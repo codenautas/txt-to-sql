@@ -1,12 +1,12 @@
 {
   "name": "txt-to-sql",
   "description": "Tools for convert text data to SQL sentences",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Codenautas <codenautas@googlegroups.com>",
   "repository": "codenautas/txt-to-sql",
   "license": "MIT",
   "main": "lib/txt-to-sql.js",
-  "files": ["lib"],
+  "files": ["lib", "web"],
   "dependencies": {
     "fs-extra": "~0.30.0",
     "fs-promise": "~0.5.0"

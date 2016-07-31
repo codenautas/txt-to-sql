@@ -1,0 +1,75 @@
+doctype html
+-
+  var messages={
+    es:{
+        labelChoose:'Archivo de datos en formato .TXT ',
+        buttonChoose:'Elegir',
+    },
+    en:{
+        labelChoose:'txt file ',
+        buttonChoose:'select',
+    }
+  }[lang||'es'];
+html(lang=lang)
+  // UTF-8: Sí
+  head
+    title txt-to-sql
+    meta(charset="UTF-8")
+    link(rel="icon", href="txt-to-sql.png", type="image/png")
+    link(rel="shortcut icon", href="txt-to-sql.png", type="image/png")
+    link(rel="apple-touch-icon", href="txt-to-sql.png")
+  body
+    h1 txt-to-sql
+    div
+      label=messages.labelChoose
+      input(value=messages.buttonChoose, type='file', id='inputFile')
+    pre#log
+    div#result
+    pre#errMessage(style={color:'red'})
+  script.
+    var module = {};
+  script(src="../lib/txt-to-sql.js")
+  script.
+    var messages={
+      es:{
+          loading:'cargando',
+          download:'descargar',
+      },
+      en:{
+          loading:'loading',
+          download:'download',
+      }
+    }[window.lang||'es'];
+    function handleFileSelect(event){
+        var files = event.target.files; // FileList object
+        result.innerHTML="";
+        Array.prototype.forEach.call(files, function(file){
+            var tableName=file.name.replace(/^(.*[\\/])?([^\\/\.]+)\.[^\\/\.]+$/,'$2');
+            log.textContent+="\n"+messages.loading+' '+file.name;
+            var promise = new Promise(function(resolve, reject){
+                try{
+                    var reader = new FileReader();
+                    reader.onload = function(event){
+                        resolve(event.target.result);
+                    };
+                    reader.readAsText(file);
+                }catch(err){
+                    reject(err);
+                }
+            });
+            return promise.then(function(txt){
+                return generateScripts({txt:txt, tableName:tableName});
+            }).then(function(script){
+                var button = document.createElement('a');
+                button.textContent = messages.download;
+                var blob = new Blob([script], {type: 'text/plain'})
+                button.setAttribute("download", tableName+".sql");    
+                var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
+                button.href=url;
+                result.appendChild(button);
+            }).catch(function(err){
+                errMessage.textContent=err.message;
+            });
+        });
+    }
+    document.getElementById('inputFile').addEventListener('change', handleFileSelect, false);  
