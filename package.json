@@ -1,0 +1,39 @@
+{
+  "name": "txt-to-sql",
+  "description": "Tools for convert text data to SQL sentences",
+  "version": "0.0.1",
+  "author": "Codenautas <codenautas@googlegroups.com>",
+  "repository": "codenautas/txt-to-sql",
+  "license": "MIT",
+  "main": "lib/txt-to-sql.js",
+  "files": ["lib"],
+  "dependencies": {
+    "fs-extra": "~0.30.0",
+    "fs-promise": "~0.5.0"
+  },
+  "devDependencies": {
+    "expect.js": "~0.3.1",
+    "istanbul": "~0.4.4",
+    "mocha": "~2.5.3",
+    
+    "best-promise": "~0.2.4",
+    "self-explain": "~0.10.7"
+  },
+  "engines": {
+    "node": ">= 0.12"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec --bail --check-leaks test/",
+    "test-nc": "mocha --reporter spec --bail --check-leaks --no-colors test/",
+    "test-ci": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/",
+    "start": "node example/server.js"
+  },
+  "qa-control": {
+    "package-version": "0.3.0",
+    "coverage": 90,
+    "run-in": "server",
+    "stability": "extending",
+    "type": "cmd-tool"
+  }
+}
