@@ -9,8 +9,14 @@ var differences = selfExplain.assert.allDifferences;
 
 describe("fixtures", function(){
     [
-        {path:'example-one'}
+        {path:'example-one'},
+        {path:'pk-simple', skip:true},
+        {path:'pk-complex', skip:true},
     ].forEach(function(fixture){
+        if(fixture.skip) {
+            console.log("skipped:", fixture.path)
+            return false;
+        }
         it("fixture: "+fixture.path, function(done){
             var basePath='./test/fixtures/'+fixture.path;
             fs.readFile(basePath+'.txt', {encoding:'utf8'}).then(function(txt){
