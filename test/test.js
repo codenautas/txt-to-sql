@@ -10,8 +10,8 @@ var differences = selfExplain.assert.allDifferences;
 describe("fixtures", function(){
     [
         {path:'example-one'},
-        {path:'pk-simple', skip:true},
-        {path:'pk-complex', skip:true},
+        {path:'pk-simple'},
+        {path:'pk-complex'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -22,6 +22,7 @@ describe("fixtures", function(){
                     return txtToSql.generateScripts({tableName:fixture.path, txt:txt});
                 }).then(function(script){
                     return fs.readFile(basePath+'.sql', {encoding:'utf8'}).then(function(sql){
+                        //console.log("sql", sql); console.log("script", script);
                         expect(script).to.eql(sql);
                         expect(differences(script,sql)).to.eql(null);
                         return;
