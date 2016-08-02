@@ -40,9 +40,13 @@ function generateWeb() {
            return Promises.all(files.map(function (file) {
                return Promises.start(function() {
                    switch(file.ext) {
+                       // jade parsing
                        case 'jade': file.ext = 'html'; return { data:pug.render(file.content, {}) };
+                       // stylus parsing
                        case 'styl': file.ext = 'css'; return { data:doStylus(file.content) }; 
+                       // estos son ignorados
                        case 'pdn': return { skip:true };
+                       // estos son copiados tal cual
                        default: return {};
                    }
                }).then(function(res) {

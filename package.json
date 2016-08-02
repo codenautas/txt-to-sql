@@ -45,7 +45,6 @@
     "type": "cmd-tool"
   },
   "pre-commit": [
-    "web",
-    "test"
+    "web"
   ]
 }
