@@ -18,7 +18,7 @@
     "expect.js": "~0.3.1",
     "istanbul": "~0.4.4",
     "mocha": "~2.5.3",
-    "precommit-hook": "latest",
+    "precommit-hook": "3.0.0",
     "pug": "~2.0.0-beta4",
     "stylus": "~0.54.5",
     "best-promise": "~0.2.4",
