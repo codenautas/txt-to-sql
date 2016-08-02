@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><!-- UTF-8: Sí--><head><title>txt-to-sql</title><meta charset="UTF-8"><link rel="icon" href="txt-to-sql.png" type="image/png"><link rel="shortcut icon" href="txt-to-sql.png" type="image/png"><link rel="apple-touch-icon" href="txt-to-sql.png"></head><body><a href="https://github.com/codenautas/txt-to-sql"><img style="position: absolute; top: 0; right: 0; border: 0" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a><a href="https://github.com/codenautas/txt-to-sql/issues"><img style="position: absolute; top: 100px; right: 100px; border: 0" src="new-issue-es.png" alt="New issue"></a><div style="float:left;height:300px;margin:0px 30px"><img src="txt-to-sql.png"></div><h1>txt-to-sql</h1><div><label>Paso 1: </label><input value="Elegir" type="file" id="inputFile"></div><pre id="log"></pre><div id="result"></div><pre id="errMessage" style="color:red"></pre></body><script>var module = {};</script><script src="../lib/txt-to-sql.js"></script><script>var messages={
+  es:{
+      loading:'cargando',
+      step2:'Paso 2 ',
+      download:'descargar',
+  },
+  en:{
+      loading:'loading',
+      step2:'Step 2 ',
+      download:'download',
+  }
+}[window.lang||'es'];
+function handleFileSelect(event){
+    var files = event.target.files; // FileList object
+    result.innerHTML="";
+    Array.prototype.forEach.call(files, function(file){
+        var tableName=file.name.replace(/^(.*[\\/])?([^\\/\.]+)\.[^\\/\.]+$/,'$2');
+        log.textContent+="\n"+messages.loading+' '+file.name;
+        var promise = new Promise(function(resolve, reject){
+            try{
+                var reader = new FileReader();
+                reader.onload = function(event){
+                    resolve(event.target.result);
+                };
+                reader.readAsText(file);
+            }catch(err){
+                reject(err);
+            }
+        });
+        return promise.then(function(txt){
+            return generateScripts({txt:txt, tableName:tableName});
+        }).then(function(script){
+            var button = document.createElement('a');
+            button.textContent = messages.download;
+            var blob = new Blob([script], {type: 'text/plain'})
+            button.setAttribute("download", tableName+".sql");    
+            var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
+            button.href=url;
+            result.textContent=messages.step2;
+            result.appendChild(button);
+        }).catch(function(err){
+            errMessage.textContent=err.message;
+        });
+    });
+}
+document.getElementById('inputFile').addEventListener('change', handleFileSelect, false);  </script></html>
