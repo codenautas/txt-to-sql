@@ -6,21 +6,19 @@
   "repository": "codenautas/txt-to-sql",
   "license": "MIT",
   "main": "lib/txt-to-sql.js",
-  "files": [
-    "lib",
-    "web"
-  ],
+  "files": ["lib", "web"],
   "dependencies": {
-    "fs-extra": "~0.30.0",
-    "fs-promise": "~0.5.0"
   },
   "devDependencies": {
     "expect.js": "~0.3.1",
+    "fs-extra": "~0.30.0",
+    "fs-promise": "~0.5.0",
     "istanbul": "~0.4.4",
     "mocha": "~2.5.3",
     "precommit-hook": "3.0.0",
     "pug": "~2.0.0-beta4",
     "stylus": "~0.54.5",
+    
     "best-promise": "~0.2.4",
     "self-explain": "~0.10.7"
   },
