@@ -22,7 +22,6 @@ describe("fixtures", function(){
                     return txtToSql.generateScripts({tableName:fixture.path, txt:txt});
                 }).then(function(script){
                     return fs.readFile(basePath+'.sql', {encoding:'utf8'}).then(function(sql){
-                        //console.log("sql", sql); console.log("script", script);
                         expect(script).to.eql(sql);
                         expect(differences(script,sql)).to.eql(null);
                         return;
@@ -30,5 +29,22 @@ describe("fixtures", function(){
                }).then(done,done);
             });   
         }
+    });
+});
+
+describe("specials", function(){
+    it("manage mixed line ends", function(done){
+        var txt="text-field;int-field;num-field;big;double\n"+
+            "hello;1;3.141592;1234567890;1.12e-101\r\n"+
+            ";;;0;0.0";
+        Promise.resolve().then(function(){
+            return txtToSql.generateScripts({tableName:'example-one', txt:txt});
+        }).then(function(script){
+            return fs.readFile('./test/fixtures/example-one.sql', {encoding:'utf8'}).then(function(sql){
+                expect(script).to.eql(sql);
+                expect(differences(script,sql)).to.eql(null);
+                return;
+            });
+        }).then(done,done);
     });
 });
