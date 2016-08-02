@@ -12,6 +12,8 @@ describe("fixtures", function(){
         {path:'example-one'},
         {path:'pk-simple'},
         {path:'pk-complex'},
+        {path:'pk-complex-all'},
+        {path:'pk-very-simple'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
