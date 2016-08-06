@@ -1,8 +1,8 @@
 "use strict";
 
 var Promises = require('best-promise');
+require('fs-extra');
 var fs = require('fs-promise');
-var fsEx = require('fs-extra');
 var Path = require('path');
 var pug = require('pug');
 var stylus = require('stylus');
@@ -17,8 +17,8 @@ function doStylus(str) {
 }
 function generateWeb() {
     console.log("Generating web content...");
-    var srcDir=__dirname+'/src';
-    var destDir=__dirname+'/web';
+    var srcDir=process.cwd()+'/src';
+    var destDir=process.cwd()+'/web';
     return Promises.start(function() {
         return fs.readdir(srcDir)
     }).then(function(files) {
@@ -43,7 +43,7 @@ function generateWeb() {
                        // jade parsing
                        case 'jade': file.ext = 'html'; return { data:pug.render(file.content, {}) };
                        // stylus parsing
-                       case 'styl': file.ext = 'css'; return { data:doStylus(file.content) }; 
+                       case 'styl': file.ext = 'css'; return doStylus(file.content).then(function(content){ return {data:content}}); 
                        // estos son ignorados
                        case 'pdn': return { skip:true };
                        // estos son copiados tal cual
@@ -53,7 +53,7 @@ function generateWeb() {
                    if(! res.skip) {
                        var destFile = Path.join(destDir, file.baseName+file.ext);
                        if(res.data) { return fs.writeFile(destFile, res.data); }
-                       return fsEx.copy(file.fullName, destFile);
+                       return fs.copy(file.fullName, destFile);
                    }
                });
            }));
