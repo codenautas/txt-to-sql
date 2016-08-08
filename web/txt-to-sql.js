@@ -74,66 +74,66 @@ function determineColumnTypes(info){
 }
 
 function determinePrimaryKey(info) {
-    var columnValues = [];
+    var columnsAsRows = [];
     info.columnsInfo.every(function(column, colIndex) {
-        var vals = [];
+        var columnValues = [];
         info.rows.every(function(row, rowIndex) {
-            var v = info.rows[rowIndex][colIndex] || null;
-            if(! v) { return false; }
-            vals.push(v)
+            var val = info.rows[rowIndex][colIndex] || null;
+            if(! val) { return false; }
+            columnValues.push(val)
             return true;
         });
-        if(vals.length !== info.rows.length) { return false; }
-        columnValues.push(vals);
+        if(columnValues.length !== info.rows.length) { return false; }
+        columnsAsRows.push(columnValues);
         return true;
     });
-    if(columnValues.length) {
-        function hasUniqueKeys(arr, requiredNumberOfKeys) {
+    if(columnsAsRows.length) {
+        function hasUniqueKeys(arr, expectedNumberOfKeys) {
             var hashTable = {};
             arr.forEach(function(elem) { hashTable[elem]=true; });
-            //console.log("requiredNumberOfKeys", requiredNumberOfKeys, "OK", Object.keys(hashTable).length)
-            if(Object.keys(hashTable).length !== requiredNumberOfKeys) { return false; }
-            return true;
+            return (Object.keys(hashTable).length === expectedNumberOfKeys);
         }
-        var firstUK = -1;
-        columnValues.every(function(column, index) {
-            var huk = hasUniqueKeys(column, info.rows.length, index);
-            if(huk && firstUK == -1) {
-                firstUK = index;
+        var firstUniqueKeyIndex = -1;
+        columnsAsRows.every(function(column, index) {
+            if(hasUniqueKeys(column, info.rows.length) && firstUniqueKeyIndex == -1) {
+                firstUniqueKeyIndex = index;
                 return false;
             }
             return true;
         });
-        if(firstUK == -1) {
-            // espera que arr1 y arr2 tengan la misma cantidad de elementos
-            function concatArrayVals(arr1, arr2) {
-                return arr1.map(function(elem, index) {
-                   return elem+info.separator+arr2[index];
-                });
-            }
-            var compKeys=columnValues[0];
-            columnValues.every(function(column, colIndex) {
-                var nextIndex = colIndex +1;
-                if(nextIndex>=columnValues.length) { return false; }
-                compKeys = concatArrayVals(compKeys, columnValues[nextIndex]);
-                if(hasUniqueKeys(compKeys, info.rows.length)) {
-                    firstUK = nextIndex;
-                    return false;
-                }
-                return true;
+        var lastUniqueCombinedKeyIndex = -1;
+        // espera que arr1 y arr2 tengan la misma cantidad de elementos
+        function concatArrayValues(arr1, arr2) {
+            return arr1.map(function(elem, index) {
+                return elem+info.separator+arr2[index];
             });
         }
-        var primaryKeys=[];
-        if(firstUK != -1) {
+        var combinedKeys=columnsAsRows[0];
+        columnsAsRows.every(function(column, colIndex) {
+            var nextIndex = colIndex +1;
+            if(nextIndex>=columnsAsRows.length) { return false; }
+            combinedKeys = concatArrayValues(combinedKeys, columnsAsRows[nextIndex]);
+            if(hasUniqueKeys(combinedKeys, info.rows.length)) {
+                lastUniqueCombinedKeyIndex = nextIndex;
+                return false;
+            }
+            return true;
+        });
+        function selectLastValidKeyIndex(firstIndex, secondIndex) {
+            if(firstIndex<0) return secondIndex;
+            if(secondIndex<0) return firstIndex;
+            return Math.min(firstIndex, secondIndex);
+        }
+        var lastValidKeyIndex = selectLastValidKeyIndex(firstUniqueKeyIndex, lastUniqueCombinedKeyIndex);
+        if(lastValidKeyIndex != -1) {
+            var primaryKeys=[];
             info.columnsInfo.every(function(col, index) {
-                if(index <= firstUK) {
+                if(index <= lastValidKeyIndex) {
                     primaryKeys.push(quote(col.name));
                     return true;
                 }
                 return false;
             });
-        }
-        if(primaryKeys.length) {
             info.primaryKey = margin+'primary key ('+primaryKeys.join(', ')+')';
         }
     }
