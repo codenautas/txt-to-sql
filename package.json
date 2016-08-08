@@ -40,7 +40,7 @@
     "coverage": 90,
     "run-in": "server",
     "stability": "extending",
-    "type": "cmd-tool"
+    "type": "web"
   },
   "pre-commit": [
     "web"
