@@ -51,3 +51,19 @@ describe("specials", function(){
         }).then(done,done);
     });
 });
+
+describe("exceptions", function(){
+    it("should reject wrong separator", function(done){
+        Promise.resolve().then(function(){
+            var txt="text-field\bint-field\bnum-field\bbig\bdouble\n"+
+                "hello\b1\r3.141592\b1234567890\b1.12e-101\r\n"+
+                "\b\b\b0\b0.0";
+            return txtToSql.generateScripts({tableName:'unimportant', txt:txt});
+        }).then(function(script){
+            done("should fail");
+        }).catch(function(err) {
+            expect(err.message).to.eql('no separator detected');
+            done();
+        });
+    });
+});
