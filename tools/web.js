@@ -16,10 +16,7 @@ function doStylus(str) {
     });
 }
 
-function generateWeb() {
-    console.log("Generating web content...");
-    var srcDir=process.cwd()+'/src';
-    var destDir=process.cwd()+'/web';
+function processDirectory(srcDir, destDir) {
     return Promises.start(function() {
         return fs.readdir(srcDir)
     }).then(function(files) {
@@ -59,6 +56,14 @@ function generateWeb() {
                 });
             }));
         });
+    });
+}
+
+function generateWeb() {
+    console.log("Generating web content...");
+    var desDir = './web';
+    return processDirectory('./src', desDir).then(function() {
+        return processDirectory('./lib', desDir);
     });
 }
 
