@@ -87,23 +87,23 @@ function determinePrimaryKey(info) {
         columnValues.push(vals);
         return true;
     });
-    console.log("CV", columnValues);
     if(columnValues.length) {
         function hasUniqueKeys(arr, requiredNumberOfKeys) {
             var hashTable = {};
-            arr.forEach(function(elem) {
-                hashTable[elem]=true;
-            });
-            console.log("requiredNumberOfKeys", requiredNumberOfKeys, "OK", Object.keys(hashTable).length)
+            arr.forEach(function(elem) { hashTable[elem]=true; });
+            //console.log("requiredNumberOfKeys", requiredNumberOfKeys, "OK", Object.keys(hashTable).length)
             if(Object.keys(hashTable).length !== requiredNumberOfKeys) { return false; }
             return true;
         }
         var firstUK = -1;
-        columnValues.forEach(function(column, index) {
+        columnValues.every(function(column, index) {
             var huk = hasUniqueKeys(column, info.rows.length, index);
-            if(huk && firstUK == -1) { firstUK = index; }
+            if(huk && firstUK == -1) {
+                firstUK = index;
+                return false;
+            }
+            return true;
         });
-        var primaryKeys=[];
         if(firstUK == -1) {
             // espera que arr1 y arr2 tengan la misma cantidad de elementos
             function concatArrayVals(arr1, arr2) {
@@ -115,9 +115,7 @@ function determinePrimaryKey(info) {
             columnValues.every(function(column, colIndex) {
                 var nextIndex = colIndex +1;
                 if(nextIndex>=columnValues.length) { return false; }
-                //console.log("columnValues.length", columnValues.length, "nextIndex", nextIndex)
                 compKeys = concatArrayVals(compKeys, columnValues[nextIndex]);
-                console.log("compKeys", compKeys)
                 if(hasUniqueKeys(compKeys, info.rows.length)) {
                     firstUK = nextIndex;
                     return false;
@@ -125,7 +123,7 @@ function determinePrimaryKey(info) {
                 return true;
             });
         }
-        console.log("firstUK",firstUK);
+        var primaryKeys=[];
         if(firstUK != -1) {
             info.columnsInfo.every(function(col, index) {
                 if(index <= firstUK) {
