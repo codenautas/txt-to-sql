@@ -55,9 +55,9 @@ describe("specials", function(){
 describe("exceptions", function(){
     it("should reject wrong separator", function(done){
         Promise.resolve().then(function(){
-            var txt="text-field\bint-field\bnum-field\bbig\bdouble\n"+
-                "hello\b1\r3.141592\b1234567890\b1.12e-101\r\n"+
-                "\b\b\b0\b0.0";
+            var txt="text-field_int-field_num-field_big_double\n"+
+                "hello_1\r3.141592_1234567890_1.12e-101\r\n"+
+                "___0_0.0";
             return txtToSql.generateScripts({tableName:'unimportant', txt:txt});
         }).then(function(script){
             done("should fail");
