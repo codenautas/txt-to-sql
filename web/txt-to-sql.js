@@ -75,9 +75,9 @@ function determineColumnTypes(info){
 
 function determinePrimaryKey(info) {
     try{
-        var lastValidKeyIndex = -1;
         var combinedKeys=new Array(info.rows.length);
-        info.columnsInfo.every(function(column, colIndex) {
+        var pkColumns = false;
+        if(info.columnsInfo.some(function(column, colIndex) {
             var combinedKeysHash = {};
             if(!info.rows.every(function(row, rowIndex) {
                 var val = row[colIndex];
@@ -91,20 +91,14 @@ function determinePrimaryKey(info) {
                 combinedKeysHash[combinedKeys[rowIndex]]=true;
                 return true;
             })){
-                return true;
+                return false;
             }else{
-                lastValidKeyIndex = colIndex;
-                return false;
+                pkColumns = info.columnsInfo.slice(0,colIndex+1);
+                return true; 
             }
-        });
-        if(lastValidKeyIndex !== -1) {
-            var primaryKeys=[];
-            info.columnsInfo.every(function(col, index) {
-                if(index <= lastValidKeyIndex) {
-                    primaryKeys.push(quote(col.name));
-                    return true;
-                }
-                return false;
+        })){
+            var primaryKeys=pkColumns.map(function(col, index) {
+                return quote(col.name);
             });
             info.primaryKey = margin+'primary key ('+primaryKeys.join(', ')+')';
         }
