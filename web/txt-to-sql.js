@@ -42,7 +42,7 @@ function determineSeparator(info){
         throw new Error('no separator detected');
     }
     // if(separatorCandidates.length>=1){
-        // console.log('separatorCandidates',separatorCandidates);
+    //    console.log('separatorCandidates',separatorCandidates);
     // }
     info.separator=separatorCandidates[0];
     return info;
