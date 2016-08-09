@@ -105,7 +105,7 @@ function determinePrimaryKey(info) {
         // espera que arr1 y arr2 tengan la misma cantidad de elementos
         function concatArrayValues(arr1, arr2) {
             return arr1.map(function(elem, index) {
-                return elem+info.separator+arr2[index];
+                return JSON.stringify(elem)+JSON.stringify(arr2[index]);
             });
         }
         var combinedKeys=columnsAsRows[0];
