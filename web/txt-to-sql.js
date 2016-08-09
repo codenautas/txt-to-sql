@@ -74,8 +74,9 @@ function determineColumnTypes(info){
 }
 
 function determinePrimaryKey(info) {
-    var firstUniqueKeyIndex = -1;
-    var lastUniqueCombinedKeyIndex = -1;
+    const invalidKeyIndex = -1;
+    var firstUniqueKeyIndex = invalidKeyIndex;
+    var lastUniqueCombinedKeyIndex = invalidKeyIndex;
     var combinedKeys=[];
     info.columnsInfo.every(function(column, colIndex) {
         var columnValues = [];
@@ -95,21 +96,21 @@ function determinePrimaryKey(info) {
             return true;
         });
         if(columnValues.length !== info.rows.length) { return false; }
-        if(Object.keys(simpleKeysHash).length === info.rows.length && firstUniqueKeyIndex == -1) {
+        if(firstUniqueKeyIndex == invalidKeyIndex && Object.keys(simpleKeysHash).length === info.rows.length) {
             firstUniqueKeyIndex = colIndex;
         }
-        if(Object.keys(combinedKeysHash).length === info.rows.length && lastUniqueCombinedKeyIndex == -1) {
+        if(lastUniqueCombinedKeyIndex == invalidKeyIndex && Object.keys(combinedKeysHash).length === info.rows.length) {
             lastUniqueCombinedKeyIndex = colIndex;
         }
         return true;
     });
     function selectLastValidKeyIndex(firstIndex, secondIndex) {
-        if(firstIndex<0) return secondIndex;
-        if(secondIndex<0) return firstIndex;
+        if(firstIndex==invalidKeyIndex) return secondIndex;
+        if(secondIndex==invalidKeyIndex) return firstIndex;
         return Math.min(firstIndex, secondIndex);
     }
     var lastValidKeyIndex = selectLastValidKeyIndex(firstUniqueKeyIndex, lastUniqueCombinedKeyIndex);
-    if(lastValidKeyIndex != -1) {
+    if(lastValidKeyIndex != invalidKeyIndex) {
         var primaryKeys=[];
         info.columnsInfo.every(function(col, index) {
             if(index <= lastValidKeyIndex) {
