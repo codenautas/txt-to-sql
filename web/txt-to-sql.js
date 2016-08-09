@@ -79,20 +79,23 @@ function determinePrimaryKey(info) {
         var combinedKeys=new Array(info.rows.length);
         info.columnsInfo.every(function(column, colIndex) {
             var combinedKeysHash = {};
-            info.rows.every(function(row, rowIndex) {
+            if(!info.rows.every(function(row, rowIndex) {
                 var val = row[colIndex];
                 if(val==='') {
                     throw new Error("haveNullColumns");
                 }
                 combinedKeys[rowIndex] = combinedKeys[rowIndex]+JSON.stringify(val);
+                if(combinedKeysHash[combinedKeys[rowIndex]]){
+                    return false;
+                }
                 combinedKeysHash[combinedKeys[rowIndex]]=true;
                 return true;
-            });
-            if(Object.keys(combinedKeysHash).length === info.rows.length) {
+            })){
+                return true;
+            }else{
                 lastValidKeyIndex = colIndex;
                 return false;
             }
-            return true;
         });
         if(lastValidKeyIndex !== -1) {
             var primaryKeys=[];
