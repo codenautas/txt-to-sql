@@ -77,7 +77,7 @@ function determinePrimaryKey(info) {
     try{
         var combinedKeys=new Array(info.rows.length);
         var pkColumns = false;
-        if(info.columnsInfo.some(function(column, colIndex) {
+        info.columnsInfo.some(function(column, colIndex) {
             var combinedKeysHash = {};
             if(!info.rows.every(function(row, rowIndex) {
                 var val = row[colIndex];
@@ -93,15 +93,12 @@ function determinePrimaryKey(info) {
             })){
                 return false;
             }else{
-                pkColumns = info.columnsInfo.slice(0,colIndex+1);
+                info.primaryKey = info.columnsInfo.slice(0,colIndex+1).map(function(col) {
+                    return quote(col.name);
+                })
                 return true; 
             }
-        })){
-            var primaryKeys=pkColumns.map(function(col, index) {
-                return quote(col.name);
-            });
-            info.primaryKey = margin+'primary key ('+primaryKeys.join(', ')+')';
-        }
+        })
     }catch(err){
         if(err.message!=="haveNullColumns") throw err;
     }
@@ -115,7 +112,7 @@ function generateCreateScript(info){
     info.columnsInfo.forEach(function(columnInfo){
         scriptLinesForTableColumns.push(margin+quote(columnInfo.name)+" "+columnInfo.typeInfo.typeName);
     });
-    if(info.primaryKey) { scriptLinesForTableColumns.push(info.primaryKey); }
+    if(info.primaryKey) { scriptLinesForTableColumns.push(margin+'primary key ('+info.primaryKey.join(', ')+')'); }
     scriptLines.push(scriptLinesForTableColumns.join(",\n"));
     scriptLines.push(');\n');
     info.scripts=[];
