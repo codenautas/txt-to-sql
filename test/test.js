@@ -9,7 +9,17 @@ var differences = selfExplain.assert.allDifferences;
 
 var yaml = require('js-yaml');
 
+function readIfExists(fileName, outObject, outProperty) {
+    return fs.exists(fileName).then(function(exists) {
+        if(exists) { return fs.readFile(fileName, {encoding:'utf8'}); }
+        return { notExists: true};
+    }).then(function(content) {
+        if(! content.notExists) { outObject[outProperty] = content; }
+    });
+}
+
 describe("fixtures", function(){
+    var defaultOpts = {};
     [
         {path:'example-one'},
         {path:'pk-simple'},
@@ -29,27 +39,25 @@ describe("fixtures", function(){
         } else {
             it("fixture: "+fixture.path, function(done){
                 var param={tableName:fixture.path};
+                var result={};
                 var basePath='./test/fixtures/'+fixture.path;
                 var optsPath=basePath+'.in-opts.yaml';
-                fs.exists(optsPath).then(function(exists) {
-                    if(exists) { return fs.readFile(optsPath, {encoding:'utf8'}); }
-                    return { notExists: true};
-                }).then(function(content) {
-                    if(! content.notExists) {
-                        param.opts = yaml.safeLoad(content);
-                    }
+                readIfExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
+                    if(param.opts) { param.opts = yaml.safeLoad(param.opts); }
+                    return readIfExists(basePath+'.txt', param, 'txt');
                 }).then(function() {
-                    return fs.readFile(basePath+'.txt', {encoding:'utf8'});
-                }).then(function(txt){
-                    param.txt = txt;
-                    //console.log("param", param);
+                    return readIfExists(basePath+'.sql', result, 'sql');
+                }).then(function() {
+                    return readIfExists(basePath+'.out-opts.yaml', result, 'opts');
+                }).then(function() {
+                    result.opts = result.opts ? yaml.safeLoad(result.opts) : defaultOpts;
+                }).then(function() {
+                    // console.log("param", param);
+                    // console.log("result", result);
                     return txtToSql.generateScripts(param);
                 }).then(function(script){
-                    return fs.readFile(basePath+'.sql', {encoding:'utf8'}).then(function(sql){
-                        expect(script).to.eql(sql);
-                        expect(differences(script,sql)).to.eql(null);
-                        return;
-                    });
+                    expect(script).to.eql(result.sql);
+                    expect(differences(script,result.sql)).to.eql(null);
                }).then(done,done);
             });   
         }
