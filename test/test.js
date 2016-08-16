@@ -2,12 +2,10 @@
 
 var fs = require('fs-promise');
 var txtToSql = require('../lib/txt-to-sql.js');
-
 var expect = require('expect.js');
 var selfExplain = require('self-explain');
 var differences = selfExplain.assert.allDifferences;
 var changing = require('best-globals').changing;
-
 var yaml = require('js-yaml');
 
 function setIfFileExists(fileName, outObject, outProperty) {
@@ -40,6 +38,7 @@ describe("fixtures", function(){
         {path:'fields-lcnames'}, // lowercased_names
         {path:'fields-unmodified'},
         {path:'fields-lcalpha'},
+        {path:'specials'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -64,8 +63,6 @@ describe("fixtures", function(){
                 }).then(function() {
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    //console.log("RES", fixture.path, result.opts, txtToSql.defaultOpts);
-                    //console.log("Res", result);
                     // console.log("R sql", result.sql.length, result.sql);
                     // console.log("G sql", generated.sql.length, generated.sql);
                     expect(generated.sql).to.eql(result.sql);
@@ -75,24 +72,6 @@ describe("fixtures", function(){
                }).then(done,done);
             });   
         }
-    });
-});
-
-describe("specials", function(){
-    it("manage mixed line ends", function(done){
-        var txt="text-field;int-field;num-field;big;double\n"+
-            "hello;1;3.141592;1234567890;1.12e-101\r\n"+
-            ";;;0;0.0";
-        Promise.resolve().then(function(){
-            return txtToSql.generateScripts({tableName:'example-one', txt:txt});
-        }).then(function(generated){
-            return fs.readFile('./test/fixtures/example-one.sql', {encoding:'utf8'}).then(function(sql){
-                sql = makeSqlArray(sql);
-                expect(generated.sql).to.eql(sql);
-                expect(differences(generated.sql,sql)).to.eql(null);
-                return;
-            });
-        }).then(done,done);
     });
 });
 
