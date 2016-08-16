@@ -9,7 +9,7 @@ var differences = selfExplain.assert.allDifferences;
 
 var yaml = require('js-yaml');
 
-function readIfExists(fileName, outObject, outProperty) {
+function setIfFileExists(fileName, outObject, outProperty) {
     return fs.exists(fileName).then(function(exists) {
         if(exists) { return fs.readFile(fileName, {encoding:'utf8'}); }
         return { notExists: true};
@@ -46,20 +46,17 @@ describe("fixtures", function(){
                 var param={tableName:fixture.path};
                 var result={};
                 var basePath='./test/fixtures/'+fixture.path;
-                var optsPath=basePath+'.in-opts.yaml';
-                readIfExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
+                setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
                     if(param.opts) { param.opts = yaml.safeLoad(param.opts); }
-                    return readIfExists(basePath+'.txt', param, 'txt');
+                    return setIfFileExists(basePath+'.txt', param, 'txt');
                 }).then(function() {
-                    return readIfExists(basePath+'.sql', result, 'sql');
+                    return setIfFileExists(basePath+'.sql', result, 'sql');
                 }).then(function() {
                     result.sql = makeSqlArray(result.sql);
-                    return readIfExists(basePath+'.out-opts.yaml', result, 'opts');
+                    return setIfFileExists(basePath+'.out-opts.yaml', result, 'opts');
                 }).then(function() {
                     result.opts = result.opts ? yaml.safeLoad(result.opts) : txtToSql.defaultOpts;
                 }).then(function() {
-                    // console.log("param", param);
-                    // console.log("result", result);
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
                     //console.log("GEN", generated.sql.length, generated.sql); console.log("RES", result.sql.length, result.sql);
