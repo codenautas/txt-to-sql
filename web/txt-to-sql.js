@@ -144,7 +144,10 @@ function generateScripts(info){
     .then(generateCreateScript)
     .then(generateInsertScript)
     .then(function(info){
-        return info.scripts.map(function(script){ return script.sql; }).join('\n');
+        //return info.scripts.map(function(script){ return script.sql; }).join('\n');
+        return {
+            sql:info.scripts.map(function(script){ return script.sql.trimRight(); })
+        };
     });
 }
 
