@@ -139,7 +139,11 @@ txtToSql.defaultOpts = {
 var quoteFunctions = {
     'unmodified' : function(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; },
     'lowercased_names' : function(objectName) { return quoteFunctions.unmodified(objectName.toLowerCase()); },
-    //'lowercased_alpha' : function(objectName) { return quoteFunctions.unmodified(objectName.toLowerCase()); },
+    'lowercased_alpha' : function(objectName) {
+        objectName = objectName.replace(/[^a-zA-Z0-9]/, '_');
+        if(objectName.charAt(0).match(/[0-9]/)) { objectName = '_'+objectName; }
+        return quoteFunctions.unmodified(objectName.toLowerCase());
+    },
 };
 
 function generateScripts(info){

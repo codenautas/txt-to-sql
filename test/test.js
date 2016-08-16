@@ -38,6 +38,7 @@ describe("fixtures", function(){
         {path:'pk-space-simple'},
         {path:'fields-lcnames'}, // lowercased_names
         {path:'fields-unmodified'},
+        {path:'fields-lcalpha'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -62,7 +63,10 @@ describe("fixtures", function(){
                 }).then(function() {
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    //console.log("GEN", generated.sql.length, generated.sql); console.log("RES", result.sql.length, result.sql);
+                    //console.log("RES", fixture.path, result.opts, txtToSql.defaultOpts);
+                    //console.log("Res", result);
+                    // console.log("R sql", result.sql.length, result.sql);
+                    // console.log("G sql", generated.sql.length, generated.sql);
                     expect(generated.sql).to.eql(result.sql);
                     expect(differences(generated.sql,result.sql)).to.eql(null);
                     expect(generated.opts).to.eql(result.opts);
