@@ -7,28 +7,26 @@ var expect = require('expect.js');
 var selfExplain = require('self-explain');
 var differences = selfExplain.assert.allDifferences;
 
-var fixturesPath='./test/fixtures/';
-
-function getFixtures() {
-    var fixtures = fs.readdirSync(fixturesPath).filter(function(file) {
-        return file.match(/(\.txt)$/);
-    }).map(function(file) {
-        var path = file.substr(0, file.length-4);
-        return {
-            path:path,
-            //skip:path.match(/example-one/) // Para skip'ear
-        };
-    });
-    return fixtures;
-}
-
 describe("fixtures", function(){
-    getFixtures().forEach(function(fixture){
+    [
+        {path:'example-one'},
+        {path:'pk-simple'},
+        {path:'pk-complex'},
+        {path:'pk-complex-all'},
+        {path:'pk-very-simple'},
+        {path:'without-pk-2'},
+        {path:'pk-simple-nn'},
+        {path:'pk-complex-nn'},
+        {path:'pk-complex-nn2'},
+        {path:'pk-very-simple2'},
+        {path:'pk-space-simple'},
+        {path:'example-uppercase'},
+    ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
         } else {
             it("fixture: "+fixture.path, function(done){
-                var basePath=fixturesPath+fixture.path;
+                var basePath='./test/fixtures/'+fixture.path;
                 fs.readFile(basePath+'.txt', {encoding:'utf8'}).then(function(txt){
                     return txtToSql.generateScripts({tableName:fixture.path, txt:txt});
                 }).then(function(script){
