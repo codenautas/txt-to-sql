@@ -36,7 +36,8 @@ describe("fixtures", function(){
         {path:'pk-complex-nn2'},
         {path:'pk-very-simple2'},
         {path:'pk-space-simple'},
-        {path:'example-uppercase'},
+        {path:'fields-lcnames'}, // lowercased_names
+        {path:'fields-unmodified'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
