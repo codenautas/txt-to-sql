@@ -20,7 +20,7 @@ function setIfFileExists(fileName, outObject, outProperty) {
 
 function makeSqlArray(sqlstr) {
     return sqlstr.split(/(\r?\n){2}/g)
-              .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
+                 .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
 }
 
 describe("fixtures", function(){
@@ -94,10 +94,8 @@ describe("exceptions", function(){
                 "hello_1\r3.141592_1234567890_1.12e-101\r\n"+
                 "___0_0.0";
             return txtToSql.generateScripts({tableName:'unimportant', txt:txt});
-        }).then(function(script){
-            done("should fail");
-        }).catch(function(err) {
-            expect(err.message).to.eql('no separator detected');
+        }).then(function(generated){
+            expect(generated.errors[0]).to.eql('no separator detected');
             done();
         });
     });
