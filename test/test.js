@@ -6,6 +6,7 @@ var txtToSql = require('../lib/txt-to-sql.js');
 var expect = require('expect.js');
 var selfExplain = require('self-explain');
 var differences = selfExplain.assert.allDifferences;
+var changing = require('best-globals').changing;
 
 var yaml = require('js-yaml');
 
@@ -56,7 +57,7 @@ describe("fixtures", function(){
                     result.sql = makeSqlArray(result.sql);
                     return setIfFileExists(basePath+'.out-opts.yaml', result, 'opts');
                 }).then(function() {
-                    result.opts = result.opts ? yaml.safeLoad(result.opts) : txtToSql.defaultOpts;
+                    result.opts = changing(txtToSql.defaultOpts, result.opts ? yaml.safeLoad(result.opts) : {});
                     return setIfFileExists(basePath+'.errors.yaml', result, 'errors');
                 }).then(function() {
                     if(result.errors) { result.errors = yaml.safeLoad(result.opts); }

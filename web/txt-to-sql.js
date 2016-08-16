@@ -133,6 +133,7 @@ function generateInsertScript(info){
 }
 
 txtToSql.defaultOpts = {
+    //'separator': 'detect',
     'field_format': 'lowercased_names'
 };
 
