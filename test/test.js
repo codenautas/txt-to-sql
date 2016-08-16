@@ -24,7 +24,6 @@ function makeSqlArray(sqlstr) {
 }
 
 describe("fixtures", function(){
-    var defaultOpts = {};
     [
         {path:'example-one'},
         {path:'pk-simple'},
@@ -56,7 +55,7 @@ describe("fixtures", function(){
                     result.sql = makeSqlArray(result.sql);
                     return readIfExists(basePath+'.out-opts.yaml', result, 'opts');
                 }).then(function() {
-                    result.opts = result.opts ? yaml.safeLoad(result.opts) : defaultOpts;
+                    result.opts = result.opts ? yaml.safeLoad(result.opts) : txtToSql.defaultOpts;
                 }).then(function() {
                     // console.log("param", param);
                     // console.log("result", result);
@@ -65,6 +64,7 @@ describe("fixtures", function(){
                     //console.log("GEN", generated.sql.length, generated.sql); console.log("RES", result.sql.length, result.sql);
                     expect(generated.sql).to.eql(result.sql);
                     expect(differences(generated.sql,result.sql)).to.eql(null);
+                    expect(generated.opts).to.eql(result.opts);
                }).then(done,done);
             });   
         }

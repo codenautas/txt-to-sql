@@ -5,6 +5,9 @@ var txtToSql = {};
 var margin = ' ';
 var separators=';,\t|';
 
+var changing = require('best-globals').changing;
+
+
 function quote(objectName){
     return '"'+objectName.toLowerCase().replace(/"/g,'""')+'"';
 }
@@ -134,7 +137,12 @@ function generateInsertScript(info){
     return info;
 }
 
+txtToSql.defaultOpts = {
+    'field_format': 'lowercased_names' // 'lowercased_alpha', 'unmodified', 
+};
+
 function generateScripts(info){
+    info.opts = changing(txtToSql.defaultOpts, info.opts || {})
     return Promise.resolve(info)
     .then(separateLines)
     .then(determineSeparator)
@@ -144,8 +152,8 @@ function generateScripts(info){
     .then(generateCreateScript)
     .then(generateInsertScript)
     .then(function(info){
-        //return info.scripts.map(function(script){ return script.sql; }).join('\n');
         return {
+            opts:info.opts,
             sql:info.scripts.map(function(script){ return script.sql.trimRight(); })
         };
     });

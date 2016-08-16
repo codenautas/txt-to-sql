@@ -20,6 +20,7 @@
     "stylus": "~0.54.5",
     "js-yaml": "~3.6.0",
     
+    "best-globals": "~0.4.9",
     "best-promise": "~0.2.4",
     "self-explain": "~0.10.7"
   },
