@@ -7,6 +7,8 @@ var expect = require('expect.js');
 var selfExplain = require('self-explain');
 var differences = selfExplain.assert.allDifferences;
 
+var yaml = require('js-yaml');
+
 describe("fixtures", function(){
     [
         {path:'example-one'},
@@ -26,9 +28,22 @@ describe("fixtures", function(){
             it.skip("fixture: "+fixture.path);
         } else {
             it("fixture: "+fixture.path, function(done){
+                var param={tableName:fixture.path};
                 var basePath='./test/fixtures/'+fixture.path;
-                fs.readFile(basePath+'.txt', {encoding:'utf8'}).then(function(txt){
-                    return txtToSql.generateScripts({tableName:fixture.path, txt:txt});
+                var optsPath=basePath+'.in-opts.yaml';
+                fs.exists(optsPath).then(function(exists) {
+                    if(exists) { return fs.readFile(optsPath, {encoding:'utf8'}); }
+                    return { notExists: true};
+                }).then(function(content) {
+                    if(! content.notExists) {
+                        param.opts = yaml.safeLoad(content);
+                    }
+                }).then(function() {
+                    return fs.readFile(basePath+'.txt', {encoding:'utf8'});
+                }).then(function(txt){
+                    param.txt = txt;
+                    //console.log("param", param);
+                    return txtToSql.generateScripts(param);
                 }).then(function(script){
                     return fs.readFile(basePath+'.sql', {encoding:'utf8'}).then(function(sql){
                         expect(script).to.eql(sql);
