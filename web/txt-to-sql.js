@@ -166,7 +166,8 @@ function generateScripts(info){
         };
     }).catch(function(err) {
         errors.push(err.message);
-        return { errors: errors } ;
+        info.errors = errors;
+        return info;
     });
 }
 

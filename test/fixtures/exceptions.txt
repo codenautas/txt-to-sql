@@ -1,0 +1,3 @@
+text-field_int-field_num-field_big_double
+hello_1\r3.141592_1234567890_1.12e-101
+___0_0.0

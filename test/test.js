@@ -39,6 +39,7 @@ describe("fixtures", function(){
         {path:'fields-unmodified'},
         {path:'fields-lcalpha'},
         {path:'specials'},
+        {path:'exceptions'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -53,18 +54,17 @@ describe("fixtures", function(){
                 }).then(function() {
                     return setIfFileExists(basePath+'.sql', result, 'sql');
                 }).then(function() {
-                    result.sql = makeSqlArray(result.sql);
+                    if(result.sql) { result.sql = makeSqlArray(result.sql); }
                     return setIfFileExists(basePath+'.out-opts.yaml', result, 'opts');
                 }).then(function() {
                     result.opts = changing(txtToSql.defaultOpts, result.opts ? yaml.safeLoad(result.opts) : {});
                     return setIfFileExists(basePath+'.errors.yaml', result, 'errors');
                 }).then(function() {
-                    if(result.errors) { result.errors = yaml.safeLoad(result.opts); }
+                    if(result.errors) { result.errors = yaml.safeLoad(result.errors); }
                 }).then(function() {
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    // console.log("R sql", result.sql.length, result.sql);
-                    // console.log("G sql", generated.sql.length, generated.sql);
+                    // console.log("R", result.opts); console.log("G", generated.opts);
                     expect(generated.sql).to.eql(result.sql);
                     expect(differences(generated.sql,result.sql)).to.eql(null);
                     expect(generated.opts).to.eql(result.opts);
@@ -72,19 +72,5 @@ describe("fixtures", function(){
                }).then(done,done);
             });   
         }
-    });
-});
-
-describe("exceptions", function(){
-    it("should reject wrong separator", function(done){
-        Promise.resolve().then(function(){
-            var txt="text-field_int-field_num-field_big_double\n"+
-                "hello_1\r3.141592_1234567890_1.12e-101\r\n"+
-                "___0_0.0";
-            return txtToSql.generateScripts({tableName:'unimportant', txt:txt});
-        }).then(function(generated){
-            expect(generated).to.eql({errors:['no separator detected']});
-            done();
-        });
     });
 });
