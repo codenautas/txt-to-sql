@@ -18,6 +18,11 @@ function readIfExists(fileName, outObject, outProperty) {
     });
 }
 
+function makeSqlArray(sqlstr) {
+    return sqlstr.split(/(\r?\n){2}/g)
+              .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
+}
+
 describe("fixtures", function(){
     var defaultOpts = {};
     [
@@ -48,8 +53,7 @@ describe("fixtures", function(){
                 }).then(function() {
                     return readIfExists(basePath+'.sql', result, 'sql');
                 }).then(function() {
-                    result.sql = result.sql.split(/(\r?\n){2}/g)
-                                           .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
+                    result.sql = makeSqlArray(result.sql);
                     return readIfExists(basePath+'.out-opts.yaml', result, 'opts');
                 }).then(function() {
                     result.opts = result.opts ? yaml.safeLoad(result.opts) : defaultOpts;
@@ -60,24 +64,25 @@ describe("fixtures", function(){
                 }).then(function(generated){
                     //console.log("GEN", generated.sql.length, generated.sql); console.log("RES", result.sql.length, result.sql);
                     expect(generated.sql).to.eql(result.sql);
-                    //expect(differences(script,result.sql)).to.eql(null);
+                    expect(differences(generated.sql,result.sql)).to.eql(null);
                }).then(done,done);
             });   
         }
     });
 });
 
-describe.skip("specials", function(){
+describe("specials", function(){
     it("manage mixed line ends", function(done){
         var txt="text-field;int-field;num-field;big;double\n"+
             "hello;1;3.141592;1234567890;1.12e-101\r\n"+
             ";;;0;0.0";
         Promise.resolve().then(function(){
             return txtToSql.generateScripts({tableName:'example-one', txt:txt});
-        }).then(function(script){
+        }).then(function(generated){
             return fs.readFile('./test/fixtures/example-one.sql', {encoding:'utf8'}).then(function(sql){
-                expect(script).to.eql(sql);
-                expect(differences(script,sql)).to.eql(null);
+                sql = makeSqlArray(sql);
+                expect(generated.sql).to.eql(sql);
+                expect(differences(generated.sql,sql)).to.eql(null);
                 return;
             });
         }).then(done,done);
