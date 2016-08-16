@@ -56,6 +56,9 @@ describe("fixtures", function(){
                     return setIfFileExists(basePath+'.out-opts.yaml', result, 'opts');
                 }).then(function() {
                     result.opts = result.opts ? yaml.safeLoad(result.opts) : txtToSql.defaultOpts;
+                    return setIfFileExists(basePath+'.errors.yaml', result, 'errors');
+                }).then(function() {
+                    if(result.errors) { result.errors = yaml.safeLoad(result.opts); }
                 }).then(function() {
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
@@ -63,6 +66,7 @@ describe("fixtures", function(){
                     expect(generated.sql).to.eql(result.sql);
                     expect(differences(generated.sql,result.sql)).to.eql(null);
                     expect(generated.opts).to.eql(result.opts);
+                    expect(generated.errors).to.eql(result.errors);
                }).then(done,done);
             });   
         }
@@ -95,7 +99,7 @@ describe("exceptions", function(){
                 "___0_0.0";
             return txtToSql.generateScripts({tableName:'unimportant', txt:txt});
         }).then(function(generated){
-            expect(generated.errors[0]).to.eql('no separator detected');
+            expect(generated).to.eql({errors:['no separator detected']});
             done();
         });
     });
