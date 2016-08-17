@@ -11,37 +11,51 @@ var yaml = require('js-yaml');
 function setIfFileExists(fileName, outObject, outProperty) {
     return fs.exists(fileName).then(function(exists) {
         if(exists) { return fs.readFile(fileName, {encoding:'utf8'}); }
-        return { notExists: true};
+        return { notExists: true };
     }).then(function(content) {
         if(! content.notExists) { outObject[outProperty] = content; }
+    });
+}
+
+var defaultResult = {};
+
+function loadDefaultResult() {
+    if(defaultResult.opts) { return Promise.resolve(defaultResult); }
+    //console.log("loading default result");
+    return setIfFileExists('./test/fixtures/_default_.out-opts.yaml', defaultResult, 'opts').then(function() {
+        defaultResult.opts = yaml.safeLoad(defaultResult.opts);
+        return defaultResult;
     });
 }
 
 describe("fixtures", function(){
     [
         {path:'example-one'},
-        {path:'pk-simple'},
-        {path:'pk-complex'},
-        {path:'pk-complex-all'},
-        {path:'pk-very-simple'},
+        {path:'pk-simple', changeResult:function(res) { res.opts.separator = '\t'; }},
+        {path:'pk-complex', changeResult:function(res) { res.opts.separator = '|'; }},
+        {path:'pk-complex-all', changeResult:function(res) { res.opts.separator = '|'; }},
+        {path:'pk-very-simple', changeResult:function(res) { res.opts.separator = ','; }},
         {path:'without-pk-2'},
-        {path:'pk-simple-nn'},
+        {path:'pk-simple-nn', changeResult:function(res) { res.opts.separator = '\t'; }},
         {path:'pk-complex-nn'},
         {path:'pk-complex-nn2'},
-        {path:'pk-very-simple2'},
-        {path:'pk-space-simple'},
+        {path:'pk-very-simple2', changeResult:function(res) { res.opts.separator = ','; }},
+        {path:'pk-space-simple', changeResult:function(res) { res.opts.separator = /\s+/; }},
         {path:'specials'},
-        {path:'exceptions'},
+        {path:'exceptions', changeResult:function(res) { delete res.opts.separator; }},
         {path:'fields-unmod'},
         {path:'fields-lcnames'},
         {path:'fields-lcalpha'},
         {path:'fields-unmod-dups'},
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
-        {path:'wrong-input'},
-        {path:'wrong-input2', change:function(param) { delete param.tableName; } },
-        {path:'wrong-input3'},
-        {path:'separator1'},
+        {path:'wrong-input', changeResult:function(res) { delete res.opts.separator; } },
+        {path:'wrong-input2',
+         changeResult:function(res) { delete res.opts.separator; },
+         changeParam:function(param) { delete param.tableName; }
+        },
+        {path:'wrong-input3', changeResult:function(res) { delete res.opts.separator; }},
+        {path:'separator1', changeResult:function(res) { res.opts.separator = '/'; }},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -56,7 +70,7 @@ describe("fixtures", function(){
                     return setIfFileExists(basePath+'.txt', param, 'txt');
                 }).then(function() {
                     // para poder cambiar despues de cargar
-                    if(fixture.change) { fixture.change(param); }
+                    if(fixture.changeParam) { fixture.changeParam(param); }
                 }).then(function() {
                     return setIfFileExists(basePath+'.sql', result, 'sql');
                 }).then(function() {
@@ -64,24 +78,27 @@ describe("fixtures", function(){
                         result.sql = result.sql.split(/(\r?\n){2}/g)
                                                .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
                     }
+                    return loadDefaultResult();
+                }).then(function() {
                     return setIfFileExists(basePath+'.out-opts.yaml', result, 'opts');
                 }).then(function() {
-                    // si no se define result.opts, asumimos que es igual a param.opts
-                    result.opts = changing(txtToSql.defaultOpts, result.opts ? yaml.safeLoad(result.opts) : (param.opts || {}) );
+                    result.opts = changing(defaultResult['opts'], result.opts ? yaml.safeLoad(result.opts) : {});
+                    //console.log("RO", result.opts)
+                }).then(function() {
                     return setIfFileExists(basePath+'.errors.yaml', result, 'errors');
                 }).then(function() {
                     if(result.errors) { result.errors = yaml.safeLoad(result.errors); }
+                    // para poder cambiar despues de cargar
+                    if(fixture.changeResult) { fixture.changeResult(result); }
                 }).then(function() {
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
                     prepared = preparedResult;
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    // console.log("P", param.opts); console.log("R", result.opts);
-                    //console.log("P", prepared);
+                    // console.log("P", param.opts); console.log("R", result.opts); console.log("P", prepared);
                     expect(prepared.opts).to.eql(result.opts);
                     expect(prepared.errors).to.eql(result.errors);
-                    expect(prepared.sql).not.be.ok();
                     //console.log("G", generated);
                     expect(generated.sql).to.eql(result.sql);
                     expect(differences(generated.sql,result.sql)).to.eql(null);

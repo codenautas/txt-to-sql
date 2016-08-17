@@ -49,7 +49,6 @@ var quoteFunctions = {
 function verifyInputParams(info){
     info.opts = changing(txtToSql.defaultOpts, info.opts || {});
     info.quote = quoteFunctions[info.opts['field_format']];
-    info.separator = info.opts.separator;
     var errors=[];
     if(! info.tableName) { errors.push('undefined table name'); }
     if(! info.txt) { errors.push('no txt in input'); }
@@ -65,7 +64,7 @@ function separateLines(info){
 }
 
 function determineSeparator(info){
-    if(! info.separator) {
+    if(! info.opts.separator) {
         var separatorCandidates = separators.split('');
         separatorCandidates.push(/\s+/);
         separatorCandidates = separatorCandidates.filter(function(separator){
@@ -77,16 +76,16 @@ function determineSeparator(info){
         // if(separatorCandidates.length>=1){
         //    console.log('separatorCandidates',separatorCandidates);
         // }
-        info.separator=separatorCandidates[0];
-    }// else { console.log("using defined separator ", info.separator); }
+        info.opts.separator=separatorCandidates[0];
+    }// else { console.log("using defined separator ", info.opts.separator); }
     return info;
 }
 
 function separateFields(info){
-    info.columnsInfo = info.headers.split(info.separator).map(function(name){ return {name:name};});
+    info.columnsInfo = info.headers.split(info.opts.separator).map(function(name){ return {name:name};});
     info.rows = info.lines
     .filter(function(line){ return line.trim()!==""; })
-    .map(function(line){ return line.split(info.separator);});
+    .map(function(line){ return line.split(info.opts.separator);});
     return info;
 }
 
@@ -201,7 +200,9 @@ function catchErrors(info, err) {
 
 function prepare(info) {
     return setup(info)
-    .catch(catchErrors.bind(null, info));
+    .then(function(info) {
+        return {opts:info.opts};
+    }).catch(catchErrors.bind(null, info));
 }
 
 function generateScripts(info){
