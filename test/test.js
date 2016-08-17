@@ -17,11 +17,6 @@ function setIfFileExists(fileName, outObject, outProperty) {
     });
 }
 
-function makeSqlArray(sqlstr) {
-    return sqlstr.split(/(\r?\n){2}/g)
-                 .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
-}
-
 describe("fixtures", function(){
     [
         {path:'example-one'},
@@ -62,7 +57,10 @@ describe("fixtures", function(){
                 }).then(function() {
                     return setIfFileExists(basePath+'.sql', result, 'sql');
                 }).then(function() {
-                    if(result.sql) { result.sql = makeSqlArray(result.sql); }
+                    if(result.sql) {
+                        result.sql = result.sql.split(/(\r?\n){2}/g)
+                                               .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
+                    }
                     return setIfFileExists(basePath+'.out-opts.yaml', result, 'opts');
                 }).then(function() {
                     // si no se define result.opts, asumimos que es igual a param.opts
