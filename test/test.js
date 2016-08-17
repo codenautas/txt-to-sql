@@ -77,11 +77,12 @@ describe("fixtures", function(){
                     prepared = preparedResult;
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    // console.log("P", param.opts); console.log("R", result.opts); console.log("P", prepared.opts);
+                    // console.log("P", param.opts); console.log("R", result.opts);
+                    //console.log("P", prepared);
                     expect(prepared.opts).to.eql(result.opts);
                     expect(prepared.errors).to.eql(result.errors);
                     expect(prepared.sql).not.be.ok();
-
+                    //console.log("G", generated);
                     expect(generated.sql).to.eql(result.sql);
                     expect(differences(generated.sql,result.sql)).to.eql(null);
                     expect(generated.errors).to.eql(result.errors);

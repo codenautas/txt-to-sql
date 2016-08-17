@@ -6,21 +6,6 @@ var txtToSql = {};
 var margin = ' ';
 var separators=';,\t|';
 
-txtToSql.defaultOpts = {
-    'field_format': 'lowercased_names'
-};
-
-
-var quoteFunctions = {
-    'unmodified' : function(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; },
-    'lowercased_names' : function(objectName) { return quoteFunctions.unmodified(objectName.toLowerCase()); },
-    'lowercased_alpha' : function(objectName) {
-        objectName = objectName.replace(/[^a-zA-Z0-9]/g, '_');
-        if(objectName.charAt(0).match(/[0-9]/)) { objectName = '_'+objectName; }
-        return quoteFunctions.unmodified(objectName.toLowerCase());
-    },
-};
-
 function adaptPlain(x){
     if(x===''){ return 'null'; }
     return x; 
@@ -47,9 +32,24 @@ function throwIfErrors(errors) {
     }
 }
 
+txtToSql.defaultOpts = {
+    'field_format': 'lowercased_names'
+};
+
+var quoteFunctions = {
+    'unmodified' : function(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; },
+    'lowercased_names' : function(objectName) { return quoteFunctions.unmodified(objectName.toLowerCase()); },
+    'lowercased_alpha' : function(objectName) {
+        objectName = objectName.replace(/[^a-zA-Z0-9]/g, '_');
+        if(objectName.charAt(0).match(/[0-9]/)) { objectName = '_'+objectName; }
+        return quoteFunctions.unmodified(objectName.toLowerCase());
+    },
+};
+
 function verifyInputParams(info){
-    info.opts = changing(txtToSql.defaultOpts, info.opts || {})
+    info.opts = changing(txtToSql.defaultOpts, info.opts || {});
     info.quote = quoteFunctions[info.opts['field_format']];
+    info.separator = info.opts.separator;
     var errors=[];
     if(! info.tableName) { errors.push('undefined table name'); }
     if(! info.txt) { errors.push('no txt in input'); }
@@ -196,8 +196,7 @@ function setup(info) {
 
 function catchErrors(info, err) {
     // console.log(err.message); console.log(err.stack);
-    info.errors = err.errors || [err.message];
-    return info;
+    return { errors: (err.errors || [err.message]), opts:info.opts };
 }
 
 function prepare(info) {
