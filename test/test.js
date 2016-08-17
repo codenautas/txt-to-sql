@@ -77,7 +77,7 @@ describe("fixtures", function(){
                     prepared = preparedResult;
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    // console.log("R", result.opts); console.log("P", prepared.opts);
+                    // console.log("P", param.opts); console.log("R", result.opts); console.log("P", prepared.opts);
                     expect(prepared.opts).to.eql(result.opts);
                     expect(prepared.errors).to.eql(result.errors);
                     expect(prepared.sql).not.be.ok();
