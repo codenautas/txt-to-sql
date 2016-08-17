@@ -40,6 +40,7 @@ describe("fixtures", function(){
         {path:'fields-lcalpha-dups'},
         {path:'wrong-input'},
         {path:'wrong-input2', change:function(param) { delete param.tableName; } },
+        {path:'wrong-input3'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
