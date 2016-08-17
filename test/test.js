@@ -42,19 +42,19 @@ describe("fixtures", function(){
         {path:'pk-very-simple2', changeResult:function(res) { res.opts.separator = ','; }},
         {path:'pk-space-simple', changeResult:function(res) { res.opts.separator = /\s+/; }},
         {path:'specials'},
-        {path:'exceptions', changeResult:function(res) { delete res.opts.separator; }},
+        {path:'exceptions', changeResult:function(res) { res.opts.separator=false; }},
         {path:'fields-unmod'},
         {path:'fields-lcnames'},
         {path:'fields-lcalpha'},
         {path:'fields-unmod-dups'},
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
-        {path:'wrong-input', changeResult:function(res) { delete res.opts.separator; } },
+        {path:'wrong-input', changeResult:function(res) { res.opts.separator=false; } },
         {path:'wrong-input2',
-         changeResult:function(res) { delete res.opts.separator; },
-         changeParam:function(param) { delete param.tableName; }
+         changeParam:function(param) { delete param.tableName; },
+         changeResult:function(res) { res.opts.separator=false; }
         },
-        {path:'wrong-input3', changeResult:function(res) { delete res.opts.separator; }},
+        {path:'wrong-input3', changeResult:function(res) { res.opts.separator=false; }},
         {path:'separator1', changeResult:function(res) { res.opts.separator = '/'; }},
     ].forEach(function(fixture){
         if(fixture.skip) {
