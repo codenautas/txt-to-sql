@@ -44,6 +44,7 @@ describe("fixtures", function(){
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
         {path:'wrong-input'},
+        {path:'wrong-input2', change:function(param) { delete param.tableName; } },
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -55,6 +56,9 @@ describe("fixtures", function(){
                 setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
                     if(param.opts) { param.opts = yaml.safeLoad(param.opts); }
                     return setIfFileExists(basePath+'.txt', param, 'txt');
+                }).then(function() {
+                    // para poder cambiar despues de cargar
+                    if(fixture.change) { fixture.change(param); }
                 }).then(function() {
                     return setIfFileExists(basePath+'.sql', result, 'sql');
                 }).then(function() {
