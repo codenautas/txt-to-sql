@@ -35,11 +35,12 @@ describe("fixtures", function(){
         {path:'pk-complex-nn2'},
         {path:'pk-very-simple2'},
         {path:'pk-space-simple'},
+        {path:'specials'},
+        {path:'exceptions'},
         {path:'fields-lcnames'}, // lowercased_names
         {path:'fields-unmodified'},
         {path:'fields-lcalpha'},
-        {path:'specials'},
-        {path:'exceptions'},
+        {path:'fields-lcalpha-bad'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -64,7 +65,7 @@ describe("fixtures", function(){
                 }).then(function() {
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    // console.log("R", result.opts); console.log("G", generated.opts);
+                    // console.log("R", result.sql); console.log("G", generated.sql);
                     expect(generated.sql).to.eql(result.sql);
                     expect(differences(generated.sql,result.sql)).to.eql(null);
                     expect(generated.opts).to.eql(result.opts);

@@ -54,6 +54,25 @@ function separateFields(info){
     return info;
 }
 
+function verifyColumnNames(info) {
+    var errors=[];
+    var namesHash = {};
+    info.columnsInfo.forEach(function(columnInfo, columnIndex){
+        var quotedName = info.quote(columnInfo.name);
+        if(quotedName in namesHash) {
+            errors.push("duplicated field name '"+quotedName+"'");
+        } else {
+            namesHash[quotedName] = true;
+        }
+    });
+    if(errors.length) {
+        var e = new Error();
+        e.errors = errors;
+        throw e;
+    }
+    return info;
+}
+
 function determineColumnTypes(info){
     info.columnsInfo.forEach(function(columnInfo, columnIndex){
         var maxTypeIndex=0;
@@ -141,7 +160,7 @@ var quoteFunctions = {
     'unmodified' : function(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; },
     'lowercased_names' : function(objectName) { return quoteFunctions.unmodified(objectName.toLowerCase()); },
     'lowercased_alpha' : function(objectName) {
-        objectName = objectName.replace(/[^a-zA-Z0-9]/, '_');
+        objectName = objectName.replace(/[^a-zA-Z0-9]/g, '_');
         if(objectName.charAt(0).match(/[0-9]/)) { objectName = '_'+objectName; }
         return quoteFunctions.unmodified(objectName.toLowerCase());
     },
@@ -155,6 +174,7 @@ function generateScripts(info){
     .then(separateLines)
     .then(determineSeparator)
     .then(separateFields)
+    .then(verifyColumnNames)
     .then(determineColumnTypes)
     .then(determinePrimaryKey)
     .then(generateCreateScript)
@@ -165,8 +185,8 @@ function generateScripts(info){
             sql:info.scripts.map(function(script){ return script.sql.trimRight(); })
         };
     }).catch(function(err) {
-        errors.push(err.message);
-        info.errors = errors;
+        //console.log(err.stack)
+        info.errors = err.errors || [err.message];
         return info;
     });
 }
