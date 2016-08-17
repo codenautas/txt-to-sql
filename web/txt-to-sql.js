@@ -200,7 +200,6 @@ function generateScripts(info){
     }).catch(function(err) {
         //console.log(err.message); console.log(err.stack);
         info.errors = err.errors || [err.message];
-        //console.log("info", info)
         return info;
     });
 }
