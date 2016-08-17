@@ -60,7 +60,8 @@ describe("fixtures", function(){
                     if(result.sql) { result.sql = makeSqlArray(result.sql); }
                     return setIfFileExists(basePath+'.out-opts.yaml', result, 'opts');
                 }).then(function() {
-                    result.opts = changing(txtToSql.defaultOpts, result.opts ? yaml.safeLoad(result.opts) : {});
+                    // si no se define result.opts, asumimos que es igual a param.opts
+                    result.opts = changing(txtToSql.defaultOpts, result.opts ? yaml.safeLoad(result.opts) : (param.opts || {}) );
                     return setIfFileExists(basePath+'.errors.yaml', result, 'errors');
                 }).then(function() {
                     if(result.errors) { result.errors = yaml.safeLoad(result.errors); }
