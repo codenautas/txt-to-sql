@@ -1,0 +1,4 @@
+campo1;campo2;campo1;campo4;campo5;campo4
+hello;1;3.141592;1234567890;1.12e-101;7
+;;;0;0.0;8
+

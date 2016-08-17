@@ -41,6 +41,7 @@ describe("fixtures", function(){
         {path:'fields-unmodified'},
         {path:'fields-lcalpha'},
         {path:'fields-lcalpha-bad'},
+        {path:'fields-duplicated'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);

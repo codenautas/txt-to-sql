@@ -54,7 +54,7 @@ function separateFields(info){
     return info;
 }
 
-function verifyColumnNames(info) {
+function verifyColumnNameDuplication(info) {
     var errors=[];
     var namesHash = {};
     info.columnsInfo.forEach(function(columnInfo, columnIndex){
@@ -174,7 +174,7 @@ function generateScripts(info){
     .then(separateLines)
     .then(determineSeparator)
     .then(separateFields)
-    .then(verifyColumnNames)
+    .then(verifyColumnNameDuplication)
     .then(determineColumnTypes)
     .then(determinePrimaryKey)
     .then(generateCreateScript)
