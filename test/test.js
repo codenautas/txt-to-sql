@@ -37,11 +37,12 @@ describe("fixtures", function(){
         {path:'pk-space-simple'},
         {path:'specials'},
         {path:'exceptions'},
-        {path:'fields-lcnames'}, // lowercased_names
-        {path:'fields-unmodified'},
+        {path:'fields-unmod'},
+        {path:'fields-lcnames'},
         {path:'fields-lcalpha'},
-        {path:'fields-lcalpha-bad'},
-        {path:'fields-duplicated'},
+        //{path:'fields-unmod-dups'},
+        {path:'fields-lcnames-dups'},
+        {path:'fields-lcalpha-dups'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
