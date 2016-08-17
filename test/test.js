@@ -40,7 +40,7 @@ describe("fixtures", function(){
         {path:'fields-unmod'},
         {path:'fields-lcnames'},
         {path:'fields-lcalpha'},
-        //{path:'fields-unmod-dups'},
+        {path:'fields-unmod-dups'},
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
     ].forEach(function(fixture){
