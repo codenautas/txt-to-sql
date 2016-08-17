@@ -43,6 +43,7 @@ describe("fixtures", function(){
         {path:'fields-unmod-dups'},
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
+        {path:'wrong-input'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -68,7 +69,7 @@ describe("fixtures", function(){
                 }).then(function() {
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    // console.log("R", result.sql); console.log("G", generated.sql);
+                    //console.log("R", result.txt); console.log("G", generated.txt);
                     expect(generated.sql).to.eql(result.sql);
                     expect(differences(generated.sql,result.sql)).to.eql(null);
                     expect(generated.opts).to.eql(result.opts);

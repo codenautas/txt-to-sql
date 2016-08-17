@@ -25,6 +25,7 @@ var typePatterns = [
 ];
 
 function separateLines(info){
+    if(! info.txt) { throw new Error('no txt in input'); }
     info.lines = info.txt.split(/\r?\n/);
     info.headers = info.lines.shift();
     return info;
@@ -185,8 +186,9 @@ function generateScripts(info){
             sql:info.scripts.map(function(script){ return script.sql.trimRight(); })
         };
     }).catch(function(err) {
-        //console.log(err.stack)
+        //console.log(err.message); console.log(err.stack);
         info.errors = err.errors || [err.message];
+        //console.log("info", info)
         return info;
     });
 }
