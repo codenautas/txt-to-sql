@@ -41,6 +41,7 @@ describe("fixtures", function(){
         {path:'wrong-input'},
         {path:'wrong-input2', change:function(param) { delete param.tableName; } },
         {path:'wrong-input3'},
+        {path:'separator1'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -49,6 +50,7 @@ describe("fixtures", function(){
                 var param={tableName:fixture.path};
                 var result={};
                 var basePath='./test/fixtures/'+fixture.path;
+                var prepared;
                 setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
                     if(param.opts) { param.opts = yaml.safeLoad(param.opts); }
                     return setIfFileExists(basePath+'.txt', param, 'txt');
@@ -70,12 +72,18 @@ describe("fixtures", function(){
                 }).then(function() {
                     if(result.errors) { result.errors = yaml.safeLoad(result.errors); }
                 }).then(function() {
+                    return txtToSql.prepare(param);
+                }).then(function(preparedResult){
+                    prepared = preparedResult;
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    //console.log("R", result.txt); console.log("G", generated.txt);
+                    // console.log("R", result.opts); console.log("P", prepared.opts);
+                    expect(prepared.opts).to.eql(result.opts);
+                    expect(prepared.errors).to.eql(result.errors);
+                    expect(prepared.sql).not.be.ok();
+
                     expect(generated.sql).to.eql(result.sql);
                     expect(differences(generated.sql,result.sql)).to.eql(null);
-                    expect(generated.opts).to.eql(result.opts);
                     expect(generated.errors).to.eql(result.errors);
                }).then(done,done);
             });   
