@@ -59,11 +59,6 @@ describe("fixtures", function(){
         {path:'fields-unmod-dups'},
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
-        {path:'wrong-input2',
-         changeParam:function(param) { delete param.tableName; },
-         changeResult:function(res) { res.opts.separator=false; }
-        },
-        {path:'wrong-input3', changeResult:function(res) { res.opts.separator=false; }},
         {path:'separator1', changeResult:function(res) { res.opts.separator = '/'; }},
     ].forEach(function(fixture){
         if(fixture.skip) {
@@ -131,8 +126,23 @@ describe("specials", function(){
 });
 
 describe("input errors", function(){
+    var eNoTXT='no txt in input',
+        eNoTable='undefined table name',
+        eBadFormat="inexistent field format 'inexistent_format'";
+    var optBadFormat = {fieldFormat: 'inexistent_format'};
     [
-        {name:'no txt', param:{tableName:'t1'}, errors:['no txt in input']},
+        { name:'no txt',
+          param:{tableName:'t1'},
+          errors:[eNoTXT]},
+        { name:'no txt and tableName',
+          param:{},
+          errors:[eNoTable, eNoTXT]},
+        { name:'no tableName and fieldFormat',
+          param:{txt:'dummy', opts:optBadFormat},
+          errors:[eNoTable, eBadFormat]},
+        { name:'all bad params',
+          param:{opts:optBadFormat},
+          errors:[eNoTable, eNoTXT, eBadFormat]},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
