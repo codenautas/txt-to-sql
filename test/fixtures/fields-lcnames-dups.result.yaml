@@ -1,0 +1,3 @@
+errors:
+  - duplicated field name '"campo1"'
+  - duplicated field name '"campo4"'

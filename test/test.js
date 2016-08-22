@@ -8,6 +8,8 @@ var differences = selfExplain.assert.allDifferences;
 var changing = require('best-globals').changing;
 var yaml = require('js-yaml');
 
+var _ = require('lodash');
+
 function setIfFileExists(fileName, outObject, outProperty) {
     return fs.exists(fileName).then(function(exists) {
         if(exists) { return fs.readFile(fileName, {encoding:'utf8'}); }
@@ -17,14 +19,18 @@ function setIfFileExists(fileName, outObject, outProperty) {
     });
 }
 
-var defaultResult;
+function loadYamlIfFileExists(fileName) {
+    var res = {};
+    return setIfFileExists(fileName, res, 'all').then(function() {
+        return yaml.safeLoad(res.all || {});
+    });
+}
 
+var defaultResult;
 function loadDefaultResult() {
     if(defaultResult) { return Promise.resolve(defaultResult); }
-    var res = {}
-    return setIfFileExists('./test/fixtures/_default_.result.yaml', res, 'all').then(function() {
-        defaultResult = yaml.safeLoad(res.all);
-        return defaultResult;
+    return loadYamlIfFileExists('./test/fixtures/_default_.result.yaml').then(function(yml) {
+       defaultResult = yml;
     });
 }
 
@@ -76,22 +82,19 @@ describe("fixtures", function(){
                     // para poder cambiar despues de cargar
                     if(fixture.changeParam) { fixture.changeParam(param); }
                 }).then(function() {
+                    return loadDefaultResult();
+                }).then(function() {
+                    // console.log("DR", defaultResult)
+                    return loadYamlIfFileExists(basePath+'.result.yaml');
+                }).then(function(yml) {
+                    result = changing(_.cloneDeep(defaultResult), yml || {});
                     return setIfFileExists(basePath+'.sql', result, 'sqls');
                 }).then(function() {
                     if(result.sqls) { result.sqls = makeSqlArray(result.sqls); }
-                    return loadDefaultResult();
-                }).then(function() {
-                    return setIfFileExists(basePath+'.out-opts.yaml', result, 'opts');
-                }).then(function() {
-                    result.opts = changing(defaultResult['opts'], result.opts ? yaml.safeLoad(result.opts) : {});
-                    //console.log("RO", result.opts)
-                }).then(function() {
-                    return setIfFileExists(basePath+'.errors.yaml', result, 'errors');
-                }).then(function() {
-                    if(result.errors) { result.errors = yaml.safeLoad(result.errors); }
-                    // para poder cambiar despues de cargar
                     if(fixture.changeResult) { fixture.changeResult(result); }
+                    //console.log("RES", result)
                 }).then(function() {
+                    // console.log("PRM", param)
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
                     prepared = preparedResult;

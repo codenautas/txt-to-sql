@@ -1,0 +1,5 @@
+opts:
+  fieldFormat: inexistent_format
+errors:
+  - no txt in input
+  - inexistent field format 'inexistent_format'

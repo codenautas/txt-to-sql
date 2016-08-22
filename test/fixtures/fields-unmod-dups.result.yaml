@@ -1,0 +1,5 @@
+opts:
+  fieldFormat: unmodified
+errors:
+  - duplicated field name '"FIELD2"'
+  - duplicated field name '"FiElD5"'
