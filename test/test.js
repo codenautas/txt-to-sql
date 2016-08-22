@@ -59,7 +59,6 @@ describe("fixtures", function(){
         {path:'fields-unmod-dups'},
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
-        {path:'wrong-input', changeResult:function(res) { res.opts.separator=false; } },
         {path:'wrong-input2',
          changeParam:function(param) { delete param.tableName; },
          changeResult:function(res) { res.opts.separator=false; }
@@ -128,6 +127,22 @@ describe("specials", function(){
                 return;
             });
         }).then(done,done);
+    });
+});
+
+describe("input errors", function(){
+    [
+        {name:'no txt', param:{tableName:'t1'}, errors:['no txt in input']},
+    ].forEach(function(check){
+        if(check.skip) {
+            it.skip(check.name);
+        } else {
+            it(check.name, function(done){
+                txtToSql.prepare(check.param).then(function(prepared){
+                    expect(prepared.errors).to.eql(check.errors);
+                }).then(done,done);
+            });
+        }
     });
 });
 
