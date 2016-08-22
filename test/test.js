@@ -28,6 +28,11 @@ function loadDefaultResult() {
     });
 }
 
+function makeSqlArray(sqls) {
+    return sqls.split(/(\r?\n){2}/g)
+               .filter(function(sqls){ return !sqls.match(/^(\r?\n)$/); });
+}
+
 describe("fixtures", function(){
     [
         {path:'example-one'},
@@ -41,7 +46,6 @@ describe("fixtures", function(){
         {path:'pk-complex-nn2'},
         {path:'pk-very-simple2', changeResult:function(res) { res.opts.separator = ','; }},
         {path:'pk-space-simple', changeResult:function(res) { res.opts.separator = /\s+/; }},
-        {path:'specials'},
         {path:'exceptions', changeResult:function(res) { res.opts.separator=false; }},
         {path:'fields-unmod'},
         {path:'fields-lcnames'},
@@ -74,10 +78,7 @@ describe("fixtures", function(){
                 }).then(function() {
                     return setIfFileExists(basePath+'.sql', result, 'sqls');
                 }).then(function() {
-                    if(result.sqls) {
-                        result.sqls = result.sqls.split(/(\r?\n){2}/g)
-                                                 .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
-                    }
+                    if(result.sqls) { result.sqls = makeSqlArray(result.sqls); }
                     return loadDefaultResult();
                 }).then(function() {
                     return setIfFileExists(basePath+'.out-opts.yaml', result, 'opts');
@@ -108,3 +109,22 @@ describe("fixtures", function(){
         }
     });
 });
+
+describe("specials", function(){
+    it("manage mixed line ends", function(done){
+        var txt="text-field;int-field;num-field;big;double\n"+
+            "hello;1;3.141592;1234567890;1.12e-101\r\n"+
+            ";;;0;0.0";
+        Promise.resolve().then(function(){
+            return txtToSql.generateScripts({tableName:'example-one', txt:txt});
+        }).then(function(generated){
+            return fs.readFile('./test/fixtures/example-one.sql', {encoding:'utf8'}).then(function(sqls){
+                sqls = makeSqlArray(sqls);
+                expect(generated.sqls).to.eql(sqls);
+                expect(differences(generated.sqls,sqls)).to.eql(null);
+                return;
+            });
+        }).then(done,done);
+    });
+});
+
