@@ -17,13 +17,13 @@ function setIfFileExists(fileName, outObject, outProperty) {
     });
 }
 
-var defaultResult = {};
+var defaultResult;
 
 function loadDefaultResult() {
-    if(defaultResult.opts) { return Promise.resolve(defaultResult); }
-    //console.log("loading default result");
-    return setIfFileExists('./test/fixtures/_default_.out-opts.yaml', defaultResult, 'opts').then(function() {
-        defaultResult.opts = yaml.safeLoad(defaultResult.opts);
+    if(defaultResult) { return Promise.resolve(defaultResult); }
+    var res = {}
+    return setIfFileExists('./test/fixtures/_default_.result.yaml', res, 'all').then(function() {
+        defaultResult = yaml.safeLoad(res.all);
         return defaultResult;
     });
 }
