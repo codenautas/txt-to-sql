@@ -4,5 +4,5 @@
     "curly": true,
     "node": true,
     "strict": "global",
-    "predef": [ "module" ]
+    "predef": [ "module", "Promise" ]
 }
