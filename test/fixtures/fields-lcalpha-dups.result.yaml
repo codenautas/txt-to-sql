@@ -1,4 +1,4 @@
 opts:
   fieldFormat: lowercased_alpha
 errors:
-  - duplicated field name '"esdr_julo"'
+  - duplicated field name '"esdrujulo"'

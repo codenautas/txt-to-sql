@@ -43,6 +43,11 @@ var formatFunctions = {
     'unmodified' : function(objectName) { return objectName; },
     'lowercased_names' : function(objectName) { return objectName.toLowerCase(); },
     'lowercased_alpha' : function(objectName) {
+        objectName = objectName.replace(/[áÁ]/g, 'a')
+                               .replace(/[éÉ]/g, 'e')
+                               .replace(/[íÍ]/g, 'i')
+                               .replace(/[óÓ]/g, 'o')
+                               .replace(/[úÚ]/g, 'u');
         objectName = objectName.replace(/[^a-zA-Z0-9]/g, '_');
         if(objectName.charAt(0).match(/[0-9]/)) { objectName = '_'+objectName; }
         return objectName.toLowerCase();
@@ -105,11 +110,10 @@ function verifyColumnNameDuplication(info) {
     var errors=[];
     var namesHash = {};
     info.columnsInfo.forEach(function(columnInfo, columnIndex){
-        var quotedName = columnInfo.name;
-        if(quotedName in namesHash) {
-            errors.push("duplicated field name '"+quotedName+"'");
+        if(columnInfo.name in namesHash) {
+            errors.push("duplicated field name '"+columnInfo.name+"'");
         } else {
-            namesHash[quotedName] = true;
+            namesHash[columnInfo.name] = true;
         }
     });
     throwIfErrors(errors);
