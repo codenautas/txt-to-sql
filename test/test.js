@@ -87,7 +87,7 @@ describe("fixtures", function(){
                     // console.log("DR", defaultResult)
                     return loadYamlIfFileExists(basePath+'.result.yaml');
                 }).then(function(yml) {
-                    result = changing(_.cloneDeep(defaultResult), yml || {});
+                    result = changing(_.cloneDeep(defaultResult), yml);
                     return setIfFileExists(basePath+'.sql', result, 'sqls');
                 }).then(function() {
                     if(result.sqls) { result.sqls = makeSqlArray(result.sqls); }
