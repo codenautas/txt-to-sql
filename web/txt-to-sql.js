@@ -90,11 +90,17 @@ function separateFields(info){
     return info;
 }
 
+
+function transformNames(info) {
+    info.columnsInfo = info.columnsInfo.map(function(column){ return {name:info.quote(column.name)}; });
+    return info;
+}
+
 function verifyColumnNameDuplication(info) {
     var errors=[];
     var namesHash = {};
     info.columnsInfo.forEach(function(columnInfo, columnIndex){
-        var quotedName = info.quote(columnInfo.name);
+        var quotedName = columnInfo.name;
         if(quotedName in namesHash) {
             errors.push("duplicated field name '"+quotedName+"'");
         } else {
@@ -142,7 +148,7 @@ function determinePrimaryKey(info) {
                 return false;
             }else{
                 info.primaryKey = info.columnsInfo.slice(0,colIndex+1).map(function(col) {
-                    return info.quote(col.name);
+                    return col.name;
                 })
                 return true; 
             }
@@ -158,7 +164,7 @@ function generateCreateScript(info){
     scriptLines.push("create table "+info.quote(info.tableName)+" (");
     var scriptLinesForTableColumns = [];
     info.columnsInfo.forEach(function(columnInfo){
-        scriptLinesForTableColumns.push(margin+info.quote(columnInfo.name)+" "+columnInfo.typeInfo.typeName);
+        scriptLinesForTableColumns.push(margin+columnInfo.name+" "+columnInfo.typeInfo.typeName);
     });
     if(info.primaryKey) { scriptLinesForTableColumns.push(margin+'primary key ('+info.primaryKey.join(', ')+')'); }
     scriptLines.push(scriptLinesForTableColumns.join(",\n"));
@@ -172,7 +178,7 @@ function generateInsertScript(info){
     var scriptLines = [];
     info.scripts.push({type:'insert', sql:
         "insert into "+info.quote(info.tableName)+" ("+info.columnsInfo.map(function(columnInfo){
-            return info.quote(columnInfo.name);
+            return columnInfo.name;
         }).join(', ')+") values\n"+
         info.rows.map(function(row){
             return margin+"("+row.map(function(value,columnIndex){
@@ -189,6 +195,7 @@ function setup(info) {
         .then(separateLines)
         .then(determineSeparator)
         .then(separateFields)
+        .then(transformNames)
         .then(verifyColumnNameDuplication)
         .then(determineColumnTypes)
         .then(determinePrimaryKey);
