@@ -72,11 +72,11 @@ describe("fixtures", function(){
                     // para poder cambiar despues de cargar
                     if(fixture.changeParam) { fixture.changeParam(param); }
                 }).then(function() {
-                    return setIfFileExists(basePath+'.sql', result, 'sql');
+                    return setIfFileExists(basePath+'.sql', result, 'sqls');
                 }).then(function() {
-                    if(result.sql) {
-                        result.sql = result.sql.split(/(\r?\n){2}/g)
-                                               .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
+                    if(result.sqls) {
+                        result.sqls = result.sqls.split(/(\r?\n){2}/g)
+                                                 .filter(function(sql){ return !sql.match(/^(\r?\n)$/); });
                     }
                     return loadDefaultResult();
                 }).then(function() {
@@ -100,8 +100,8 @@ describe("fixtures", function(){
                     expect(prepared.opts).to.eql(result.opts);
                     expect(prepared.errors).to.eql(result.errors);
                     //console.log("G", generated);
-                    expect(generated.sql).to.eql(result.sql);
-                    expect(differences(generated.sql,result.sql)).to.eql(null);
+                    expect(generated.sqls).to.eql(result.sqls);
+                    expect(differences(generated.sqls,result.sqls)).to.eql(null);
                     expect(generated.errors).to.eql(result.errors);
                }).then(done,done);
             });   
