@@ -39,15 +39,62 @@ txtToSql.defaultOpts = {
 
 function quote(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; }
 
+var letterTranslator = {
+    '\u00E0':'a',
+    '\u00E1':'a',
+    '\u00E2':'a',
+    '\u00E3':'a',
+    '\u00E4':'a',
+    '\u00E5':'a',
+    '\u00C0':'a',
+    '\u00C1':'a',
+    '\u00C2':'a',
+    '\u00C3':'a',
+    '\u00C4':'a',
+    '\u00C5':'a',
+    '\u00E8':'e',
+    '\u00E9':'e',
+    '\u00EA':'e',
+    '\u00EB':'e',
+    '\u00C8':'e',
+    '\u00C9':'e',
+    '\u00CA':'e',
+    '\u00CB':'e',
+    '\u00EC':'i',
+    '\u00ED':'i',
+    '\u00EE':'i',
+    '\u00EF':'i',
+    '\u00CC':'i',
+    '\u00CD':'i',
+    '\u00CE':'i',
+    '\u00CF':'i',
+    '\u00F2':'o',
+    '\u00F3':'o',
+    '\u00F4':'o',
+    '\u00F5':'o',
+    '\u00F6':'o',
+    '\u00D2':'o',
+    '\u00D3':'o',
+    '\u00D4':'o',
+    '\u00D5':'o',
+    '\u00D6':'o',
+    '\u00F9':'u',
+    '\u00FA':'u',
+    '\u00FB':'u',
+    '\u00FC':'u',
+    '\u00D9':'u',
+    '\u00DA':'u',
+    '\u00DB':'u',
+    '\u00DC':'u'
+};
+
 var formatFunctions = {
     'unmodified' : function(objectName) { return objectName; },
     'lowercased_names' : function(objectName) { return objectName.toLowerCase(); },
     'lowercased_alpha' : function(objectName) {
-        objectName = objectName.replace(/[áÁ]/g, 'a')
-                               .replace(/[éÉ]/g, 'e')
-                               .replace(/[íÍ]/g, 'i')
-                               .replace(/[óÓ]/g, 'o')
-                               .replace(/[úÚ]/g, 'u');
+        objectName = objectName.split('')
+                               .map(function(letter) { return letterTranslator[letter] || letter; })
+                               .join('');
         objectName = objectName.replace(/[^a-zA-Z0-9]/g, '_');
         if(objectName.charAt(0).match(/[0-9]/)) { objectName = '_'+objectName; }
         return objectName.toLowerCase();
