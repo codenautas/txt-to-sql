@@ -1,7 +1,8 @@
 create table "col-align" (
  "text-field" text,
  "int-field" integer,
- "numerico-el-1" numeric
+ "numerico-el-1" numeric,
+ primary key ("text-field", "int-field", "numerico-el-1")
 );
 
 insert into "col-align" ("text-field", "int-field", "numerico-el-1") values

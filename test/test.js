@@ -63,6 +63,7 @@ describe("fixtures", function(){
         {path:'pk-enabled'},
         {path:'pk-disabled'},
         {path:'col-align'},
+        {path:'col-align-nulls'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
