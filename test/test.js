@@ -60,6 +60,7 @@ describe("fixtures", function(){
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
         {path:'separator', changeResult:function(res) { res.opts.separator = '/'; }},
+        {path:'pk-disabled'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
