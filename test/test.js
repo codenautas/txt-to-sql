@@ -62,8 +62,8 @@ describe("fixtures", function(){
         {path:'separator', changeResult:function(res) { res.opts.separator = '/'; }},
         {path:'pk-enabled'},
         {path:'pk-disabled'},
-        {path:'col-align'},
-        {path:'col-align-nulls'},
+        {path:'comma-align'},
+        {path:'comma-align-nulls'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);

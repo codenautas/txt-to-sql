@@ -1,11 +1,11 @@
-create table "col-align" (
+create table "comma-align" (
  "text-field" text,
  "int-field" integer,
  "numerico-el-1" numeric,
  primary key ("text-field", "int-field", "numerico-el-1")
 );
 
-insert into "col-align" ("text-field", "int-field", "numerico-el-1") values
+insert into "comma-align" ("text-field", "int-field", "numerico-el-1") values
  ('hello'          ,  1, 3.141592),
  ('ciao'           ,  2,        3),
  ('hello my friend',  1,        2),
