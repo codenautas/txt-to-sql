@@ -52,7 +52,6 @@ describe("fixtures", function(){
         {path:'pk-complex-nn2'},
         {path:'pk-very-simple2', changeResult:function(res) { res.opts.separator = ','; }},
         {path:'pk-space-simple', changeResult:function(res) { res.opts.separator = /\s+/; }},
-        {path:'exceptions', changeResult:function(res) { res.opts.separator=false; }},
         {path:'fields-unmod'},
         {path:'fields-lcnames'},
         {path:'fields-lcalpha'},
@@ -150,6 +149,9 @@ describe("input errors", function(){
         { name:'all bad params',
           param:{opts:optBadFormat},
           errors:[eNoTable, eNoTXT, eBadFormat]},
+        { name:'no separator',
+          param:{tableName:'t2', txt:'dummy', opts:{separator:false}},
+          errors:['no separator detected']},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
