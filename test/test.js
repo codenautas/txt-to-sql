@@ -60,6 +60,7 @@ describe("fixtures", function(){
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
         {path:'separator', changeResult:function(res) { res.opts.separator = '/'; }},
+        {path:'pk-enabled'},
         {path:'pk-disabled'},
     ].forEach(function(fixture){
         if(fixture.skip) {
@@ -89,7 +90,7 @@ describe("fixtures", function(){
                     if(fixture.changeResult) { fixture.changeResult(result); }
                     //console.log("RES", result)
                 }).then(function() {
-                    // console.log("PRM", param)
+                    //console.log("PRM", param)
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
                     prepared = preparedResult;
