@@ -2,3 +2,4 @@ opts:
   fieldFormat: lowercased_names
   separator: ';'
   includePrimaryKey: true
+  columnAlignedCommas: false
