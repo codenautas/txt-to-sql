@@ -16,12 +16,17 @@ function adaptText(x){
     return "'"+x.replace(/'/g,"''").replace(/\r/g,"' || chr(10) || '").replace(/\n/g,"' || chr(13) || '")+"'"; 
 }
 
+function alignNone(val) { return val; }
+function pad(colLen, val) { return new Array(colLen - (val.length || 0) + 1).join(' '); }
+function alignLeft(columnLength, val) { return val+pad(columnLength, val); }
+function alignRight(columnLength, val) { return pad(columnLength,val)+val; }
+
 var typePatterns = [
-    {typeName:'integer'         , adapt:adaptPlain, dataPattern: /^-?[0-9]{1,5}$/},
-    {typeName:'bigint'          , adapt:adaptPlain, dataPattern: /^-?[0-9]+$/},
-    {typeName:'numeric'         , adapt:adaptPlain, dataPattern: /^-?[0-9]+\.?[0-9]*$/},
-    {typeName:'double precision', adapt:adaptPlain, dataPattern: /^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/},
-    {typeName:'text'            , adapt:adaptText , dataPattern: /.?/, }
+    {typeName:'integer'         , adapt:adaptPlain, align:alignRight, dataPattern: /^-?[0-9]{1,5}$/},
+    {typeName:'bigint'          , adapt:adaptPlain, align:alignRight, dataPattern: /^-?[0-9]+$/},
+    {typeName:'numeric'         , adapt:adaptPlain, align:alignRight, dataPattern: /^-?[0-9]+\.?[0-9]*$/},
+    {typeName:'double precision', adapt:adaptPlain, align:alignRight, dataPattern: /^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/},
+    {typeName:'text'            , adapt:adaptText , align:alignLeft , dataPattern: /.?/}
 ];
 
 function throwIfErrors(errors) {
@@ -109,7 +114,6 @@ function separateFields(info){
     return info;
 }
 
-
 function transformNames(info) {
     info.formatedTableName = info.transform(info.tableName);
     info.columnsInfo = info.columnsInfo.map(function(column){ return {name:info.transform(column.name)}; });
@@ -143,6 +147,7 @@ function determineColumnTypes(info){
             }
         });
         columnInfo.typeInfo=typePatterns[maxTypeIndex];
+        columnInfo.align = info.opts.columnAlignedCommas ? typePatterns[maxTypeIndex].align : alignNone;
     });
     return info;
 }
@@ -194,13 +199,23 @@ function generateCreateScript(info){
 }
 
 function generateInsertScript(info){
+    if(info.opts.columnAlignedCommas) {
+        info.columnsInfo.forEach(function(col, colIndex) {
+            var maxColumnLength=0;
+            info.rows.forEach(function(row, rowIndex) {
+                var colLength=info.columnsInfo[colIndex].typeInfo.adapt(row[colIndex]).length;
+                if(colLength>maxColumnLength) { maxColumnLength=colLength; }
+            });
+            info.columnsInfo[colIndex].align = info.columnsInfo[colIndex].align.bind(null, maxColumnLength);
+        });
+    }
     info.scripts.push({type:'insert', sql:
         "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
             return columnInfo.name;
         }).join(', ')+") values\n"+
         info.rows.map(function(row){
             return margin+"("+row.map(function(value,columnIndex){
-                return info.columnsInfo[columnIndex].typeInfo.adapt(value);
+                return info.columnsInfo[columnIndex].align(info.columnsInfo[columnIndex].typeInfo.adapt(value));
             }).join(', ')+")";
         }).join(",\n")+";"
     });
