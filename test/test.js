@@ -64,7 +64,7 @@ describe("fixtures", function(){
         {path:'pk-disabled'},
         {path:'comma-align'},
         {path:'comma-align-nulls'},
-        {path:'one-column'},
+        {path:'comma-align-one-column'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
