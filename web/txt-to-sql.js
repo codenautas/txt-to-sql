@@ -17,7 +17,7 @@ function adaptText(x){
 }
 
 function alignNone(val) { return val; }
-function pad(colLen, val) { return new Array(colLen - (val.length || 0) + 1).join(' '); }
+function pad(columnLength, val) { return new Array(columnLength - (val.length||0) + 1).join(' '); }
 function alignLeft(columnLength, val) { return val+pad(columnLength, val); }
 function alignRight(columnLength, val) { return pad(columnLength,val)+val; }
 
@@ -156,10 +156,10 @@ function determinePrimaryKey(info) {
     if(info.opts.includePrimaryKey) {
         try{
             var combinedKeys=new Array(info.rows.length);
-            info.columnsInfo.some(function(column, colIndex) {
+            info.columnsInfo.some(function(column, columnIndex) {
                 var combinedKeysHash = {};
                 if(!info.rows.every(function(row, rowIndex) {
-                    var val = row[colIndex];
+                    var val = row[columnIndex];
                     if(val==='') {
                         throw new Error("haveNullColumns");
                     }
@@ -172,7 +172,7 @@ function determinePrimaryKey(info) {
                 })){
                     return false;
                 }else{
-                    info.primaryKey = info.columnsInfo.slice(0,colIndex+1).map(function(col) { return col.name; });
+                    info.primaryKey = info.columnsInfo.slice(0,columnIndex+1).map(function(col) { return col.name; });
                     return true; 
                 }
             });
@@ -200,13 +200,13 @@ function generateCreateScript(info){
 
 function generateInsertScript(info){
     if(info.opts.columnAlignedCommas) {
-        info.columnsInfo.forEach(function(col, colIndex) {
+        info.columnsInfo.forEach(function(column, columnIndex) {
             var maxColumnLength=0;
-            info.rows.forEach(function(row, rowIndex) {
-                var colLength=info.columnsInfo[colIndex].typeInfo.adapt(row[colIndex]).length;
+            info.rows.forEach(function(row) {
+                var colLength=info.columnsInfo[columnIndex].typeInfo.adapt(row[columnIndex]).length;
                 if(colLength>maxColumnLength) { maxColumnLength=colLength; }
             });
-            info.columnsInfo[colIndex].align = info.columnsInfo[colIndex].align.bind(null, maxColumnLength);
+            info.columnsInfo[columnIndex].align = info.columnsInfo[columnIndex].align.bind(null, maxColumnLength);
         });
     }
     info.scripts.push({type:'insert', sql:
