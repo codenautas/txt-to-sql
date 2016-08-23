@@ -34,7 +34,8 @@ function throwIfErrors(errors) {
 
 txtToSql.defaultOpts = {
     fieldFormat: 'lowercased_names',
-    separator: false
+    separator: false,
+    includePrimaryKey: true
 };
 
 function quote(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; }
@@ -145,30 +146,32 @@ function determineColumnTypes(info){
 }
 
 function determinePrimaryKey(info) {
-    try{
-        var combinedKeys=new Array(info.rows.length);
-        info.columnsInfo.some(function(column, colIndex) {
-            var combinedKeysHash = {};
-            if(!info.rows.every(function(row, rowIndex) {
-                var val = row[colIndex];
-                if(val==='') {
-                    throw new Error("haveNullColumns");
-                }
-                combinedKeys[rowIndex] = combinedKeys[rowIndex]+JSON.stringify(val);
-                if(combinedKeysHash[combinedKeys[rowIndex]]){
+    if(info.opts.includePrimaryKey) {
+        try{
+            var combinedKeys=new Array(info.rows.length);
+            info.columnsInfo.some(function(column, colIndex) {
+                var combinedKeysHash = {};
+                if(!info.rows.every(function(row, rowIndex) {
+                    var val = row[colIndex];
+                    if(val==='') {
+                        throw new Error("haveNullColumns");
+                    }
+                    combinedKeys[rowIndex] = combinedKeys[rowIndex]+JSON.stringify(val);
+                    if(combinedKeysHash[combinedKeys[rowIndex]]){
+                        return false;
+                    }
+                    combinedKeysHash[combinedKeys[rowIndex]]=true;
+                    return true;
+                })){
                     return false;
+                }else{
+                    info.primaryKey = info.columnsInfo.slice(0,colIndex+1).map(function(col) { return col.name; });
+                    return true; 
                 }
-                combinedKeysHash[combinedKeys[rowIndex]]=true;
-                return true;
-            })){
-                return false;
-            }else{
-                info.primaryKey = info.columnsInfo.slice(0,colIndex+1).map(function(col) { return col.name; });
-                return true; 
-            }
-        });
-    }catch(err){
-        if(err.message!=="haveNullColumns") { throw err; }
+            });
+        }catch(err){
+            if(err.message!=="haveNullColumns") { throw err; }
+        }
     }
     return info;
 }
