@@ -3,8 +3,8 @@
 var txtToSql = {};
 
 var _ = require('lodash');
-
 var changing = require('best-globals').changing;
+
 var margin = ' ';
 var separators=';,\t|';
 
@@ -19,7 +19,7 @@ function adaptText(x){
 }
 
 function padNone(val) { return val; }
-function pad(columnLength, val) { return new Array(columnLength - (val.length||0) + 1).join(' '); }
+function pad(columnLength, val) { return new Array(columnLength - val.length + 1).join(' '); }
 function padLeft(columnLength, val) { return val+pad(columnLength, val); }
 function padRight(columnLength, val) { return pad(columnLength,val)+val; }
 
@@ -72,7 +72,6 @@ var formatFunctions = {
 
 function verifyInputParams(info){
     info.opts = changing(txtToSql.defaultOpts, info.opts || {});
-    //console.log("IO", info.opts)
     var errors=[];
     if(! info.tableName) { errors.push('undefined table name'); }
     if(! info.txt) { errors.push('no txt in input'); }
@@ -245,7 +244,7 @@ function setup(info) {
 }
 
 function catchErrors(info, err) {
-    // console.log(err.message); console.log(err.stack);
+    //console.log(err.message, err.stack);
     return { errors: (err.errors || [err.message]), opts:info.opts };
 }
 
