@@ -62,6 +62,7 @@ describe("fixtures", function(){
         {path:'separator', changeResult:function(res) { res.opts.separator = '/'; }},
         {path:'pk-enabled'},
         {path:'pk-disabled'},
+        {path:'col-align', skip:true},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -96,7 +97,8 @@ describe("fixtures", function(){
                     prepared = preparedResult;
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    //console.log("P", param); console.log("R", result.opts); console.log("P", prepared);
+                    //console.log("P", param); console.log("R", result.opts);
+                    //console.log("P", prepared);
                     expect(prepared.opts).to.eql(result.opts);
                     expect(prepared.errors).to.eql(result.errors);
                     //console.log("G", generated);
