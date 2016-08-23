@@ -59,7 +59,7 @@ describe("fixtures", function(){
         {path:'fields-unmod-dups'},
         {path:'fields-lcnames-dups'},
         {path:'fields-lcalpha-dups'},
-        {path:'separator1', changeResult:function(res) { res.opts.separator = '/'; }},
+        {path:'separator', changeResult:function(res) { res.opts.separator = '/'; }},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
