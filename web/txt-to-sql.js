@@ -70,7 +70,7 @@ function verifyInputParams(info){
         errors.push("inexistent field format '"+info.opts.fieldFormat+"'");
     }
     throwIfErrors(errors);
-    info.format = function(objectName) { return quote(formatFunctions[info.opts.fieldFormat](objectName)); };
+    info.transform = function(objectName) { return quote(formatFunctions[info.opts.fieldFormat](objectName)); };
     return info;
 }
 
@@ -108,8 +108,8 @@ function separateFields(info){
 
 
 function transformNames(info) {
-    info.formatedTableName = info.format(info.tableName);
-    info.columnsInfo = info.columnsInfo.map(function(column){ return {name:info.format(column.name)}; });
+    info.formatedTableName = info.transform(info.tableName);
+    info.columnsInfo = info.columnsInfo.map(function(column){ return {name:info.transform(column.name)}; });
     return info;
 }
 
