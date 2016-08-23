@@ -72,7 +72,7 @@ var formatFunctions = {
 
 function verifyInputParams(info){
     info.opts = changing(txtToSql.defaultOpts, info.opts || {});
-    // console.log("IO", info.opts)
+    //console.log("IO", info.opts)
     var errors=[];
     if(! info.tableName) { errors.push('undefined table name'); }
     if(! info.txt) { errors.push('no txt in input'); }
