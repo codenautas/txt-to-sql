@@ -64,6 +64,7 @@ describe("fixtures", function(){
         {path:'comma-align'},
         {path:'comma-align-nulls'},
         {path:'comma-align-one-column'},
+        {path:'one-column-no-sep', changeResult:function(res) { res.opts.separator = false; }},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -149,9 +150,6 @@ describe("input errors", function(){
         { name:'all bad params',
           param:{opts:optBadFormat},
           errors:[eNoTable, eNoTXT, eBadFormat]},
-        { name:'no separator',
-          param:{tableName:'t2', txt:'dummy', opts:{separator:false}},
-          errors:['no separator detected']},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
