@@ -99,7 +99,7 @@ describe("fixtures", function(){
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
                     //console.log("P", param); console.log("R", result.opts);
-                    //console.log("P", prepared);
+                    // console.log("P", prepared);
                     expect(prepared.opts).to.eql(result.opts);
                     expect(prepared.errors).to.eql(result.errors);
                     //console.log("G", generated);
