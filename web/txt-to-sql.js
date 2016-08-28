@@ -17,7 +17,7 @@ function adaptText(x){
     return "'"+x.replace(/'/g,"''").replace(/\r/g,"' || chr(10) || '").replace(/\n/g,"' || chr(13) || '")+"'"; 
 }
 
-function padNone(val) { return val; }
+function padNone(columnLength, val) { return val; }
 function pad(columnLength, val) { return new Array(columnLength - val.length + 1).join(' '); }
 function padLeft(columnLength, val) { return val+pad(columnLength, val); }
 function padRight(columnLength, val) { return pad(columnLength,val)+val; }
@@ -200,23 +200,17 @@ function generateCreateScript(info){
 
 function generateInsertScript(info){
     var rows = info.rows.map(function(){ return []; });
-    if(info.opts.columnAlignedCommas) {
-        info.columnsInfo.forEach(function(column, columnIndex) {
-            var maxColumnLength=0;
-            info.rows.forEach(function(row, rowIndex) {
-                rows[rowIndex][columnIndex] = info.columnsInfo[columnIndex].typeInfo.adapt(row[columnIndex]);
+    info.columnsInfo.forEach(function(column, columnIndex) {
+        var maxColumnLength=0;
+        info.rows.forEach(function(row, rowIndex) {
+            rows[rowIndex][columnIndex] = info.columnsInfo[columnIndex].typeInfo.adapt(row[columnIndex]);
+            if(info.opts.columnAlignedCommas) {
                 var colLength=rows[rowIndex][columnIndex].length;
                 if(colLength>maxColumnLength) { maxColumnLength=colLength; }
-            });
-            info.columnsInfo[columnIndex].pad = info.columnsInfo[columnIndex].pad.bind(null, maxColumnLength);
+            }
         });
-    } else {
-        info.rows.forEach(function(row, rowIndex){
-            row.forEach(function(value, columnIndex){
-                rows[rowIndex][columnIndex] = info.columnsInfo[columnIndex].typeInfo.adapt(value);
-            });
-        });
-    }
+        info.columnsInfo[columnIndex].pad = info.columnsInfo[columnIndex].pad.bind(null, maxColumnLength);
+    });
     info.scripts.push({type:'insert', sql:
         "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
             return columnInfo.name;
