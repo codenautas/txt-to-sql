@@ -209,7 +209,7 @@ function generateInsertScript(info){
                 if(colLength>maxColumnLength) { maxColumnLength=colLength; }
             }
         });
-        column.pad = column.pad.bind(null, maxColumnLength);
+        column.maxColumnLength = maxColumnLength;
     });
     info.scripts.push({type:'insert', sql:
         "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
@@ -217,7 +217,8 @@ function generateInsertScript(info){
         }).join(', ')+") values\n"+
         rows.map(function(row){
             return margin+"("+row.map(function(adaptedValue,columnIndex){
-                return info.columnsInfo[columnIndex].pad(adaptedValue);
+                var column = info.columnsInfo[columnIndex];
+                return column.pad(column.maxColumnLength, adaptedValue);
             }).join(', ')+")";
         }).join(",\n")+";"
     });
