@@ -200,8 +200,8 @@ function generateCreateScript(info){
 
 function generateInsertScript(info){
     var adaptedRows = info.rows.map(function(){ return []; });
-    info.columnsInfo.forEach(function(column, columnIndex) {
-        info.rows.forEach(function(row, rowIndex) {
+    info.rows.forEach(function(row, rowIndex) {
+        info.columnsInfo.forEach(function(column, columnIndex) {
             var adaptedValue = column.typeInfo.adapt(row[columnIndex]);
             adaptedRows[rowIndex][columnIndex] = adaptedValue; 
             if(info.opts.columnAlignedCommas) {
