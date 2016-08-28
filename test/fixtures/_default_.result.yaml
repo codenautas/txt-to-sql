@@ -3,3 +3,4 @@ opts:
   separator: ';'
   includePrimaryKey: true
   columnAlignedCommas: false
+  columnAlignedMaxWidth: 100

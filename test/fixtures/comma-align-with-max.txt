@@ -1,0 +1,6 @@
+text-field;int-field;numerico-el-1
+hello;1;3.141592
+ciao;2;3
+hola mi amigo;5;34
+hello my friend;1;2
+ciao;32;4

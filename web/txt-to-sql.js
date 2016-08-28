@@ -18,9 +18,9 @@ function adaptText(x){
 }
 
 function padNone(columnLength, val) { return val; }
-function pad(columnLength, val) { return new Array(columnLength - val.length + 1).join(' '); }
-function padLeft(columnLength, val) { return val+pad(columnLength, val); }
-function padRight(columnLength, val) { return pad(columnLength,val)+val; }
+function filling(columnLength, val) { return val.length>=columnLength?'':new Array(columnLength - val.length + 1).join(' '); }
+function padLeft(columnLength, val) { return val+filling(columnLength, val); }
+function padRight(columnLength, val) { return filling(columnLength,val)+val; }
 
 var typePatterns = [
     {typeName:'integer'         , adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]{1,5}$/},
@@ -42,7 +42,8 @@ txtToSql.defaultOpts = {
     fieldFormat: 'lowercased_names',
     separator: false,
     includePrimaryKey: true,
-    columnAlignedCommas: false
+    columnAlignedCommas: false,
+    columnAlignedMaxWidth: 100,
 };
 
 function quote(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; }
@@ -147,7 +148,6 @@ function determineColumnTypes(info){
             }
         });
         columnInfo.typeInfo = typePatterns[maxTypeIndex];
-        columnInfo.pad = info.opts.columnAlignedCommas ? typePatterns[maxTypeIndex].pad : padNone;
     });
     return info;
 }
@@ -210,14 +210,32 @@ function generateInsertScript(info){
             return adaptedValue;
         });
     });
+    info.columnsInfo.forEach(function(column){ 
+        column.columnLength = info.opts.columnAlignedCommas?
+            Math.min(column.columnLength, info.opts.columnAlignedMaxWidth):0;
+    });
     info.scripts.push({type:'insert', sql:
         "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
             return columnInfo.name;
         }).join(', ')+") values\n"+
         adaptedRows.map(function(row){
+            var owedLength = 0;
             return margin+"("+row.map(function(adaptedValue,columnIndex){
                 var column = info.columnsInfo[columnIndex];
-                return column.pad(column.columnLength, adaptedValue);
+                var recoveredLength = 0;
+                var debug=false;
+                if(adaptedValue.length>column.columnLength-owedLength){
+                    owedLength=adaptedValue.length-(column.columnLength-owedLength);
+                    recoveredLength = column.columnLength-adaptedValue.length;
+                }else{
+                    recoveredLength = owedLength;
+                    owedLength = 0;
+                    if(adaptedValue.length>column.columnLength-recoveredLength){
+                        owedLength=adaptedValue.length-(column.columnLength-recoveredLength);
+                        recoveredLength=recoveredLength-owedLength;
+                    }
+                }
+                return column.typeInfo.pad(column.columnLength-recoveredLength, adaptedValue);
             }).join(', ')+")";
         }).join(",\n")+";"
     });
@@ -237,7 +255,7 @@ function setup(info) {
 }
 
 function catchErrors(info, err) {
-    return { errors: (err.errors || [err.message]), opts:info.opts };
+    return { errors: (err.errors || [err.message]), opts:info.opts};
 }
 
 function prepare(info) {

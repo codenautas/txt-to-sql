@@ -65,6 +65,7 @@ describe("fixtures", function(){
         {path:'comma-align-nulls'},
         {path:'comma-align-one-column'},
         {path:'one-column-no-sep', changeResult:function(res) { res.opts.separator = false; }},
+        {path:'comma-align-with-max'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -91,23 +92,17 @@ describe("fixtures", function(){
                 }).then(function() {
                     if(result.sqls) { result.sqls = makeSqlArray(result.sqls); }
                     if(fixture.changeResult) { fixture.changeResult(result); }
-                    //console.log("RES", result)
                 }).then(function() {
-                    //console.log("PRM", param)
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
                     prepared = preparedResult;
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    //console.log("P", param);
-                    // console.log("R", result.opts);
-                    // console.log("P", prepared);
+                    expect(prepared.errors).to.eql(generated.errors);
+                    expect(result.errors).to.eql(generated.errors);
                     expect(prepared.opts).to.eql(result.opts);
-                    expect(prepared.errors).to.eql(result.errors);
-                    //console.log("G", generated);
                     expect(generated.sqls).to.eql(result.sqls);
                     expect(differences(generated.sqls,result.sqls)).to.eql(null);
-                    expect(generated.errors).to.eql(result.errors);
                }).then(done,done);
             });   
         }
