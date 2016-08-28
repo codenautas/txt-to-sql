@@ -199,16 +199,15 @@ function generateCreateScript(info){
 }
 
 function generateInsertScript(info){
-    var adaptedRows = info.rows.map(function(){ return []; });
-    info.rows.forEach(function(row, rowIndex) {
-        info.columnsInfo.forEach(function(column, columnIndex) {
+    var adaptedRows = info.rows.map(function(row, rowIndex) {
+        return info.columnsInfo.map(function(column, columnIndex) {
             var adaptedValue = column.typeInfo.adapt(row[columnIndex]);
-            adaptedRows[rowIndex][columnIndex] = adaptedValue; 
             if(info.opts.columnAlignedCommas) {
                 if(adaptedValue.length>column.columnLength) { 
                     column.columnLength = adaptedValue.length; 
                 }
             }
+            return adaptedValue;
         });
     });
     info.scripts.push({type:'insert', sql:
