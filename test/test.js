@@ -121,12 +121,23 @@ describe("fixtures", function(){
                             return {
                                 name:name,
                                 type:fyt.slice(1).join(' '),
-                                inPrimaryKey: pks.indexOf(name) !== -1
+                                inPrimaryKey: pks.indexOf(name) !== -1,
+                                columnLength:0
                             };
+                        });
+                        var lines=param.txt.split(/\r?\n/);
+                        lines.shift(); // elimino headers
+                        lines = lines.map(function(line) {
+                            return line.split(expected.opts.separator).forEach(function(column, index) {
+                               if(expected.fields[index].columnLength<column.length) {
+                                   //comento hasta implementar
+                                   //expected.fields[index].columnLength = column.length;
+                               }
+                           });
                         });
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
-                    // console.log("expected.fields", expected.fields)
+                    //console.log("expected.fields", expected.fields)
                 }).then(function() {
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
