@@ -26,6 +26,10 @@ function loadYamlIfFileExists(fileName) {
     });
 }
 
+function trimQuotes(txt) {
+    return txt.trim().replace(/^("+)/,'').replace(/("+)$/,'');    
+}
+
 var defaultExpectedResult;
 function loadDefaultExpectedResult() {
     if(defaultExpectedResult) { return Promise.resolve(defaultExpectedResult); }
@@ -90,7 +94,26 @@ describe("fixtures", function(){
                     expected = changing(_.cloneDeep(defaultExpectedResult), yml);
                     return setIfFileExists(basePath+'.sql', expected, 'sqls');
                 }).then(function() {
-                    if(expected.sqls) { expected.sqls = makeSqlArray(expected.sqls); }
+                    if(expected.sqls) {
+                        expected.sqls = makeSqlArray(expected.sqls);
+                        var parts = expected.sqls[0].split('(');
+                        var fields = parts[1].split(',').map(function(field) {
+                            return field.trim().replace(/(\n\);)$/,'');
+                        });
+                        var last = fields[fields.length-1];
+                        var pks = [];
+                        if(last===');') {
+                            fields.splice(-1,1);
+                        } else if(last==='primary key') {
+                            fields.splice(-1,1);
+                            pks = parts[2].split(')')[0].split(',').map(function(pk) { return  trimQuotes(pk); });
+                        }
+                        fields = fields.map(function(field) {
+                            var fyt = field.split(' ');
+                            return { name:trimQuotes(fyt[0]), type:fyt[1]};
+                        });
+                        //console.log("fields",fields); console.log("pks",pks)
+                    }
                     if(fixture.changeResult) { fixture.changeResult(expected); }
                 }).then(function() {
                     return txtToSql.prepare(param);
