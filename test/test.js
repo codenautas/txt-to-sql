@@ -46,29 +46,37 @@ function makeSqlArray(sqls) {
 describe("fixtures", function(){
     [
         {path:'example-one'},
-        {path:'pk-simple', changeResult:function(res) { res.opts.separator = '\t'; }},
-        {path:'pk-complex', changeResult:function(res) { res.opts.separator = '|'; }},
-        {path:'pk-complex-all', changeResult:function(res) { res.opts.separator = '|'; }},
-        {path:'pk-very-simple', changeResult:function(res) { res.opts.separator = ','; }},
+        {path:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
+        {path:'pk-complex', changeExpected:function(exp) { exp.opts.separator = '|'; }},
+        {path:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|'; }},
+        {path:'pk-very-simple', changeExpected:function(exp) { exp.opts.separator = ','; exp.fields.forEach(function(field) { field.name = field.name.toUpperCase(); });}},
         {path:'without-pk-2'},
-        {path:'pk-simple-nn', changeResult:function(res) { res.opts.separator = '\t'; }},
+        {path:'pk-simple-nn', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
         {path:'pk-complex-nn'},
         {path:'pk-complex-nn2'},
-        {path:'pk-very-simple2', changeResult:function(res) { res.opts.separator = ','; }},
-        {path:'pk-space-simple', changeResult:function(res) { res.opts.separator = /\s+/; }},
+        {path:'pk-very-simple2', changeExpected:function(exp) {
+                exp.opts.separator = ',';
+                exp.fields.forEach(function(field) { field.name = field.name.toUpperCase(); });                
+            }
+        },
+        {path:'pk-space-simple', changeExpected:function(exp) {
+                exp.opts.separator = /\s+/;
+                exp.fields.forEach(function(field) { field.name = field.name.toUpperCase(); });
+            }
+        },
         {path:'fields-unmod'},
-        {path:'fields-lcnames'},
-        {path:'fields-lcalpha'},
-        {path:'fields-unmod-dups'},
-        {path:'fields-lcnames-dups'},
-        {path:'fields-lcalpha-dups'},
-        {path:'separator', changeResult:function(res) { res.opts.separator = '/'; }},
+        {path:'fields-lcnames', skipFields:true},
+        {path:'fields-lcalpha', skipFields:true},
+        {path:'fields-unmod-dups', changeExpected:function(exp) { delete exp.fields; }},
+        {path:'fields-lcnames-dups', changeExpected:function(exp) { delete exp.fields; }},
+        {path:'fields-lcalpha-dups', changeExpected:function(exp) { delete exp.fields; }},
+        {path:'separator', changeExpected:function(exp) { exp.opts.separator = '/'; }},
         {path:'pk-enabled'},
         {path:'pk-disabled'},
         {path:'comma-align'},
         {path:'comma-align-nulls'},
         {path:'comma-align-one-column'},
-        {path:'one-column-no-sep', changeResult:function(res) { res.opts.separator = false; }},
+        {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.fields; }},
         {path:'comma-align-with-max'},
     ].forEach(function(fixture){
         if(fixture.skip) {
@@ -88,7 +96,6 @@ describe("fixtures", function(){
                 }).then(function() {
                     return loadDefaultExpectedResult();
                 }).then(function() {
-                    // console.log("DR", defaultExpectedResult)
                     return loadYamlIfFileExists(basePath+'.result.yaml');
                 }).then(function(yml) {
                     expected = changing(_.cloneDeep(defaultExpectedResult), yml);
@@ -112,16 +119,13 @@ describe("fixtures", function(){
                         expected.fields = fields.map(function(field) {
                             var fyt = field.split(' ');
                             var name = trimQuotes(fyt[0]).replace(/""/g,'"');
-                            //console.log("field", field, "fyt", fyt, "name", name, fyt.slice(1).join(' '))
                             return { name:name, type:fyt.slice(1).join(' ')};
                         });
                         expected.fields.forEach(function(field) {
-                            //console.log("fi", field, pks)
                             field.inPrimaryKey = pks.indexOf(field.name.replace(/"/g,'""')) !== -1;
                         });
                     }
-                    //console.log("fields",expected.fields)
-                    if(fixture.changeResult) { fixture.changeResult(expected); }
+                    if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
@@ -130,7 +134,9 @@ describe("fixtures", function(){
                 }).then(function(generated){
                     // prepared
                     expect(prepared.opts).to.eql(expected.opts);
-                    // expect(prepared.fields).to.eql(expected.fields);
+                    if(! fixture.skipFields) {
+                        expect(prepared.fields).to.eql(expected.fields);
+                    }
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
                     expect(generated.sqls).to.eql(expected.sqls);
