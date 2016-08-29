@@ -98,11 +98,14 @@ describe("fixtures", function(){
                     prepared = preparedResult;
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    expect(prepared.errors).to.eql(generated.errors);
-                    expect(expected.errors).to.eql(generated.errors);
+                    // prepared
                     expect(prepared.opts).to.eql(expected.opts);
+                    // generated
+                    expect(generated.errors).to.eql(expected.errors);
                     expect(generated.sqls).to.eql(expected.sqls);
                     expect(differences(generated.sqls,expected.sqls)).to.eql(null);
+                    // coherencia entre prepared y generated
+                    expect(generated.errors).to.eql(prepared.errors);
                }).then(done,done);
             });   
         }
