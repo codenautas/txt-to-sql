@@ -257,6 +257,7 @@ function setup(info) {
 }
 
 function catchErrors(info, err) {
+    //console.log("err", err); console.log("err.stack", err.stack)
     return { errors: (err.errors || [err.message]), opts:info.opts};
 }
 

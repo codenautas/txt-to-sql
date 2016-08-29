@@ -68,10 +68,11 @@ html(lang=lang)
             });
             return promise.then(function(txt){
                 return generateScripts({txt:txt, tableName:tableName});
-            }).then(function(script){
+            }).then(function(generated){
+                if(generated.errors) { throw new Error(generated.errors.join('<br>\n')); }
                 var button = document.createElement('a');
                 button.textContent = messages.download;
-                var blob = new Blob([script], {type: 'text/plain'})
+                var blob = new Blob(generated.sqls, {type: 'text/plain'})
                 button.setAttribute("download", tableName+".sql");    
                 var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
                 button.href=url;
