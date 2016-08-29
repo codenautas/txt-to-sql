@@ -64,6 +64,11 @@ function generateWeb() {
     var desDir = './web';
     return processDirectory('./src', desDir).then(function() {
         return processDirectory('./lib', desDir);
+    }).then(function() {
+        return fs.copy('./node_modules/best-globals/best-globals.js', desDir+'/best-globals.js');
+    }).catch(function(err) {
+        console.log("Error", err);
+        process.exit(1);
     });
 }
 
