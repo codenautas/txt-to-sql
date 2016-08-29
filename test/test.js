@@ -117,13 +117,9 @@ describe("fixtures", function(){
                         }
                         expected.fields = fields.map(function(field) {
                             var fyt = field.split(' ');
-                            //var name = trimQuotes(fyt[0]).replace(/""/g,'"');
-                            var name = trimQuotes(fyt[0]);
-                            return { name:name, type:fyt.slice(1).join(' ')};
+                            return { name:trimQuotes(fyt[0]), type:fyt.slice(1).join(' ')};
                         });
-                        //console.log("pks", pks, "fields", expected.fields)
                         expected.fields.forEach(function(field) {
-                            //field.inPrimaryKey = pks.indexOf(field.name.replace(/"/g,'""')) !== -1;
                             field.inPrimaryKey = pks.indexOf(field.name) !== -1;
                         });
                     }
