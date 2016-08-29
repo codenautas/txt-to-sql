@@ -117,10 +117,12 @@ describe("fixtures", function(){
                         }
                         expected.fields = fields.map(function(field) {
                             var fyt = field.split(' ');
-                            return { name:trimQuotes(fyt[0]), type:fyt.slice(1).join(' ')};
-                        });
-                        expected.fields.forEach(function(field) {
-                            field.inPrimaryKey = pks.indexOf(field.name) !== -1;
+                            var name = trimQuotes(fyt[0]);
+                            return {
+                                name:name,
+                                type:fyt.slice(1).join(' '),
+                                inPrimaryKey: pks.indexOf(name) !== -1
+                            };
                         });
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
