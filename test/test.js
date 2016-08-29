@@ -27,7 +27,7 @@ function loadYamlIfFileExists(fileName) {
 }
 
 function trimQuotes(txt) {
-    return txt.trim().replace(/^("+)/,'').replace(/("+)$/,'');    
+    return txt.trim().replace(/^(")/,'').replace(/(")$/,'');
 }
 
 var defaultExpectedResult;
@@ -94,6 +94,7 @@ describe("fixtures", function(){
                     expected = changing(_.cloneDeep(defaultExpectedResult), yml);
                     return setIfFileExists(basePath+'.sql', expected, 'sqls');
                 }).then(function() {
+                    expected.fields = [];
                     if(expected.sqls) {
                         expected.sqls = makeSqlArray(expected.sqls);
                         var parts = expected.sqls[0].split('(');
@@ -108,12 +109,18 @@ describe("fixtures", function(){
                             fields.splice(-1,1);
                             pks = parts[2].split(')')[0].split(',').map(function(pk) { return  trimQuotes(pk); });
                         }
-                        fields = fields.map(function(field) {
+                        expected.fields = fields.map(function(field) {
                             var fyt = field.split(' ');
-                            return { name:trimQuotes(fyt[0]), type:fyt[1]};
+                            var name = trimQuotes(fyt[0]).replace(/""/g,'"');
+                            //console.log("field", field, "fyt", fyt, "name", name, fyt.slice(1).join(' '))
+                            return { name:name, type:fyt.slice(1).join(' ')};
                         });
-                        //console.log("fields",fields); console.log("pks",pks)
+                        expected.fields.forEach(function(field) {
+                            //console.log("fi", field, pks)
+                            field.inPrimaryKey = pks.indexOf(field.name.replace(/"/g,'""')) !== -1;
+                        });
                     }
+                    //console.log("fields",expected.fields)
                     if(fixture.changeResult) { fixture.changeResult(expected); }
                 }).then(function() {
                     return txtToSql.prepare(param);
@@ -123,6 +130,7 @@ describe("fixtures", function(){
                 }).then(function(generated){
                     // prepared
                     expect(prepared.opts).to.eql(expected.opts);
+                    // expect(prepared.fields).to.eql(expected.fields);
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
                     expect(generated.sqls).to.eql(expected.sqls);
