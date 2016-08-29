@@ -2,9 +2,7 @@
 
 var txtToSql = {};
 
-var changing = (typeof module === 'undefined' || ! module.exports)
-                    ? bestGlobals.changing
-                    : require('best-globals').changing;    
+var changing = (typeof module === 'undefined' || ! module.exports) ? bestGlobals.changing : require('best-globals').changing;    
 
 var margin = ' ';
 var separators=';,\t|';
