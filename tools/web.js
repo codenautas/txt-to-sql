@@ -66,6 +66,8 @@ function generateWeb() {
         return processDirectory('./lib', desDir);
     }).then(function() {
         return fs.copy('./node_modules/best-globals/best-globals.js', desDir+'/best-globals.js');
+    }).then(function() {
+        return processDirectory('./node_modules/require-bro/lib', desDir);
     }).catch(function(err) {
         console.log("Error", err);
         process.exit(1);
