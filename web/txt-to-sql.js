@@ -262,18 +262,16 @@ function catchErrors(info, err) {
 function prepare(info) {
     return setup(info)
     .then(function(info) {
-        //console.log("info", info)
         var headers = info.headers.split(info.opts.separator);
         var primaryKey = info.primaryKey || [];
         if(primaryKey.length) {
             primaryKey = primaryKey.map(function(name, index) {
-                return headers[index];
+                return info.columnsInfo[index].name.slice(1, -1)
             })
         }
         //console.log("PKS", primaryKey)
         var fields = info.columnsInfo.map(function(columnInfo, columnIndex) {
-            var name = headers[columnIndex];
-            //console.log("--name", name)
+            var name = columnInfo.name.slice(1, -1);
             return {name:name,
                     type:columnInfo.typeInfo.typeName,
                     inPrimaryKey:primaryKey.indexOf(name) !== -1}

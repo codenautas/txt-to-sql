@@ -48,25 +48,24 @@ describe("fixtures", function(){
         {path:'example-one'},
         {path:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
         {path:'pk-complex', changeExpected:function(exp) { exp.opts.separator = '|'; }},
-        {path:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|'; }},
-        {path:'pk-very-simple', changeExpected:function(exp) { exp.opts.separator = ','; exp.fields.forEach(function(field) { field.name = field.name.toUpperCase(); });}},
+        {path:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|';}},
+        {path:'pk-very-simple', changeExpected:function(exp) { exp.opts.separator = ',';}},
+        {path:'pk-very-simple2', changeExpected:function(exp) {
+                exp.opts.separator = ',';
+            }
+        },
         {path:'without-pk-2'},
         {path:'pk-simple-nn', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
         {path:'pk-complex-nn'},
         {path:'pk-complex-nn2'},
-        {path:'pk-very-simple2', changeExpected:function(exp) {
-                exp.opts.separator = ',';
-                exp.fields.forEach(function(field) { field.name = field.name.toUpperCase(); });                
-            }
-        },
         {path:'pk-space-simple', changeExpected:function(exp) {
                 exp.opts.separator = /\s+/;
-                exp.fields.forEach(function(field) { field.name = field.name.toUpperCase(); });
+
             }
         },
         {path:'fields-unmod'},
-        {path:'fields-lcnames', skipFields:true},
-        {path:'fields-lcalpha', skipFields:true},
+        {path:'fields-lcnames'},
+        {path:'fields-lcalpha'},
         {path:'fields-unmod-dups', changeExpected:function(exp) { delete exp.fields; }},
         {path:'fields-lcnames-dups', changeExpected:function(exp) { delete exp.fields; }},
         {path:'fields-lcalpha-dups', changeExpected:function(exp) { delete exp.fields; }},
@@ -118,14 +117,18 @@ describe("fixtures", function(){
                         }
                         expected.fields = fields.map(function(field) {
                             var fyt = field.split(' ');
-                            var name = trimQuotes(fyt[0]).replace(/""/g,'"');
+                            //var name = trimQuotes(fyt[0]).replace(/""/g,'"');
+                            var name = trimQuotes(fyt[0]);
                             return { name:name, type:fyt.slice(1).join(' ')};
                         });
+                        //console.log("pks", pks, "fields", expected.fields)
                         expected.fields.forEach(function(field) {
-                            field.inPrimaryKey = pks.indexOf(field.name.replace(/"/g,'""')) !== -1;
+                            //field.inPrimaryKey = pks.indexOf(field.name.replace(/"/g,'""')) !== -1;
+                            field.inPrimaryKey = pks.indexOf(field.name) !== -1;
                         });
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
+                    // console.log("expected.fields", expected.fields)
                 }).then(function() {
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
@@ -134,9 +137,7 @@ describe("fixtures", function(){
                 }).then(function(generated){
                     // prepared
                     expect(prepared.opts).to.eql(expected.opts);
-                    if(! fixture.skipFields) {
-                        expect(prepared.fields).to.eql(expected.fields);
-                    }
+                    expect(prepared.fields).to.eql(expected.fields);
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
                     expect(generated.sqls).to.eql(expected.sqls);
