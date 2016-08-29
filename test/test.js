@@ -26,11 +26,11 @@ function loadYamlIfFileExists(fileName) {
     });
 }
 
-var defaultResult;
-function loadDefaultResult() {
-    if(defaultResult) { return Promise.resolve(defaultResult); }
+var defaultExpectedResult;
+function loadDefaultExpectedResult() {
+    if(defaultExpectedResult) { return Promise.resolve(defaultExpectedResult); }
     return loadYamlIfFileExists('./test/fixtures/_default_.result.yaml').then(function(yml) {
-       defaultResult = yml;
+       defaultExpectedResult = yml;
     });
 }
 
@@ -72,7 +72,7 @@ describe("fixtures", function(){
         } else {
             it("fixture: "+fixture.path, function(done){
                 var param={tableName:fixture.path};
-                var result={};
+                var expected={};
                 var basePath='./test/fixtures/'+fixture.path;
                 var prepared;
                 setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
@@ -82,16 +82,16 @@ describe("fixtures", function(){
                     // para poder cambiar despues de cargar
                     if(fixture.changeParam) { fixture.changeParam(param); }
                 }).then(function() {
-                    return loadDefaultResult();
+                    return loadDefaultExpectedResult();
                 }).then(function() {
-                    // console.log("DR", defaultResult)
+                    // console.log("DR", defaultExpectedResult)
                     return loadYamlIfFileExists(basePath+'.result.yaml');
                 }).then(function(yml) {
-                    result = changing(_.cloneDeep(defaultResult), yml);
-                    return setIfFileExists(basePath+'.sql', result, 'sqls');
+                    expected = changing(_.cloneDeep(defaultExpectedResult), yml);
+                    return setIfFileExists(basePath+'.sql', expected, 'sqls');
                 }).then(function() {
-                    if(result.sqls) { result.sqls = makeSqlArray(result.sqls); }
-                    if(fixture.changeResult) { fixture.changeResult(result); }
+                    if(expected.sqls) { expected.sqls = makeSqlArray(expected.sqls); }
+                    if(fixture.changeResult) { fixture.changeResult(expected); }
                 }).then(function() {
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
@@ -99,10 +99,10 @@ describe("fixtures", function(){
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
                     expect(prepared.errors).to.eql(generated.errors);
-                    expect(result.errors).to.eql(generated.errors);
-                    expect(prepared.opts).to.eql(result.opts);
-                    expect(generated.sqls).to.eql(result.sqls);
-                    expect(differences(generated.sqls,result.sqls)).to.eql(null);
+                    expect(expected.errors).to.eql(generated.errors);
+                    expect(prepared.opts).to.eql(expected.opts);
+                    expect(generated.sqls).to.eql(expected.sqls);
+                    expect(differences(generated.sqls,expected.sqls)).to.eql(null);
                }).then(done,done);
             });   
         }
