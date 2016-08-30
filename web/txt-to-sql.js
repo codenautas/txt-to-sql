@@ -271,7 +271,7 @@ function prepare(info) {
     .then(function(info) {
         var headers = info.headers.split(info.opts.separator);
         var primaryKey = info.primaryKey || [];
-        var fields = info.columnsInfo.map(function(columnInfo) {
+        var columns = info.columnsInfo.map(function(columnInfo) {
             return {name:columnInfo.name,
                     type:columnInfo.typeInfo.typeName,
                     inPrimaryKey:primaryKey.indexOf(columnInfo.name) !== -1,
@@ -282,11 +282,11 @@ function prepare(info) {
             info.columnsInfo.forEach(function(column, columnIndex) {
                 var lenInfo = getLengthInfo(row[columnIndex], column.typeInfo.typeName);
                 var len = lenInfo.length || lenInfo.precision;
-                var field = fields[columnIndex];
-                if(field.columnLength<len) { field.columnLength=len; }
+                var col = columns[columnIndex];
+                if(col.columnLength<len) { col.columnLength=len; }
             });
         });
-        return {opts:info.opts, fields:fields};
+        return {opts:info.opts, columns:columns};
     }).catch(catchErrors.bind(null, info));
 }
 

@@ -55,16 +55,16 @@ describe("fixtures", function(){
         {path:'fields-unmod'},
         {path:'fields-lcnames'},
         {path:'fields-lcalpha'},
-        {path:'fields-unmod-dups', changeExpected:function(exp) { delete exp.fields; }},
-        {path:'fields-lcnames-dups', changeExpected:function(exp) { delete exp.fields; }},
-        {path:'fields-lcalpha-dups', changeExpected:function(exp) { delete exp.fields; }},
+        {path:'fields-unmod-dups', changeExpected:function(exp) { delete exp.columns; }},
+        {path:'fields-lcnames-dups', changeExpected:function(exp) { delete exp.columns; }},
+        {path:'fields-lcalpha-dups', changeExpected:function(exp) { delete exp.columns; }},
         {path:'separator', changeExpected:function(exp) { exp.opts.separator = '/'; }},
         {path:'pk-enabled'},
         {path:'pk-disabled'},
         {path:'comma-align'},
         {path:'comma-align-nulls'},
         {path:'comma-align-one-column'},
-        {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.fields; }},
+        {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.columns; }},
         {path:'comma-align-with-max'},
     ].forEach(function(fixture){
         if(fixture.skip) {
@@ -89,23 +89,23 @@ describe("fixtures", function(){
                     expected = changing(_.cloneDeep(defaultExpectedResult), yml);
                     return setIfFileExists(basePath+'.sql', expected, 'sqls');
                 }).then(function() {
-                    expected.fields = [];
+                    expected.columns = [];
                     if(expected.sqls) {
                         expected.sqls = makeSqlArray(expected.sqls);
                         var parts = expected.sqls[0].split('(');
-                        var fields = parts[1].split(',').map(function(field) {
-                            return field.trim().replace(/(\n\);)$/,'');
+                        var columns = parts[1].split(',').map(function(column) {
+                            return column.trim().replace(/(\n\);)$/,'');
                         });
-                        var last = fields[fields.length-1];
+                        var last = columns[columns.length-1];
                         var pks = [];
                         if(last===');') {
-                            fields.splice(-1,1);
+                            columns.splice(-1,1);
                         } else if(last==='primary key') {
-                            fields.splice(-1,1);
+                            columns.splice(-1,1);
                             pks = parts[2].split(')')[0].split(',').map(function(pk) { return pk.trim(); });
                         }
-                        expected.fields = fields.map(function(field) {
-                            var fyt = field.split(' ');
+                        expected.columns = columns.map(function(column) {
+                            var fyt = column.split(' ');
                             var name = fyt[0];
                             return {
                                 name:name,
@@ -116,19 +116,19 @@ describe("fixtures", function(){
                         });
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
-                    if(expected.fields) {
+                    if(expected.columns) {
                         var lines=param.txt.split(/\r?\n/);
                         lines.shift(); // elimino headers
                         lines = lines.map(function(line) {
                             return line.split(expected.opts.separator).forEach(function(column, index) {
-                               var field = expected.fields[index];
-                               var lenInfo = txtToSql.getLengthInfo(column, field.type);
+                               var col = expected.columns[index];
+                               var lenInfo = txtToSql.getLengthInfo(column, col.type);
                                var len = lenInfo.length || lenInfo.precision;
-                               if(field.columnLength<len) { field.columnLength = len; }
+                               if(col.columnLength<len) { col.columnLength = len; }
                            });
                         });
                     }
-                    // console.log("expected.fields", expected.fields)
+                    // console.log("expected.columns", expected.columns)
                 }).then(function() {
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
@@ -137,7 +137,7 @@ describe("fixtures", function(){
                 }).then(function(generated){
                     // prepared
                     expect(prepared.opts).to.eql(expected.opts);
-                    expect(prepared.fields).to.eql(expected.fields);
+                    expect(prepared.columns).to.eql(expected.columns);
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
                     expect(generated.sqls).to.eql(expected.sqls);
