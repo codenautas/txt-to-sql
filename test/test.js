@@ -46,19 +46,12 @@ describe("fixtures", function(){
         {path:'pk-complex', changeExpected:function(exp) { exp.opts.separator = '|'; }},
         {path:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|';}},
         {path:'pk-very-simple', changeExpected:function(exp) { exp.opts.separator = ',';}},
-        {path:'pk-very-simple2', changeExpected:function(exp) {
-                exp.opts.separator = ',';
-            }
-        },
+        {path:'pk-very-simple2', changeExpected:function(exp) { exp.opts.separator = ',';}},
         {path:'without-pk-2'},
         {path:'pk-simple-nn', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
         {path:'pk-complex-nn'},
         {path:'pk-complex-nn2'},
-        {path:'pk-space-simple', changeExpected:function(exp) {
-                exp.opts.separator = /\s+/;
-
-            }
-        },
+        {path:'pk-space-simple', changeExpected:function(exp) { exp.opts.separator = /\s+/; } },
         {path:'fields-unmod'},
         {path:'fields-lcnames'},
         {path:'fields-lcalpha'},
@@ -121,18 +114,21 @@ describe("fixtures", function(){
                                 columnLength:0
                             };
                         });
+                    }
+                    if(fixture.changeExpected) { fixture.changeExpected(expected); }
+                    if(expected.fields) {
                         var lines=param.txt.split(/\r?\n/);
                         lines.shift(); // elimino headers
                         lines = lines.map(function(line) {
                             return line.split(expected.opts.separator).forEach(function(column, index) {
                                var field = expected.fields[index];
-                               var len = column.length + (field.type=='text'?2:0);
-                               //if(field.columnLength<len) { field.columnLength = len; }
+                               var lenInfo = txtToSql.getLengthInfo(column, field.type);
+                               var len = lenInfo.length || lenInfo.precision;
+                               if(field.columnLength<len) { field.columnLength = len; }
                            });
                         });
                     }
-                    if(fixture.changeExpected) { fixture.changeExpected(expected); }
-                    //console.log("expected.fields", expected.fields)
+                    // console.log("expected.fields", expected.fields)
                 }).then(function() {
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
