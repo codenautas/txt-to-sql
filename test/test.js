@@ -111,7 +111,7 @@ describe("fixtures", function(){
                                 name:name,
                                 type:fyt.slice(1).join(' '),
                                 inPrimaryKey: pks.indexOf(name) !== -1,
-                                columnLength:0
+                                maxLength:0
                             };
                         });
                     }
@@ -124,7 +124,7 @@ describe("fixtures", function(){
                                var col = expected.columns[index];
                                var lenInfo = txtToSql.getLengthInfo(column, col.type);
                                var len = lenInfo.length || lenInfo.precision;
-                               if(col.columnLength<len) { col.columnLength = len; }
+                               if(col.maxLength<len) { col.maxLength = len; }
                            });
                         });
                     }
