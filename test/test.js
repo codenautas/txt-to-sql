@@ -26,10 +26,6 @@ function loadYamlIfFileExists(fileName) {
     });
 }
 
-function trimQuotes(txt) {
-    return txt.trim().replace(/^(")/,'').replace(/(")$/,'');
-}
-
 var defaultExpectedResult;
 function loadDefaultExpectedResult() {
     if(defaultExpectedResult) { return Promise.resolve(defaultExpectedResult); }
@@ -113,11 +109,11 @@ describe("fixtures", function(){
                             fields.splice(-1,1);
                         } else if(last==='primary key') {
                             fields.splice(-1,1);
-                            pks = parts[2].split(')')[0].split(',').map(function(pk) { return  trimQuotes(pk); });
+                            pks = parts[2].split(')')[0].split(',').map(function(pk) { return pk.trim(); });
                         }
                         expected.fields = fields.map(function(field) {
                             var fyt = field.split(' ');
-                            var name = trimQuotes(fyt[0]);
+                            var name = fyt[0];
                             return {
                                 name:name,
                                 type:fyt.slice(1).join(' '),
@@ -129,10 +125,9 @@ describe("fixtures", function(){
                         lines.shift(); // elimino headers
                         lines = lines.map(function(line) {
                             return line.split(expected.opts.separator).forEach(function(column, index) {
-                               if(expected.fields[index].columnLength<column.length) {
-                                   //comento hasta implementar
-                                   //expected.fields[index].columnLength = column.length;
-                               }
+                               var field = expected.fields[index];
+                               var len = column.length + (field.type=='text'?2:0);
+                               //if(field.columnLength<len) { field.columnLength = len; }
                            });
                         });
                     }
