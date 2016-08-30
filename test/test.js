@@ -8,8 +8,6 @@ var differences = selfExplain.assert.allDifferences;
 var changing = require('best-globals').changing;
 var yaml = require('js-yaml');
 
-var _ = require('lodash');
-
 function setIfFileExists(fileName, outObject, outProperty) {
     return fs.exists(fileName).then(function(exists) {
         if(exists) { return fs.readFile(fileName, {encoding:'utf8'}); }
@@ -79,14 +77,11 @@ describe("fixtures", function(){
                     if(param.opts) { param.opts = yaml.safeLoad(param.opts); }
                     return setIfFileExists(basePath+'.txt', param, 'txt');
                 }).then(function() {
-                    // para poder cambiar despues de cargar
-                    if(fixture.changeParam) { fixture.changeParam(param); }
-                }).then(function() {
                     return loadDefaultExpectedResult();
                 }).then(function() {
                     return loadYamlIfFileExists(basePath+'.result.yaml');
                 }).then(function(yml) {
-                    expected = changing(_.cloneDeep(defaultExpectedResult), yml);
+                    expected = changing(JSON.parse(JSON.stringify(defaultExpectedResult)), yml);
                     return setIfFileExists(basePath+'.sql', expected, 'sqls');
                 }).then(function() {
                     expected.columns = [];

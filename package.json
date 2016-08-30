@@ -8,8 +8,7 @@
   "main": "lib/txt-to-sql.js",
   "files": ["lib", "web"],
   "dependencies": {
-    "lodash": "~4.12.0",
-    
+
     "best-globals": "~0.4.9"
   },
   "devDependencies": {
