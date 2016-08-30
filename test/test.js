@@ -65,6 +65,7 @@ describe("fixtures", function(){
         {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.columns; }},
         {path:'comma-align-with-max'},
         {path:'example-one-mysql'},
+        {path:'pk-complex-all-mysql'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -97,7 +98,7 @@ describe("fixtures", function(){
                         if(last===');') {
                             columns.splice(-1,1);
                         } else if(last==='primary key') {
-                            columns.splice(-1,1);
+                            columns.splice(-1,1); // remuevo quoting
                             pks = parts[2].split(')')[0].split(',').map(function(pk) { return pk.trim(); });
                         }
                         expected.columns = columns.map(function(column) {
