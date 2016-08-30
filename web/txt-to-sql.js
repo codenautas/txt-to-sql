@@ -31,17 +31,15 @@ var types = [
 ];
 
 function mapTypes(typeNames) {
-    return typeNames.map(function(type, index) {
-        var e = types[index];
-        e.typeName = type;
-        return e;
-    });
+    return typeNames.map(function(type, index) { return Object.assign({typeName:type}, types[index]); });
 }
 
 function quoteDouble(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; }
+function quoteBackTick(objectName) { return '`'+objectName.replace(/`/g,'``')+'`'; }
 
 var outputFormats = {
-    'postgresql': { types:mapTypes(['integer','bigint','numeric','double precision','text']), quote:quoteDouble }
+    'postgresql': { types:mapTypes(['integer','bigint','numeric','double precision','text']), quote:quoteDouble },
+    'mysql': { types:mapTypes(['integer','bigint','numeric','double precision','varchar']), quote:quoteBackTick }
 };
 
 function throwIfErrors(errors) {
