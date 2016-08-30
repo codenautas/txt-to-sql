@@ -107,13 +107,14 @@ describe("fixtures", function(){
                         expected.columns = columns.map(function(column) {
                             var fyt = column.split(' ');
                             var name = fyt[0];
+                            var type = fyt.slice(1).join(' ');
                             return {
                                 name:name,
-                                type:fyt.slice(1).join(' '),
+                                type:type,
                                 inPrimaryKey: pks.indexOf(name) !== -1,
                                 maxLength:0,
                                 hasNullValues:false,
-                                maxScale:0
+                                maxScale:type!=='text'?0:null
                             };
                         });
                     }
@@ -129,7 +130,7 @@ describe("fixtures", function(){
                                var len = lenInfo.length || lenInfo.precision;
                                if(col.maxLength<len) { col.maxLength = len; }
                                if(! col.hasNullValues && ! column) { col.hasNullValues=true; }
-                               if(lenInfo.scale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
+                               if(lenInfo.scale && col.maxScale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
                            });
                         });
                     }

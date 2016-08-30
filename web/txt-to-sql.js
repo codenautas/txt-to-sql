@@ -277,7 +277,7 @@ function prepare(info) {
                     inPrimaryKey:primaryKey.indexOf(columnInfo.name) !== -1,
                     maxLength:0,
                     hasNullValues:false,
-                    maxScale:0 // maxima cantidad de decimales
+                    maxScale:columnInfo.typeInfo.typeName!=='text'?0:null // maxima cantidad de decimales
                    };
         });
         info.rows.forEach(function(row) {
@@ -287,7 +287,7 @@ function prepare(info) {
                 var col = columns[columnIndex];
                 if(col.maxLength<len) { col.maxLength=len; }
                 if(! col.hasNullValues && ! row[columnIndex]) { col.hasNullValues=true; }
-                if(lenInfo.scale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
+                if(lenInfo.scale && col.maxScale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
             });
         });
         return {opts:info.opts, columns:columns};
