@@ -114,7 +114,8 @@ describe("fixtures", function(){
                                 inPrimaryKey: pks.indexOf(name) !== -1,
                                 maxLength:0,
                                 hasNullValues:false,
-                                maxScale:type!=='text'?0:null
+                                maxScale:type!=='text'?0:null,
+                                hasCientificNotation:type==='double precision'?false:null
                             };
                         });
                     }
@@ -124,13 +125,14 @@ describe("fixtures", function(){
                         lines.shift(); // elimino headers
                         lines = lines.filter(function(line){ return line.trim()!==""; })
                                      .map(function(line) {
-                            return line.split(expected.opts.separator).forEach(function(column, index) {
+                            return line.split(expected.opts.separator).forEach(function(val, index) {
                                var col = expected.columns[index];
-                               var lenInfo = txtToSql.getLengthInfo(column, col.type);
+                               var lenInfo = txtToSql.getLengthInfo(val, col.type);
                                var len = lenInfo.length || lenInfo.precision;
                                if(col.maxLength<len) { col.maxLength = len; }
-                               if(! col.hasNullValues && ! column) { col.hasNullValues=true; }
+                               if(! col.hasNullValues && ! val) { col.hasNullValues=true; }
                                if(lenInfo.scale && col.maxScale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
+                               if(col.hasCientificNotation===false && val.match(/[eE]/)) { col.hasCientificNotation=true; }
                            });
                         });
                     }
