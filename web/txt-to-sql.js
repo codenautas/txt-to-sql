@@ -276,16 +276,18 @@ function prepare(info) {
                     type:columnInfo.typeInfo.typeName,
                     inPrimaryKey:primaryKey.indexOf(columnInfo.name) !== -1,
                     maxLength:0,
-                    hasNullValues:false};
+                    hasNullValues:false,
+                    maxScale:0 // maxima cantidad de decimales
+                   };
         });
         info.rows.forEach(function(row) {
             info.columnsInfo.forEach(function(column, columnIndex) {
-                var val=row[columnIndex];
-                var lenInfo = getLengthInfo(val, column.typeInfo.typeName);
+                var lenInfo = getLengthInfo(row[columnIndex], column.typeInfo.typeName);
                 var len = lenInfo.length || lenInfo.precision;
                 var col = columns[columnIndex];
                 if(col.maxLength<len) { col.maxLength=len; }
-                if(! col.hasNullValues && ! val) { col.hasNullValues=true; }
+                if(! col.hasNullValues && ! row[columnIndex]) { col.hasNullValues=true; }
+                if(lenInfo.scale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
             });
         });
         return {opts:info.opts, columns:columns};

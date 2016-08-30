@@ -112,7 +112,8 @@ describe("fixtures", function(){
                                 type:fyt.slice(1).join(' '),
                                 inPrimaryKey: pks.indexOf(name) !== -1,
                                 maxLength:0,
-                                hasNullValues:false
+                                hasNullValues:false,
+                                maxScale:0
                             };
                         });
                     }
@@ -128,6 +129,7 @@ describe("fixtures", function(){
                                var len = lenInfo.length || lenInfo.precision;
                                if(col.maxLength<len) { col.maxLength = len; }
                                if(! col.hasNullValues && ! column) { col.hasNullValues=true; }
+                               if(lenInfo.scale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
                            });
                         });
                     }
