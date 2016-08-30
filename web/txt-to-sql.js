@@ -44,6 +44,7 @@ txtToSql.defaultOpts = {
     includePrimaryKey: true,
     columnAlignedCommas: false,
     columnAlignedMaxWidth: 100,
+    outputFormat: 'postgresql'
 };
 
 function quote(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; }
@@ -269,7 +270,6 @@ function getLengthInfo(val, typeName) {
 function prepare(info) {
     return setup(info)
     .then(function(info) {
-        var headers = info.headers.split(info.opts.separator);
         var primaryKey = info.primaryKey || [];
         var columns = info.columnsInfo.map(function(columnInfo) {
             return {name:columnInfo.name,

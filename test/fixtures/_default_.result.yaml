@@ -4,3 +4,4 @@ opts:
   includePrimaryKey: true
   columnAlignedCommas: false
   columnAlignedMaxWidth: 100
+  outputFormat: postgresql
