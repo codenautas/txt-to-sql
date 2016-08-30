@@ -111,7 +111,8 @@ describe("fixtures", function(){
                                 name:name,
                                 type:fyt.slice(1).join(' '),
                                 inPrimaryKey: pks.indexOf(name) !== -1,
-                                maxLength:0
+                                maxLength:0,
+                                hasNullValues:false
                             };
                         });
                     }
@@ -119,12 +120,14 @@ describe("fixtures", function(){
                     if(expected.columns) {
                         var lines=param.txt.split(/\r?\n/);
                         lines.shift(); // elimino headers
-                        lines = lines.map(function(line) {
+                        lines = lines.filter(function(line){ return line.trim()!==""; })
+                                     .map(function(line) {
                             return line.split(expected.opts.separator).forEach(function(column, index) {
                                var col = expected.columns[index];
                                var lenInfo = txtToSql.getLengthInfo(column, col.type);
                                var len = lenInfo.length || lenInfo.precision;
                                if(col.maxLength<len) { col.maxLength = len; }
+                               if(! col.hasNullValues && ! column) { col.hasNullValues=true; }
                            });
                         });
                     }

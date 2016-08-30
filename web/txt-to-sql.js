@@ -275,15 +275,17 @@ function prepare(info) {
             return {name:columnInfo.name,
                     type:columnInfo.typeInfo.typeName,
                     inPrimaryKey:primaryKey.indexOf(columnInfo.name) !== -1,
-                    maxLength:0
-                   }
+                    maxLength:0,
+                    hasNullValues:false};
         });
         info.rows.forEach(function(row) {
             info.columnsInfo.forEach(function(column, columnIndex) {
-                var lenInfo = getLengthInfo(row[columnIndex], column.typeInfo.typeName);
+                var val=row[columnIndex];
+                var lenInfo = getLengthInfo(val, column.typeInfo.typeName);
                 var len = lenInfo.length || lenInfo.precision;
                 var col = columns[columnIndex];
                 if(col.maxLength<len) { col.maxLength=len; }
+                if(! col.hasNullValues && ! val) { col.hasNullValues=true; }
             });
         });
         return {opts:info.opts, columns:columns};
