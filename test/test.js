@@ -179,8 +179,10 @@ describe("specials", function(){
 describe("input errors", function(){
     var eNoTXT='no txt in input',
         eNoTable='undefined table name',
-        eBadFormat="inexistent field format 'inexistent_format'";
-    var optBadFormat = {fieldFormat: 'inexistent_format'};
+        eBadFieldFormat="inexistent field format 'inexistent_format'",
+        eBadOutFormat="inexistent output format 'inexistent output format'";
+    var optBadFieldFormat = {fieldFormat: 'inexistent_format'};
+    var optBadOutFormat = {outputFormat: 'inexistent output format'};
     [
         { name:'no txt',
           param:{tableName:'t1'},
@@ -189,11 +191,14 @@ describe("input errors", function(){
           param:{},
           errors:[eNoTable, eNoTXT]},
         { name:'no tableName and fieldFormat',
-          param:{txt:'dummy', opts:optBadFormat},
-          errors:[eNoTable, eBadFormat]},
+          param:{txt:'dummy', opts:optBadFieldFormat},
+          errors:[eNoTable, eBadFieldFormat]},
+        { name:'bad output format',
+          param:{tableName:'t1', txt:'dummy', opts:optBadOutFormat},
+          errors:[eBadOutFormat]},
         { name:'all bad params',
-          param:{opts:optBadFormat},
-          errors:[eNoTable, eNoTXT, eBadFormat]},
+          param:{opts:optBadFieldFormat},
+          errors:[eNoTable, eNoTXT, eBadFieldFormat]},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
