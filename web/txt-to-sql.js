@@ -22,13 +22,25 @@ function filling(columnLength, val) { return val.length>=columnLength?'':new Arr
 function padLeft(columnLength, val) { return val+filling(columnLength, val); }
 function padRight(columnLength, val) { return filling(columnLength,val)+val; }
 
-var typePatterns = [
-    {typeName:'integer'         , adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]{1,5}$/},
-    {typeName:'bigint'          , adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+$/},
-    {typeName:'numeric'         , adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*$/},
-    {typeName:'double precision', adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/},
-    {typeName:'text'            , adapt:adaptText , pad:padLeft , dataPattern:/.?/}
+var types = [
+    {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]{1,5}$/},                     // integer
+    {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+$/},                         // bigint
+    {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*$/},                // numeric
+    {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/}, // double precision
+    {adapt:adaptText , pad:padLeft , dataPattern:/.?/}                                  // text
 ];
+
+function mapTypes(typeNames) {
+    return typeNames.map(function(type, index) {
+        var e = types[index];
+        e.typeName = type;
+        return e;
+    });
+}
+
+var outputFormats = {
+    'postgresql': { types:mapTypes(['integer','bigint','numeric','double precision','text']) }
+};
 
 function throwIfErrors(errors) {
     if(errors.length) {
@@ -81,6 +93,7 @@ function verifyInputParams(info){
     }
     throwIfErrors(errors);
     info.transform = function(objectName) { return quote(formatFunctions[info.opts.fieldFormat](objectName)); };
+    info.typePatterns = outputFormats[info.opts.outputFormat].types;
     return info;
 }
 
@@ -142,13 +155,13 @@ function determineColumnTypes(info){
         info.rows.forEach(function(row){
             var typeIndex=0;
             if(row[columnIndex]){
-                while(!row[columnIndex].match(typePatterns[typeIndex].dataPattern)) { typeIndex++; }
+                while(!row[columnIndex].match(info.typePatterns[typeIndex].dataPattern)) { typeIndex++; }
                 if(typeIndex>maxTypeIndex){
                     maxTypeIndex=typeIndex;
                 }
             }
         });
-        columnInfo.typeInfo = typePatterns[maxTypeIndex];
+        columnInfo.typeInfo = info.typePatterns[maxTypeIndex];
     });
     return info;
 }
