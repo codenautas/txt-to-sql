@@ -1,4 +1,5 @@
-texts;numbers;integers
-sencillo;3.14;1
-comilla'simple;1.12;2
-
+texts;integers
+dos palabras;1
+una comilla'simple;2
+dos comillas"dobles";3
+varios `, \ y /;4
