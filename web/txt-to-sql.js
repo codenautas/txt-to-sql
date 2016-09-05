@@ -39,6 +39,7 @@ function quoteBackTick(objectName) { return '`'+objectName.replace(/`/g,'``')+'`
 
 function nameColumnNoLen(columnInfo) { return columnInfo.name+" "+columnInfo.typeInfo.typeName; }
 function nameColumnLen(columnInfo) {
+    //console.log("columnInfo.maxScale", columnInfo.maxScale)
     return nameColumnNoLen(columnInfo)+
         (columnInfo.maxLength<1
          ?'':('('+columnInfo.maxLength+(columnInfo.maxScale>0 ? ','+columnInfo.maxScale:'')+')')
@@ -216,24 +217,40 @@ function determinePrimaryKey(info) {
     return info;
 }
 
+function isTextType(typeName) {
+    return typeName.match(/(text|char)/);
+}
+
+function getLengthInfo(val, typeName) {
+    if(isTextType(typeName)) { return {length:val.length || 0}; }
+    if(! val) { return {precision:0, scale:0}; }
+    var num = val.split('.');
+    var scale = num.length===2?num[1].length:0;
+    var precision = num[0].length+scale+(num.length===2?1:0);
+    return {precision:precision, scale:scale};
+}
+
 function determineColumnValuesInfo(info) {
     var primaryKey = info.primaryKey || [];
     info.columnsInfo.forEach(function(columnInfo) {
         columnInfo.inPrimaryKey         = primaryKey.indexOf(columnInfo.name) !== -1;
         columnInfo.maxLength            = 0;
         columnInfo.hasNullValues        = false;
-        columnInfo.maxScale             = columnInfo.typeInfo.typeName!=='text'?0:null; // maxima cantidad de decimales
+        columnInfo.maxScale             = isTextType(columnInfo.typeInfo.typeName)?null:0; // maxima cantidad de decimales
         columnInfo.hasCientificNotation = columnInfo.typeInfo.typeName==='double precision'?false:null;
     });
     info.rows.forEach(function(row) {
         info.columnsInfo.forEach(function(column, columnIndex) {
             var val=row[columnIndex];
             var lenInfo = getLengthInfo(val, column.typeInfo.typeName);
+            //console.log("LI", column.name, val, lenInfo)
             var len = lenInfo.length || lenInfo.precision;
             if(column.maxLength<len) { column.maxLength=len; }
             if(! column.hasNullValues && ! val) { column.hasNullValues=true; }
-            if(lenInfo.scale && column.maxScale && column.maxScale < lenInfo.scale) { column.maxScale=lenInfo.scale; }
+            //console.log(" -", lenInfo.scale, column.maxScale < lenInfo.scale)
+            if(lenInfo.scale && column.maxScale < lenInfo.scale) { column.maxScale=lenInfo.scale; }
             if(column.hasCientificNotation===false && val.match(/[eE]/)) { column.hasCientificNotation=true; }
+            //console.log("   ", column.name, column.maxLength, column.maxScale)
         });
     });
     return  info;
@@ -244,6 +261,7 @@ function generateCreateScript(info){
     scriptLines.push("create table "+info.formatedTableName+" (");
     var scriptLinesForTableColumns = [];
     info.columnsInfo.forEach(function(columnInfo){
+        //console.log(columnInfo, columnInfo.name, info.nameColumn(columnInfo))
         scriptLinesForTableColumns.push(margin+info.nameColumn(columnInfo));
     });
     if(info.primaryKey) { scriptLinesForTableColumns.push(margin+'primary key ('+info.primaryKey.join(', ')+')'); }
@@ -316,13 +334,6 @@ function catchErrors(info, err) {
     return { errors: (err.errors || [err.message]), opts:info.opts};
 }
 
-function getLengthInfo(val, typeName) {
-    val = val || '';
-    if(typeName==='text') { return {length:val.length}; }
-    var num = val.split('.');
-    return {precision:num[0].length, scale:num[1]?num[1].length:0};
-}
-
 function prepare(info) {
     return setup(info)
     .then(function(info) {
@@ -347,6 +358,7 @@ function generateScripts(info){
     }).catch(catchErrors.bind(null, info));
 }
 
+txtToSql.isTextType = isTextType;
 txtToSql.getLengthInfo = getLengthInfo;
 txtToSql.prepare = prepare;
 txtToSql.generateScripts = generateScripts;

@@ -64,8 +64,8 @@ describe("fixtures", function(){
         {path:'comma-align-one-column'},
         {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.columns; }},
         {path:'comma-align-with-max'},
-        {path:'example-one-mysql'},
-        {path:'pk-complex-all-mysql'},
+        {path:'example-one-mysql', skip:true},
+        {path:'pk-complex-all-mysql', skip:true},
         {path:'adapt'},
         {path:'adapt-mysql'},
     ].forEach(function(fixture){
@@ -112,7 +112,7 @@ describe("fixtures", function(){
                                 inPrimaryKey: pks.indexOf(name) !== -1,
                                 maxLength:0,
                                 hasNullValues:false,
-                                maxScale:type!=='text'?0:null,
+                                maxScale:txtToSql.isTextType(type)?null:0,
                                 hasCientificNotation:type==='double precision'?false:null
                             };
                         });
@@ -129,7 +129,7 @@ describe("fixtures", function(){
                                var len = lenInfo.length || lenInfo.precision;
                                if(col.maxLength<len) { col.maxLength = len; }
                                if(! col.hasNullValues && ! val) { col.hasNullValues=true; }
-                               if(lenInfo.scale && col.maxScale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
+                               if(lenInfo.scale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
                                if(col.hasCientificNotation===false && val.match(/[eE]/)) { col.hasCientificNotation=true; }
                            });
                         });
