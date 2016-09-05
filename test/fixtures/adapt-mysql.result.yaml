@@ -1,0 +1,3 @@
+opts:
+  includePrimaryKey: false
+  outputFormat: mysql
