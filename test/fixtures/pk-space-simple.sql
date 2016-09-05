@@ -1,7 +1,7 @@
 create table "pk-space-simple" (
- "x" character varying,
- "y" character varying,
- "z" character varying,
+ "x" character varying(7),
+ "y" character varying(7),
+ "z" character varying(1),
  primary key ("x", "y")
 );
 

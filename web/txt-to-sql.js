@@ -39,18 +39,20 @@ function quoteBackTick(objectName) { return '`'+objectName.replace(/`/g,'``')+'`
 
 function nameColumnNoLen(columnInfo) { return columnInfo.name+" "+columnInfo.typeInfo.typeName; }
 function nameColumnLen(columnInfo) {
-    //console.log("columnInfo.maxScale", columnInfo.maxScale)
-    return nameColumnNoLen(columnInfo)+
+    var scale = columnInfo.maxScale!==null?columnInfo.maxScale:0;
+    var precision = columnInfo.maxLength+scale+(scale>0?1:0);
+    var r=nameColumnNoLen(columnInfo)+
         (columnInfo.maxLength<1
-         ?'':('('+columnInfo.maxLength+(columnInfo.maxScale>0 ? ','+columnInfo.maxScale:'')+')')
+         ?'':('('+precision+(scale>0 ? ','+scale:'')+')')
         );
+    return r;
 }
 
 var outputFormats = {
     'postgresql': {
         types:mapTypes(['integer','bigint','numeric','double precision','character varying']),
         quote:quoteDouble,
-        nameColumn:nameColumnNoLen
+        nameColumn:nameColumnLen
     },
     'mysql': {
         types:mapTypes(['integer','bigint','numeric','double precision','varchar']),
@@ -220,12 +222,12 @@ function determinePrimaryKey(info) {
 function isTextType(typeName) { return typeName.match(/(text|char)/); }
 
 function getLengthInfo(val, typeName) {
-    if(isTextType(typeName)) { return {length:val.length || 0}; }
-    if(! val) { return {precision:0, scale:0}; }
+    if(isTextType(typeName)) { return {length:val.length || 0, scale:0}; }
+    if(! val) { return {length:0, scale:0}; }
     var num = val.split('.');
-    var scale = num.length===2?num[1].length:0;
-    var precision = num[0].length+scale+(num.length===2?1:0);
-    return {precision:precision, scale:scale};
+    // var scale = num.length===2?num[1].length:0;
+    // var precision = num[0].length+scale+(num.length===2?1:0);
+    return {length:num[0].length, scale:num.length===2?num[1].length:0};
 }
 
 function determineColumnValuesInfo(info) {
@@ -233,22 +235,18 @@ function determineColumnValuesInfo(info) {
     info.columnsInfo.forEach(function(columnInfo) {
         columnInfo.inPrimaryKey         = primaryKey.indexOf(columnInfo.name) !== -1;
         columnInfo.maxLength            = 0;
-        columnInfo.hasNullValues        = false;
         columnInfo.maxScale             = isTextType(columnInfo.typeInfo.typeName)?null:0; // maxima cantidad de decimales
+        columnInfo.hasNullValues        = false;
         columnInfo.hasCientificNotation = columnInfo.typeInfo.typeName==='double precision'?false:null;
     });
     info.rows.forEach(function(row) {
         info.columnsInfo.forEach(function(column, columnIndex) {
             var val=row[columnIndex];
             var lenInfo = getLengthInfo(val, column.typeInfo.typeName);
-            //console.log("LI", column.name, val, lenInfo)
-            var len = lenInfo.length || lenInfo.precision;
-            if(column.maxLength<len) { column.maxLength=len; }
+            if(column.maxLength<lenInfo.length) { column.maxLength=lenInfo.length; }
+            if(column.maxScale!=null && column.maxScale<lenInfo.scale) { column.maxScale=lenInfo.scale; }
             if(! column.hasNullValues && ! val) { column.hasNullValues=true; }
-            //console.log(" -", lenInfo.scale, column.maxScale < lenInfo.scale)
-            if(lenInfo.scale && column.maxScale < lenInfo.scale) { column.maxScale=lenInfo.scale; }
             if(column.hasCientificNotation===false && val.match(/[eE]/)) { column.hasCientificNotation=true; }
-            //console.log("   ", column.name, column.maxLength, column.maxScale)
         });
     });
     return  info;
@@ -259,7 +257,6 @@ function generateCreateScript(info){
     scriptLines.push("create table "+info.formatedTableName+" (");
     var scriptLinesForTableColumns = [];
     info.columnsInfo.forEach(function(columnInfo){
-        //console.log(columnInfo, columnInfo.name, info.nameColumn(columnInfo))
         scriptLinesForTableColumns.push(margin+info.nameColumn(columnInfo));
     });
     if(info.primaryKey) { scriptLinesForTableColumns.push(margin+'primary key ('+info.primaryKey.join(', ')+')'); }

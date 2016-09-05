@@ -111,8 +111,8 @@ describe("fixtures", function(){
                                 type:type,
                                 inPrimaryKey: pks.indexOf(name) !== -1,
                                 maxLength:0,
-                                hasNullValues:false,
                                 maxScale:txtToSql.isTextType(type)?null:0,
+                                hasNullValues:false,
                                 hasCientificNotation:type==='double precision'?false:null
                             };
                         });
@@ -126,10 +126,9 @@ describe("fixtures", function(){
                             return line.split(expected.opts.separator).forEach(function(val, index) {
                                var col = expected.columns[index];
                                var lenInfo = txtToSql.getLengthInfo(val, col.type);
-                               var len = lenInfo.length || lenInfo.precision;
-                               if(col.maxLength<len) { col.maxLength = len; }
+                               if(col.maxLength<lenInfo.length) { col.maxLength = lenInfo.length; }
+                               if(col.maxScale!==null && col.maxScale<lenInfo.scale) { col.maxScale=lenInfo.scale; }
                                if(! col.hasNullValues && ! val) { col.hasNullValues=true; }
-                               if(lenInfo.scale && col.maxScale < lenInfo.scale) { col.maxScale=lenInfo.scale; }
                                if(col.hasCientificNotation===false && val.match(/[eE]/)) { col.hasCientificNotation=true; }
                            });
                         });

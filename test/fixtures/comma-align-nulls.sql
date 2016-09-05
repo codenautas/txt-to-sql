@@ -1,9 +1,9 @@
 create table "comma-align-nulls" (
- "text-field" character varying,
- "int-field" integer,
- "numerico-el-1" numeric,
+ "text-field" character varying(15),
+ "int-field" integer(2),
+ "numerico-el-1" numeric(8,6),
  "todosnulos" integer,
- "numerico-el-2" numeric
+ "numerico-el-2" numeric(6,2)
 );
 
 insert into "comma-align-nulls" ("text-field", "int-field", "numerico-el-1", "todosnulos", "numerico-el-2") values

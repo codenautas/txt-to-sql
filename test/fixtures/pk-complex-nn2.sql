@@ -1,9 +1,9 @@
 create table "pk-complex-nn2" (
- "text-field" character varying,
- "int-field" integer,
- "num-field" numeric,
- "big" bigint,
- "double" double precision,
+ "text-field" character varying(5),
+ "int-field" integer(1),
+ "num-field" numeric(3,1),
+ "big" bigint(10),
+ "double" double precision(9,7),
  primary key ("text-field", "int-field", "num-field")
 );
 

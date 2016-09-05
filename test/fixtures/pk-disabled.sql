@@ -1,7 +1,7 @@
 create table "pk-disabled" (
- "text-field" character varying,
- "int-field" integer,
- "num""1""" numeric
+ "text-field" character varying(5),
+ "int-field" integer(1),
+ "num""1""" numeric(8,6)
 );
 
 insert into "pk-disabled" ("text-field", "int-field", "num""1""") values
