@@ -64,7 +64,7 @@ describe("fixtures", function(){
         {path:'comma-align-one-column'},
         {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.columns; }},
         {path:'comma-align-with-max'},
-        {path:'example-one-mysql', skip:true},
+        {path:'example-one-mysql'},
         {path:'pk-complex-all-mysql', skip:true},
         {path:'adapt'},
         {path:'adapt-mysql'},
@@ -92,7 +92,7 @@ describe("fixtures", function(){
                     if(expected.sqls) {
                         expected.sqls = makeSqlArray(expected.sqls);
                         var pts = expected.sqls[0].split('primary key');
-                        var cols = pts[0].split(',');                        
+                        var cols = pts[0].split(/(?:,[^0-9])/);
                         cols[0]=cols[0].split('(')[1];
                         cols = cols.map(function(column) {
                             return column.trim().replace(/(\n\);)$/,'');
@@ -116,6 +116,7 @@ describe("fixtures", function(){
                                 hasCientificNotation:type==='double precision'?false:null
                             };
                         });
+                        //console.log("columns", expected.columns)
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                     if(expected.columns) {

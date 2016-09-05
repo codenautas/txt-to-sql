@@ -1,7 +1,7 @@
 create table `example-one-mysql` (
  `text-field` varchar(5),
  `int-field` integer(1),
- `num-field` numeric(8),
+ `num-field` numeric(8,6),
  `big` bigint(10),
  `double` double precision(9,7)
 );
