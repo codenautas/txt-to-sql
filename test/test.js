@@ -67,7 +67,7 @@ describe("fixtures", function(){
         {path:'example-one-mysql'},
         {path:'pk-complex-all-mysql'},
         {path:'adapt'},
-        {path:'adapt-mysql', skip:true},
+        {path:'adapt-mysql'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
