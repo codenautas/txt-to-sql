@@ -1,0 +1,4 @@
+texts;numbers;integers
+sencillo;3.14;1
+comilla'simple;1.12;2
+

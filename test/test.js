@@ -66,6 +66,7 @@ describe("fixtures", function(){
         {path:'comma-align-with-max'},
         {path:'example-one-mysql'},
         {path:'pk-complex-all-mysql'},
+        {path:'adapt'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
