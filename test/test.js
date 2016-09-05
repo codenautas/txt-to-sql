@@ -65,7 +65,7 @@ describe("fixtures", function(){
         {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.columns; }},
         {path:'comma-align-with-max'},
         {path:'example-one-mysql'},
-        {path:'pk-complex-all-mysql', skip:true},
+        {path:'pk-complex-all-mysql'},
         {path:'adapt'},
         {path:'adapt-mysql'},
     ].forEach(function(fixture){
@@ -93,7 +93,7 @@ describe("fixtures", function(){
                         expected.sqls = makeSqlArray(expected.sqls);
                         var pts = expected.sqls[0].split('primary key');
                         var cols = pts[0].split(/(?:,[^0-9])/);
-                        cols[0]=cols[0].split('(')[1];
+                        cols[0]=cols[0].split('(')[1]; // remuevo create table
                         cols = cols.map(function(column) {
                             return column.trim().replace(/(\n\);)$/,'');
                         }).filter(function(col) {
@@ -105,7 +105,7 @@ describe("fixtures", function(){
                         expected.columns = cols.map(function(column) {
                             var fyt = column.split(' ');
                             var name = fyt[0];
-                            var type = fyt.slice(1).join(' ').split('(')[0];
+                            var type = fyt.slice(1).join(' ').split('(')[0]; // remuevo length
                             return {
                                 name:name,
                                 type:type,
@@ -116,7 +116,6 @@ describe("fixtures", function(){
                                 hasCientificNotation:type==='double precision'?false:null
                             };
                         });
-                        //console.log("columns", expected.columns)
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                     if(expected.columns) {
