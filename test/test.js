@@ -64,10 +64,10 @@ describe("fixtures", function(){
         {path:'comma-align-one-column'},
         {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.columns; }},
         {path:'comma-align-with-max'},
-        {path:'example-one-mysql', skip:true},
+        {path:'example-one-mysql'},
         {path:'pk-complex-all-mysql'},
         {path:'adapt'},
-        {path:'adapt-mysql'},
+        {path:'adapt-mysql', skip:true},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -91,23 +91,21 @@ describe("fixtures", function(){
                     expected.columns = [];
                     if(expected.sqls) {
                         expected.sqls = makeSqlArray(expected.sqls);
-                        var parts = expected.sqls[0].split('(');
-                        var columns = parts[1].split(',').map(function(column) {
+                        var pts = expected.sqls[0].split('primary key');
+                        var cols = pts[0].split(',');                        
+                        cols[0]=cols[0].split('(')[1];
+                        cols = cols.map(function(column) {
                             return column.trim().replace(/(\n\);)$/,'');
+                        }).filter(function(col) {
+                            return col.length>0
                         });
-                        var last = columns[columns.length-1];
-                        var pks = [];
-                        if(last===');') {
-                            columns.splice(-1,1);
-                        } else if(last==='primary key') {
-                            columns.splice(-1,1); // remuevo quoting
-                            pks = parts[2].split(')')[0].split(',').map(function(pk) { return pk.trim(); });
-                        }
-                        //console.log("columns", columns)
-                        expected.columns = columns.map(function(column) {
+                        var pks = pts[1]
+                                    ? pts[1].split('(')[1].split(')')[0].split(',').map(function(pk) { return pk.trim(); })
+                                    : [];
+                        expected.columns = cols.map(function(column) {
                             var fyt = column.split(' ');
                             var name = fyt[0];
-                            var type = fyt.slice(1).join(' ');
+                            var type = fyt.slice(1).join(' ').split('(')[0];
                             return {
                                 name:name,
                                 type:type,
@@ -121,7 +119,6 @@ describe("fixtures", function(){
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                     if(expected.columns) {
-                        //console.log("expected.columns", expected.columns)
                         var lines=param.txt.split(/\r?\n/);
                         lines.shift(); // elimino headers
                         lines = lines.filter(function(line){ return line.trim()!==""; })
@@ -137,7 +134,6 @@ describe("fixtures", function(){
                            });
                         });
                     }
-                    // console.log("expected.columns", expected.columns)
                 }).then(function() {
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){

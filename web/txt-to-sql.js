@@ -54,7 +54,7 @@ var outputFormats = {
     'mysql': {
         types:mapTypes(['integer','bigint','numeric','double precision','varchar']),
         quote:quoteBackTick,
-        nameColumn:nameColumnNoLen
+        nameColumn:nameColumnLen
     }
 };
 
@@ -244,7 +244,6 @@ function generateCreateScript(info){
     scriptLines.push("create table "+info.formatedTableName+" (");
     var scriptLinesForTableColumns = [];
     info.columnsInfo.forEach(function(columnInfo){
-        //scriptLinesForTableColumns.push(margin+columnInfo.name+" "+columnInfo.typeInfo.typeName);
         scriptLinesForTableColumns.push(margin+info.nameColumn(columnInfo));
     });
     if(info.primaryKey) { scriptLinesForTableColumns.push(margin+'primary key ('+info.primaryKey.join(', ')+')'); }

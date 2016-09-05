@@ -1,9 +1,9 @@
 create table `example-one-mysql` (
  `text-field` varchar(5),
  `int-field` integer(1),
- `num-field` numeric,
- `big` bigint,
- `double` double precision
+ `num-field` numeric(1),
+ `big` bigint(10),
+ `double` double precision(1)
 );
 
 insert into `example-one-mysql` (`text-field`, `int-field`, `num-field`, `big`, `double`) values
