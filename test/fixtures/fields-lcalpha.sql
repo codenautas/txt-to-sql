@@ -1,5 +1,5 @@
 create table "fields_lcalpha" (
- "conene" text,
+ "conene" character varying,
  "esdrujulo" integer,
  "masdias" numeric,
  "faltanaeeiiuoooo" bigint,

@@ -1,5 +1,5 @@
 create table "pk-enabled" (
- "f1" text,
+ "f1" character varying,
  "f2" integer,
  "f3" numeric,
  primary key ("f1", "f2", "f3")

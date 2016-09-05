@@ -1,5 +1,5 @@
 create table "pk-disabled" (
- "text-field" text,
+ "text-field" character varying,
  "int-field" integer,
  "num""1""" numeric
 );

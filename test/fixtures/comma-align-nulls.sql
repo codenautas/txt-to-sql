@@ -1,5 +1,5 @@
 create table "comma-align-nulls" (
- "text-field" text,
+ "text-field" character varying,
  "int-field" integer,
  "numerico-el-1" numeric,
  "todosnulos" integer,

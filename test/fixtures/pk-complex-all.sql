@@ -1,5 +1,5 @@
 create table "pk-complex-all" (
- "text-field" text,
+ "text-field" character varying,
  "int-field" integer,
  "num""1""" numeric,
  primary key ("text-field", "int-field", "num""1""")

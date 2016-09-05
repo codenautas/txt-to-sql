@@ -1,5 +1,5 @@
 create table "adapt" (
- "texts" text,
+ "texts" character varying,
  "integers" integer
 );
 

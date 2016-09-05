@@ -1,5 +1,5 @@
 create table "fields-unmod" (
- "text-FIELD" text,
+ "text-FIELD" character varying,
  "int-field" integer,
  "Num-Field" numeric,
  "BIG" bigint,

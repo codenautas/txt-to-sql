@@ -1,5 +1,5 @@
 create table "comma-align-one-column" (
- "text-field" text
+ "text-field" character varying
 );
 
 insert into "comma-align-one-column" ("text-field") values

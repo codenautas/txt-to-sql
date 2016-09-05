@@ -1,5 +1,5 @@
 create table "comma-align" (
- "text-field" text,
+ "text-field" character varying,
  "int-field" integer,
  "numerico-el-1" numeric,
  primary key ("text-field", "int-field", "numerico-el-1")

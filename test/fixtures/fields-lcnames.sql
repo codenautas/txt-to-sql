@@ -1,5 +1,5 @@
 create table "fields-lcnames" (
- "text-field" text,
+ "text-field" character varying,
  "int-field" integer,
  "num-field" numeric,
  "big" bigint,

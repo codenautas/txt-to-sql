@@ -1,5 +1,5 @@
 create table "without-pk-2" (
- "text-field" text,
+ "text-field" character varying,
  "int-field" integer,
  "num-field" numeric,
  "big" bigint,

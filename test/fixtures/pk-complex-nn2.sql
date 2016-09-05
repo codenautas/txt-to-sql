@@ -1,5 +1,5 @@
 create table "pk-complex-nn2" (
- "text-field" text,
+ "text-field" character varying,
  "int-field" integer,
  "num-field" numeric,
  "big" bigint,
