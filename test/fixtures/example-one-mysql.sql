@@ -1,6 +1,6 @@
 create table `example-one-mysql` (
- `text-field` varchar,
- `int-field` integer,
+ `text-field` varchar(5),
+ `int-field` integer(1),
  `num-field` numeric,
  `big` bigint,
  `double` double precision

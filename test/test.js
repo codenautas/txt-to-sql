@@ -64,7 +64,7 @@ describe("fixtures", function(){
         {path:'comma-align-one-column'},
         {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.columns; }},
         {path:'comma-align-with-max'},
-        {path:'example-one-mysql'},
+        {path:'example-one-mysql', skip:true},
         {path:'pk-complex-all-mysql'},
         {path:'adapt'},
         {path:'adapt-mysql'},
@@ -103,6 +103,7 @@ describe("fixtures", function(){
                             columns.splice(-1,1); // remuevo quoting
                             pks = parts[2].split(')')[0].split(',').map(function(pk) { return pk.trim(); });
                         }
+                        //console.log("columns", columns)
                         expected.columns = columns.map(function(column) {
                             var fyt = column.split(' ');
                             var name = fyt[0];
@@ -120,6 +121,7 @@ describe("fixtures", function(){
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                     if(expected.columns) {
+                        //console.log("expected.columns", expected.columns)
                         var lines=param.txt.split(/\r?\n/);
                         lines.shift(); // elimino headers
                         lines = lines.filter(function(line){ return line.trim()!==""; })
