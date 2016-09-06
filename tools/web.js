@@ -73,6 +73,8 @@ function generateWeb() {
         // return processDirectory('./node_modules/best-promise', desDir, ['js']);
     }).then(function() {
         return processDirectory('./node_modules/require-bro/lib', desDir);
+    }).then(function() {
+        return fs.copy('./node_modules/js-to-html/js-to-html.js', desDir+'/js-to-html.js');
     }).catch(function(err) {
         console.log("Error", err, err.stack);
         process.exit(1);

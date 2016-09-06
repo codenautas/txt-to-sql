@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><!-- UTF-8: Sí--><head><title>txt-to-sql</title><meta charset="UTF-8"><link rel="icon" href="txt-to-sql.png" type="image/png"><link rel="shortcut icon" href="txt-to-sql.png" type="image/png"><link rel="apple-touch-icon" href="txt-to-sql.png"></head><body><a href="https://github.com/codenautas/txt-to-sql"><img style="position: absolute; top: 0; right: 0; border: 0" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a><a href="https://github.com/codenautas/txt-to-sql/issues"><img style="position: absolute; top: 100px; right: 100px; border: 0" src="new-issue-es.png" alt="New issue"></a><div style="float:left;height:300px;margin:0px 30px"><img src="txt-to-sql.png"></div><h1>txt-to-sql</h1><div><label>Paso 1: </label><input value="Elegir" type="file" id="inputFile"></div><div id="steps"></div><div id="result"></div><pre id="log"></pre><pre id="errMessage" style="color:red"></pre></body><script>var module = {};</script><script src="require-bro.js"></script><script src="best-globals.js"></script><script src="txt-to-sql.js"> </script><script>var options = {};
+<!DOCTYPE html><html><!-- UTF-8: Sí--><head><title>txt-to-sql</title><meta charset="UTF-8"><link rel="icon" href="txt-to-sql.png" type="image/png"><link rel="shortcut icon" href="txt-to-sql.png" type="image/png"><link rel="apple-touch-icon" href="txt-to-sql.png"></head><body><a href="https://github.com/codenautas/txt-to-sql"><img style="position: absolute; top: 0; right: 0; border: 0" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a><a href="https://github.com/codenautas/txt-to-sql/issues"><img style="position: absolute; top: 100px; right: 100px; border: 0" src="new-issue-es.png" alt="New issue"></a><div style="float:left;height:300px;margin:0px 30px"><img src="txt-to-sql.png"></div><h1>txt-to-sql</h1><div><label>Paso 1: </label><input value="Elegir" type="file" id="inputFile"></div><div id="steps"></div><div id="result"></div><pre id="log"></pre><pre id="errMessage" style="color:red"></pre></body><script>var module = {};</script><script src="require-bro.js"></script><script src="best-globals.js"></script><script src="txt-to-sql.js"> </script><script src="js-to-html.js"> </script><script>var options = {};
 var messages={
   es:{
       loading:'cargando',
@@ -46,34 +46,21 @@ function processFile(file, messageText) {
         errMessage.textContent=err.message;
     });
 }
+var html = jsToHtml.html;
 function addStep(labelText, elements) {
-    var div = document.createElement('div');
-    var label = document.createElement('label');
-    label.textContent = labelText;
-    div.appendChild(label);
-    elements.forEach(function(element) {
-        div.appendChild(element);
-    })
-    steps.appendChild(div);
+    steps.appendChild(html.div([html.label(labelText)].concat(elements)).create());
 }
-function createOption(name, value, type) {
-    var o = document.createElement('input');
-    o.type = type;
-    var lbl = document.createElement('label');
-    lbl.textContent = name;
-    if(type==='checkbox') {
-        o.checked = value;
+function createOption(label, name, value, type) {
+    var attrs = {type:type, name:name};
+    if(typeof(value)==='boolean') {
+        attrs.checked = value;
     } else {
-        o.value = value;
+        attrs.value = value;
     }
-    var tr = document.createElement('tr');
-    var tdl = document.createElement('td');
-    tdl.appendChild(lbl);
-    var tdo = document.createElement('td');
-    tdo.appendChild(o);
-    tr.appendChild(tdl);
-    tr.appendChild(tdo);
-    return tr;
+    return html.tr([
+        html.td([html.label(label)]),
+        html.td([html.input(attrs)])            
+    ]).create();
 }
 function handleGenerate(event){
     var file = event.target.file; // FileList object
@@ -83,12 +70,10 @@ function handleGenerate(event){
         return generateScripts(param);
     }).then(function(generated) {
         if(generated.errors) { throw new Error(generated.errors.join('\n')); }
-        var link = document.createElement('a');
-        link.textContent = messages.download;
         var blob = new Blob(generated.sqls.map(function(sql) { return sql+'\n'; }), {type: 'text/plain'})
-        link.setAttribute("download", tableName+".sql");    
         var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
-        link.href=url;
+        var link = html.a({href:url}, messages.download).create();
+        link.setAttribute("download", tableName+".sql");
         addStep(messages.step3, [link]);
     }).catch(function(err){
         errMessage.textContent=err.message;
@@ -103,19 +88,18 @@ function handlePrepare(event){
         }).then(function(prepared) {
             if(prepared.errors) { throw new Error(prepared.errors.join('\n')); }
             //log.textContent += '\n'+JSON.stringify(prepared);
-            var opts = prepared.opts;
-            var table = document.createElement('table');
-            table.appendChild(createOption('Align commas', opts.columnAlignedCommas, 'checkbox'));
-            table.appendChild(createOption('Align max width', opts.columnAlignedMaxWidth, 'input'));
-            table.appendChild(createOption('Field format', opts.fieldFormat, 'input'));
-            table.appendChild(createOption('Field separator', opts.separator, 'input'));
-            table.appendChild(createOption('Output format', opts.outputFormat, 'input'));
-            table.appendChild(createOption('Include PK', opts.includePrimaryKey, 'checkbox'));
-            table.appendChild(createOption('Verbose errors', opts.verboseErrors, 'checkbox'));                
-            var button = document.createElement('input');
-            button.type = 'button';
+            options = prepared.opts;
+            var table = html.table([
+                createOption('Align commas', 'columnAlignedCommas', options.columnAlignedCommas, 'checkbox'),
+                createOption('Align max width', 'columnAlignedMaxWidth', options.columnAlignedMaxWidth, 'input'),
+                createOption('Field format', 'fieldFormat', options.fieldFormat, 'input'),
+                createOption('Field separator', 'separator', options.separator, 'input'),
+                createOption('Output format', 'outputFormat', options.outputFormat, 'input'),
+                createOption('Include PK', 'includePrimaryKey', options.includePrimaryKey, 'checkbox'),
+                createOption('Verbose errors', 'verboseErrors', options.verboseErrors, 'checkbox')
+            ]).create();
+            var button = html.input({type:'button', value:messages.generate}).create();
             button.file = file;
-            button.value = messages.generate;
             button.addEventListener('click', handleGenerate, false);
             addStep(messages.step2, [table,button]);
         }).catch(function(err){
