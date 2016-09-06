@@ -44,6 +44,7 @@ html(lang=lang)
       es:{
           loading:'cargando',
           step2:'Paso 2: ',
+          generate:'generar',
           generating:'generando',
           step3:'Paso 3: ',
           download:'descargar',
@@ -51,6 +52,7 @@ html(lang=lang)
       en:{
           loading:'loading',
           step2:'Step 2: ',
+          generate:'generate',
           generating:'generating',
           step3:'Step 3: ',
           download:'download',
@@ -85,12 +87,14 @@ html(lang=lang)
             errMessage.textContent=err.message;
         });
     }
-    function addStep(labelText, element) {
+    function addStep(labelText, elements) {
         var div = document.createElement('div');
         var label = document.createElement('label');
         label.textContent = labelText;
         div.appendChild(label);
-        div.appendChild(element);
+        elements.forEach(function(element) {
+            div.appendChild(element);
+        })
         steps.appendChild(div);
     }
     function handleGenerate(event){
@@ -107,7 +111,7 @@ html(lang=lang)
             link.setAttribute("download", tableName+".sql");    
             var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
             link.href=url;
-            addStep(messages.step3, link);
+            addStep(messages.step3, [link]);
         }).catch(function(err){
             errMessage.textContent=err.message;
         });
@@ -124,9 +128,9 @@ html(lang=lang)
                 var button = document.createElement('input');
                 button.type = 'button';
                 button.file = file;
-                button.value = 'Generar';
+                button.value = messages.generate;
                 button.addEventListener('click', handleGenerate, false);
-                addStep(messages.step2, button);
+                addStep(messages.step2, [button]);
             }).catch(function(err){
                 errMessage.textContent=err.message;
             });
