@@ -38,6 +38,7 @@ html(lang=lang)
   script(src="best-globals.js")
   script(src="txt-to-sql.js")
   script.
+    var params = {};
     var messages={
       es:{
           loading:'cargando',
@@ -50,14 +51,31 @@ html(lang=lang)
           download:'download',
       }
     }[window.lang||'es'];
-    function clearOutput() {
+    function resetPage() {
+        params =
+        {
+            opts: {
+                verboseErrors:true,
+                columnAlignedCommas:true
+            }
+        };
         while (result.firstChild) { result.removeChild(result.firstChild); }
         log.textContent="";
         errMessage.textContent="";
     }
+    function createDownloadLink(generated) {
+        var link = document.createElement('a');
+        link.textContent = messages.download;
+        var blob = new Blob(generated.sqls.map(function(sql) { return sql+'\n'; }), {type: 'text/plain'})
+        link.setAttribute("download", params.tableName+".sql");    
+        var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
+        link.href=url;
+        result.textContent=messages.step2;
+        result.appendChild(link);
+    }
     function handleFileSelect(event){
         var files = event.target.files; // FileList object
-        clearOutput();
+        resetPage();
         Array.prototype.forEach.call(files, function(file){
             var tableName=file.name.replace(/^(.*[\\/])?([^\\/\.]+)\.[^\\/\.]+$/,'$2');
             log.textContent+="\n"+messages.loading+' '+file.name;
@@ -73,22 +91,18 @@ html(lang=lang)
                 }
             });
             return promise.then(function(txt){
-                return generateScripts({txt:txt, tableName:tableName, opts:{verboseErrors:true,columnAlignedCommas:true}});
+                params.txt = txt;
+                params.tableName = tableName;
+                return generateScripts(params);
             }).then(function(generated){
                 if(generated.errors) { throw new Error(generated.errors.join('\n')); }
-                var link = document.createElement('a');
-                link.textContent = messages.download;
-                var blob = new Blob(generated.sqls.map(function(sql) { return sql+'\n'; }), {type: 'text/plain'})
-                link.setAttribute("download", tableName+".sql");    
-                var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
-                link.href=url;
-                result.textContent=messages.step2;
-                result.appendChild(link);
+                createDownloadLink(generated);
             }).catch(function(err){
                 errMessage.textContent=err.message;
             });
         });
     }
     document.getElementById('inputFile').addEventListener('change', handleFileSelect, false);
-    clearOutput();
+    // para el F5 post "npm run web"
+    resetPage();
     inputFile.value = "";
