@@ -5,3 +5,4 @@ opts:
   columnAlignedCommas: false
   columnAlignedMaxWidth: 100
   outputFormat: postgresql
+  verboseErrors: false

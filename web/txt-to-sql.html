@@ -13,6 +13,8 @@
 function handleFileSelect(event){
     var files = event.target.files; // FileList object
     result.innerHTML="";
+    log.textContent="";
+    errMessage.textContent="";
     Array.prototype.forEach.call(files, function(file){
         var tableName=file.name.replace(/^(.*[\\/])?([^\\/\.]+)\.[^\\/\.]+$/,'$2');
         log.textContent+="\n"+messages.loading+' '+file.name;
@@ -28,9 +30,9 @@ function handleFileSelect(event){
             }
         });
         return promise.then(function(txt){
-            return generateScripts({txt:txt, tableName:tableName});
+            return generateScripts({txt:txt, tableName:tableName, opts:{verboseErrors:true}});
         }).then(function(generated){
-            if(generated.errors) { throw new Error(generated.errors.join('<br>\n')); }
+            if(generated.errors) { throw new Error(generated.errors.join('\n')); }
             var button = document.createElement('a');
             button.textContent = messages.download;
             var blob = new Blob(generated.sqls.map(function(sql) { return sql+'\n'; }), {type: 'text/plain'})

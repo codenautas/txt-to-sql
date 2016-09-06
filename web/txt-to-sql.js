@@ -72,7 +72,8 @@ txtToSql.defaultOpts = {
     includePrimaryKey: true,
     columnAlignedCommas: false,
     columnAlignedMaxWidth: 100,
-    outputFormat: 'postgresql'
+    outputFormat: 'postgresql',
+    verboseErrors: false
 };
 
 var letterTranslator = {
@@ -329,7 +330,9 @@ function setup(info) {
 
 function catchErrors(info, err) {
     //console.log("err", err); console.log("err.stack", err.stack)
-    return { errors: (err.errors || [err.message]), opts:info.opts};
+    var errors = (err.errors || [err.message]);
+    if(info.opts.verboseErrors && err.stack) { errors.push(err.stack); }
+    return { errors: errors, opts:info.opts};
 }
 
 function prepare(info) {
