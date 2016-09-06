@@ -1,0 +1,13 @@
+table.outer td {
+  vertical-align: top;
+}
+table.inner td {
+  border: 1px solid #000;
+}
+table.inner tr td th:last-child {
+  width: 1%;
+  white-space: nowrap;
+}
+input {
+  width: auto;
+}

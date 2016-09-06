@@ -18,6 +18,7 @@ html(lang=lang)
     link(rel="icon", href="txt-to-sql.png", type="image/png")
     link(rel="shortcut icon", href="txt-to-sql.png", type="image/png")
     link(rel="apple-touch-icon", href="txt-to-sql.png")
+    link(href='txt-to-sql.css', rel='stylesheet')
   body
     a(href="https://github.com/codenautas/txt-to-sql")
       img(style="position: absolute; top: 0; right: 0; border: 0;", src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67", alt="Fork me on GitHub", data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png")
@@ -30,7 +31,6 @@ html(lang=lang)
       label=messages.labelChoose
       input(value=messages.buttonChoose, type='file', id='inputFile')
     div#steps
-    div#result
     pre#log
     pre#errMessage(style={color:'red'})
   script.
@@ -92,7 +92,7 @@ html(lang=lang)
     function addStep(labelText, elements) {
         steps.appendChild(html.div([html.label(labelText)].concat(elements)).create());
     }
-    function createInput(name, value) {
+    function createInput(name, value, width) {
         var attrs = {name:name};
         if(typeof(value)==='boolean') {
             attrs.type = 'checkbox',
@@ -100,13 +100,14 @@ html(lang=lang)
         } else {
             attrs.type = 'text',
             attrs.value = value;
+            attrs.size=width || 5;
         }
         return html.input(attrs);
     }
-    function createOption(label, name, value) {
+    function createOption(label, name, value, width) {
         return html.tr([
             html.td([html.label(label)]),
-            html.td([createInput(name, value)])            
+            html.td([createInput(name, value, width)])            
         ]).create();
     }
     function handleGenerate(event){
@@ -138,23 +139,22 @@ html(lang=lang)
                 var button = html.input({type:'button', value:messages.generate}).create();
                 button.file = file;
                 button.addEventListener('click', handleGenerate, false);
-                var tblOpts = html.table([
-                    html.th([html.td({colspan:2},"Options")]).create(),
-                    createOption('Align commas', 'columnAlignedCommas', options.columnAlignedCommas),
-                    createOption('Align max width', 'columnAlignedMaxWidth', options.columnAlignedMaxWidth),
-                    createOption('Field format', 'fieldFormat', options.fieldFormat),
-                    createOption('Field separator', 'separator', options.separator),
-                    createOption('Output format', 'outputFormat', options.outputFormat),
-                    createOption('Include PK', 'includePrimaryKey', options.includePrimaryKey),
-                    createOption('Verbose errors', 'verboseErrors', options.verboseErrors)
+                var tblOpts = html.table({class:'inner'},[
+                    html.th({colspan:2},[html.td("Options")]).create(),
+                    createOption('Align commas', 'columnAlignedCommas', options.columnAlignedCommas, 1),
+                    createOption('Align max width', 'columnAlignedMaxWidth', options.columnAlignedMaxWidth, 1),
+                    createOption('Field format', 'fieldFormat', options.fieldFormat, 10),
+                    createOption('Field separator', 'separator', options.separator, 1),
+                    createOption('Output format', 'outputFormat', options.outputFormat, 10),
+                    createOption('Include PK', 'includePrimaryKey', options.includePrimaryKey, 1),
+                    createOption('Verbose errors', 'verboseErrors', options.verboseErrors, 1)
                 ]).create();
-                //tblOpts.setAttribute('border',1);
                 console.log("column", prepared.columns);
                 var fields = prepared.columns.map(function(column) {
                     var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                     return html.tr([
-                                html.td([createInput('name', column.name.substr(1,column.name.length-2))]),
-                                html.td([createInput('type', column.type)]),
+                                html.td([createInput('name', column.name.substr(1,column.name.length-2), 15)]),
+                                html.td([createInput('type', column.type, 10)]),
                                 html.td([createInput('inPrimaryKey', column.inPrimaryKey)]),
                                 html.td([createInput('hasNullValues', column.hasNullValues)]),
                                 html.td([createInput('maxLength', column.maxLength)]),
@@ -173,9 +173,8 @@ html(lang=lang)
                                ]));
                 fields.unshift(html.th({colspan:7}, [html.td("Fields")]));
                 console.log("fields", fields)
-                var tblFields = html.table(fields).create();
-                //tblFields.setAttribute('border',1);
-                addStep(messages.step2, [html.table([
+                var tblFields = html.table({class:'inner'}, fields).create();
+                addStep(messages.step2, [html.table({class:'outer'}, [
                                             html.tr([
                                                 html.td([tblOpts]),
                                                 html.td([tblFields])
