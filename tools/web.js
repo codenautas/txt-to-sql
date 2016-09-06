@@ -16,7 +16,7 @@ function doStylus(str) {
     });
 }
 
-function processDirectory(srcDir, destDir) {
+function processDirectory(srcDir, destDir, only) {
     return Promises.start(function() {
         return fs.readdir(srcDir)
     }).then(function(files) {
@@ -32,11 +32,13 @@ function processDirectory(srcDir, destDir) {
                     content:content
                 };
             }).catch(function(err) {
-                console.log("error", err)
+                //console.log("error", err)
             });
         })).then(function(files) {
             return Promises.all(files.map(function (file) {
                 return Promises.start(function() {
+                    //console.log("file", file.ext)
+                    if(!file || (only && only.indexOf(file.ext)==-1)) { return {skip:true}; }
                     switch(file.ext) {
                         // jade parsing
                         case 'jade': file.ext = 'html'; return { data:pug.render(file.content, {}) };
@@ -48,6 +50,7 @@ function processDirectory(srcDir, destDir) {
                         default: return {};
                     }
                 }).then(function(res) {
+                    //console.log(file.fullName, res)
                     if(! res.skip) {
                         var destFile = Path.join(destDir, file.baseName+file.ext);
                         if(res.data) { return fs.writeFile(destFile, res.data); }
@@ -66,10 +69,12 @@ function generateWeb() {
         return processDirectory('./lib', desDir);
     }).then(function() {
         return fs.copy('./node_modules/best-globals/best-globals.js', desDir+'/best-globals.js');
+    // }).then(function() {
+        // return processDirectory('./node_modules/best-promise', desDir, ['js']);
     }).then(function() {
         return processDirectory('./node_modules/require-bro/lib', desDir);
     }).catch(function(err) {
-        console.log("Error", err);
+        console.log("Error", err, err.stack);
         process.exit(1);
     });
 }

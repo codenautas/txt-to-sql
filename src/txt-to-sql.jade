@@ -29,80 +29,104 @@ html(lang=lang)
     div
       label=messages.labelChoose
       input(value=messages.buttonChoose, type='file', id='inputFile')
+    div(id="step2")
+      label#step2_label
+    div(id="step3")
     pre#log
     div#result
     pre#errMessage(style={color:'red'})
   script.
     var module = {};
   script(src='require-bro.js')
-  script(src="best-globals.js")
-  script(src="txt-to-sql.js")
+  script(src='best-globals.js')
+  script(src='txt-to-sql.js')  
   script.
-    var params = {};
+    var options = {};
     var messages={
       es:{
           loading:'cargando',
-          step2:'Paso 2 ',
+          step2:'Paso 2: ',
+          step3:'Paso 3: ',
           download:'descargar',
       },
       en:{
           loading:'loading',
-          step2:'Step 2 ',
+          step2:'Step 2: ',
+          step3:'Step 3: ',
           download:'download',
       }
     }[window.lang||'es'];
     function resetPage() {
-        params =
-        {
-            opts: {
-                verboseErrors:true,
-                columnAlignedCommas:true
-            }
+        options = {
+            verboseErrors:true,
+            columnAlignedCommas:true
         };
-        while (result.firstChild) { result.removeChild(result.firstChild); }
+        // if(step2.lastChild) { step2.removeChild(step2.lastChild); }
+        if(step3.lastChild) { step3.removeChild(step3.lastChild); }
         log.textContent="";
         errMessage.textContent="";
     }
-    function createDownloadLink(generated) {
-        var link = document.createElement('a');
-        link.textContent = messages.download;
-        var blob = new Blob(generated.sqls.map(function(sql) { return sql+'\n'; }), {type: 'text/plain'})
-        link.setAttribute("download", params.tableName+".sql");    
-        var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
-        link.href=url;
-        result.textContent=messages.step2;
-        result.appendChild(link);
+    function processFile(file) {
+        var tableName=file.name.replace(/^(.*[\\/])?([^\\/\.]+)\.[^\\/\.]+$/,'$2');
+        log.textContent+="\n"+messages.loading+' '+file.name;
+        var promise = new Promise(function(resolve, reject){
+            try{
+                var reader = new FileReader();
+                reader.onload = function(event){
+                    resolve(event.target.result);
+                };
+                reader.readAsText(file);
+            }catch(err){
+                reject(err);
+            }
+        });
+        return promise.then(function(txt){
+            return {tableName:tableName, txt:txt, opts:options};
+        }).catch(function(err){
+            errMessage.textContent=err.message;
+        });
     }
-    function handleFileSelect(event){
+    function handleGenerate(event){
+        var file = event.target.file; // FileList object
+        var tableName;
+        processFile(file).then(function(param) {
+            tableName=param.tableName;
+            return generateScripts(param);
+        }).then(function(generated) {
+            if(generated.errors) { throw new Error(generated.errors.join('\n')); }
+            var link = document.createElement('a');
+            link.textContent = messages.download;
+            var blob = new Blob(generated.sqls.map(function(sql) { return sql+'\n'; }), {type: 'text/plain'})
+            link.setAttribute("download", tableName+".sql");    
+            var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
+            link.href=url;
+            step3.appendChild(link);
+        }).catch(function(err){
+            errMessage.textContent=err.message;
+        });
+    }
+    function handlePrepare(event){
         var files = event.target.files; // FileList object
         resetPage();
         Array.prototype.forEach.call(files, function(file){
-            var tableName=file.name.replace(/^(.*[\\/])?([^\\/\.]+)\.[^\\/\.]+$/,'$2');
-            log.textContent+="\n"+messages.loading+' '+file.name;
-            var promise = new Promise(function(resolve, reject){
-                try{
-                    var reader = new FileReader();
-                    reader.onload = function(event){
-                        resolve(event.target.result);
-                    };
-                    reader.readAsText(file);
-                }catch(err){
-                    reject(err);
-                }
-            });
-            return promise.then(function(txt){
-                params.txt = txt;
-                params.tableName = tableName;
-                return generateScripts(params);
-            }).then(function(generated){
-                if(generated.errors) { throw new Error(generated.errors.join('\n')); }
-                createDownloadLink(generated);
+            processFile(file).then(function(param) {
+                return prepare(param);
+            }).then(function(prepared) {
+                if(prepared.errors) { throw new Error(prepared.errors.join('\n')); }
+                //log.textContent += '\n'+JSON.stringify(prepared);
+                var button = document.createElement('input');
+                button.type = 'button';
+                button.file = file;
+                button.value = 'Generar';
+                button.addEventListener('click', handleGenerate, false);
+                step2.appendChild(button);
+                step2_label.textContent = messages.step2;
             }).catch(function(err){
                 errMessage.textContent=err.message;
             });
         });
     }
-    document.getElementById('inputFile').addEventListener('change', handleFileSelect, false);
+    document.getElementById('inputFile').addEventListener('change', handlePrepare, false);
     // para el F5 post "npm run web"
     resetPage();
     inputFile.value = "";
