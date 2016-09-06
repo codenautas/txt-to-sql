@@ -50,11 +50,14 @@ html(lang=lang)
           download:'download',
       }
     }[window.lang||'es'];
-    function handleFileSelect(event){
-        var files = event.target.files; // FileList object
-        result.innerHTML="";
+    function clearOutput() {
+        while (result.firstChild) { result.removeChild(result.firstChild); }
         log.textContent="";
         errMessage.textContent="";
+    }
+    function handleFileSelect(event){
+        var files = event.target.files; // FileList object
+        clearOutput();
         Array.prototype.forEach.call(files, function(file){
             var tableName=file.name.replace(/^(.*[\\/])?([^\\/\.]+)\.[^\\/\.]+$/,'$2');
             log.textContent+="\n"+messages.loading+' '+file.name;
@@ -86,4 +89,6 @@ html(lang=lang)
             });
         });
     }
-    document.getElementById('inputFile').addEventListener('change', handleFileSelect, false);  
+    document.getElementById('inputFile').addEventListener('change', handleFileSelect, false);
+    clearOutput();
+    inputFile.value = "";
