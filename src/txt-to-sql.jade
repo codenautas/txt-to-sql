@@ -92,16 +92,21 @@ html(lang=lang)
     function addStep(labelText, elements) {
         steps.appendChild(html.div([html.label(labelText)].concat(elements)).create());
     }
-    function createOption(label, name, value, type) {
-        var attrs = {type:type, name:name};
+    function createInput(name, value) {
+        var attrs = {name:name};
         if(typeof(value)==='boolean') {
+            attrs.type = 'checkbox',
             attrs.checked = value;
         } else {
+            attrs.type = 'text',
             attrs.value = value;
         }
+        return html.input(attrs);
+    }
+    function createOption(label, name, value) {
         return html.tr([
             html.td([html.label(label)]),
-            html.td([html.input(attrs)])            
+            html.td([createInput(name, value)])            
         ]).create();
     }
     function handleGenerate(event){
@@ -129,21 +134,54 @@ html(lang=lang)
                 return prepare(param);
             }).then(function(prepared) {
                 if(prepared.errors) { throw new Error(prepared.errors.join('\n')); }
-                //log.textContent += '\n'+JSON.stringify(prepared);
                 options = prepared.opts;
-                var table = html.table([
-                    createOption('Align commas', 'columnAlignedCommas', options.columnAlignedCommas, 'checkbox'),
-                    createOption('Align max width', 'columnAlignedMaxWidth', options.columnAlignedMaxWidth, 'input'),
-                    createOption('Field format', 'fieldFormat', options.fieldFormat, 'input'),
-                    createOption('Field separator', 'separator', options.separator, 'input'),
-                    createOption('Output format', 'outputFormat', options.outputFormat, 'input'),
-                    createOption('Include PK', 'includePrimaryKey', options.includePrimaryKey, 'checkbox'),
-                    createOption('Verbose errors', 'verboseErrors', options.verboseErrors, 'checkbox')
-                ]).create();
                 var button = html.input({type:'button', value:messages.generate}).create();
                 button.file = file;
                 button.addEventListener('click', handleGenerate, false);
-                addStep(messages.step2, [table,button]);
+                var tblOpts = html.table([
+                    html.th([html.td({colspan:2},"Options")]).create(),
+                    createOption('Align commas', 'columnAlignedCommas', options.columnAlignedCommas),
+                    createOption('Align max width', 'columnAlignedMaxWidth', options.columnAlignedMaxWidth),
+                    createOption('Field format', 'fieldFormat', options.fieldFormat),
+                    createOption('Field separator', 'separator', options.separator),
+                    createOption('Output format', 'outputFormat', options.outputFormat),
+                    createOption('Include PK', 'includePrimaryKey', options.includePrimaryKey),
+                    createOption('Verbose errors', 'verboseErrors', options.verboseErrors)
+                ]).create();
+                //tblOpts.setAttribute('border',1);
+                console.log("column", prepared.columns);
+                var fields = prepared.columns.map(function(column) {
+                    var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
+                    return html.tr([
+                                html.td([createInput('name', column.name.substr(1,column.name.length-2))]),
+                                html.td([createInput('type', column.type)]),
+                                html.td([createInput('inPrimaryKey', column.inPrimaryKey)]),
+                                html.td([createInput('hasNullValues', column.hasNullValues)]),
+                                html.td([createInput('maxLength', column.maxLength)]),
+                                html.td([createInput('maxScale', column.maxScale || 0)]),
+                                html.td([createInput('hasCientificNotation', hcn)]),
+                           ]);
+                });
+                fields.unshift(html.tr([
+                                        html.td("Name"),
+                                        html.td("Type"),
+                                        html.td("inPrimaryKey"),
+                                        html.td("NULLs"),
+                                        html.td("Length"),
+                                        html.td("Scale"),
+                                        html.td("CientificNotation")
+                               ]));
+                fields.unshift(html.th({colspan:7}, [html.td("Fields")]));
+                console.log("fields", fields)
+                var tblFields = html.table(fields).create();
+                //tblFields.setAttribute('border',1);
+                addStep(messages.step2, [html.table([
+                                            html.tr([
+                                                html.td([tblOpts]),
+                                                html.td([tblFields])
+                                            ]),
+                                            button
+                                        ]).create()]);
             }).catch(function(err){
                 errMessage.textContent=err.message;
             });
