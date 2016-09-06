@@ -56,6 +56,15 @@ html(lang=lang)
             pk:'Incluir PK',
             verbose:'Errores verborrágicos'
           },
+          cols:{
+            name:'Nombre',
+            type:'Tipo',
+            pk:'En PK',
+            nuls:'NULL\'s',
+            len:'Longitud',
+            scale:'Escala',
+            cn:'NotaciónCientífica'
+          },
           step3:'Paso 3: ',
           download:'descargar',
       },
@@ -72,6 +81,15 @@ html(lang=lang)
             outformat:'Output format',
             pk:'Include PK',
             verbose:'Verbose errors'
+          },
+          cols:{
+            name:'Name',
+            type:'Type',
+            pk:'In PK',
+            nuls:'NULL\'s',
+            len:'Length',
+            scale:'Scale',
+            cn:'CientificNotation'
           },
           step3:'Step 3: ',
           download:'download',
@@ -181,13 +199,13 @@ html(lang=lang)
                            ]);
                 });
                 fields.unshift(html.tr([
-                                        html.td("Name"),
-                                        html.td("Type"),
-                                        html.td("inPrimaryKey"),
-                                        html.td("NULLs"),
-                                        html.td("Length"),
-                                        html.td("Scale"),
-                                        html.td("CientificNotation")
+                                        html.td(messages.cols.name),
+                                        html.td(messages.cols.type),
+                                        html.td(messages.cols.pk),
+                                        html.td(messages.cols.nuls),
+                                        html.td(messages.cols.len),
+                                        html.td(messages.cols.scale),
+                                        html.td(messages.cols.cn)
                                ]));
                 fields.unshift(html.th({colspan:7}, [html.td("Fields")]));
                 console.log("fields", fields)
