@@ -70,17 +70,17 @@ html(lang=lang)
                 }
             });
             return promise.then(function(txt){
-                return generateScripts({txt:txt, tableName:tableName, opts:{verboseErrors:true}});
+                return generateScripts({txt:txt, tableName:tableName, opts:{verboseErrors:true,columnAlignedCommas:true}});
             }).then(function(generated){
                 if(generated.errors) { throw new Error(generated.errors.join('\n')); }
-                var button = document.createElement('a');
-                button.textContent = messages.download;
+                var link = document.createElement('a');
+                link.textContent = messages.download;
                 var blob = new Blob(generated.sqls.map(function(sql) { return sql+'\n'; }), {type: 'text/plain'})
-                button.setAttribute("download", tableName+".sql");    
+                link.setAttribute("download", tableName+".sql");    
                 var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
-                button.href=url;
+                link.href=url;
                 result.textContent=messages.step2;
-                result.appendChild(button);
+                result.appendChild(link);
             }).catch(function(err){
                 errMessage.textContent=err.message;
             });
