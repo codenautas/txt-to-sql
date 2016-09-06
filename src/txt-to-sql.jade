@@ -29,11 +29,9 @@ html(lang=lang)
     div
       label=messages.labelChoose
       input(value=messages.buttonChoose, type='file', id='inputFile')
-    div(id="step2")
-      label#step2_label
-    div(id="step3")
-    pre#log
+    div#steps
     div#result
+    pre#log
     pre#errMessage(style={color:'red'})
   script.
     var module = {};
@@ -46,12 +44,14 @@ html(lang=lang)
       es:{
           loading:'cargando',
           step2:'Paso 2: ',
+          generating:'generando',
           step3:'Paso 3: ',
           download:'descargar',
       },
       en:{
           loading:'loading',
           step2:'Step 2: ',
+          generating:'generating',
           step3:'Step 3: ',
           download:'download',
       }
@@ -61,14 +61,13 @@ html(lang=lang)
             verboseErrors:true,
             columnAlignedCommas:true
         };
-        // if(step2.lastChild) { step2.removeChild(step2.lastChild); }
-        if(step3.lastChild) { step3.removeChild(step3.lastChild); }
+        while(steps.lastChild) { steps.removeChild(steps.lastChild); }
         log.textContent="";
         errMessage.textContent="";
     }
-    function processFile(file) {
+    function processFile(file, messageText) {
         var tableName=file.name.replace(/^(.*[\\/])?([^\\/\.]+)\.[^\\/\.]+$/,'$2');
-        log.textContent+="\n"+messages.loading+' '+file.name;
+        log.textContent+="\n"+messageText+' '+file.name;
         var promise = new Promise(function(resolve, reject){
             try{
                 var reader = new FileReader();
@@ -86,10 +85,18 @@ html(lang=lang)
             errMessage.textContent=err.message;
         });
     }
+    function addStep(labelText, element) {
+        var div = document.createElement('div');
+        var label = document.createElement('label');
+        label.textContent = labelText;
+        div.appendChild(label);
+        div.appendChild(element);
+        steps.appendChild(div);
+    }
     function handleGenerate(event){
         var file = event.target.file; // FileList object
         var tableName;
-        processFile(file).then(function(param) {
+        processFile(file, messages.generating).then(function(param) {
             tableName=param.tableName;
             return generateScripts(param);
         }).then(function(generated) {
@@ -100,7 +107,7 @@ html(lang=lang)
             link.setAttribute("download", tableName+".sql");    
             var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
             link.href=url;
-            step3.appendChild(link);
+            addStep(messages.step3, link);
         }).catch(function(err){
             errMessage.textContent=err.message;
         });
@@ -109,7 +116,7 @@ html(lang=lang)
         var files = event.target.files; // FileList object
         resetPage();
         Array.prototype.forEach.call(files, function(file){
-            processFile(file).then(function(param) {
+            processFile(file, messages.loading).then(function(param) {
                 return prepare(param);
             }).then(function(prepared) {
                 if(prepared.errors) { throw new Error(prepared.errors.join('\n')); }
@@ -119,8 +126,7 @@ html(lang=lang)
                 button.file = file;
                 button.value = 'Generar';
                 button.addEventListener('click', handleGenerate, false);
-                step2.appendChild(button);
-                step2_label.textContent = messages.step2;
+                addStep(messages.step2, button);
             }).catch(function(err){
                 errMessage.textContent=err.message;
             });
