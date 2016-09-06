@@ -97,6 +97,25 @@ html(lang=lang)
         })
         steps.appendChild(div);
     }
+    function createOption(name, value, type) {
+        var o = document.createElement('input');
+        o.type = type;
+        var lbl = document.createElement('label');
+        lbl.textContent = name;
+        if(type==='checkbox') {
+            o.checked = value;
+        } else {
+            o.value = value;
+        }
+        var tr = document.createElement('tr');
+        var tdl = document.createElement('td');
+        tdl.appendChild(lbl);
+        var tdo = document.createElement('td');
+        tdo.appendChild(o);
+        tr.appendChild(tdl);
+        tr.appendChild(tdo);
+        return tr;
+    }
     function handleGenerate(event){
         var file = event.target.file; // FileList object
         var tableName;
@@ -125,12 +144,21 @@ html(lang=lang)
             }).then(function(prepared) {
                 if(prepared.errors) { throw new Error(prepared.errors.join('\n')); }
                 //log.textContent += '\n'+JSON.stringify(prepared);
+                var opts = prepared.opts;
+                var table = document.createElement('table');
+                table.appendChild(createOption('Align commas', opts.columnAlignedCommas, 'checkbox'));
+                table.appendChild(createOption('Align max width', opts.columnAlignedMaxWidth, 'input'));
+                table.appendChild(createOption('Field format', opts.fieldFormat, 'input'));
+                table.appendChild(createOption('Field separator', opts.separator, 'input'));
+                table.appendChild(createOption('Output format', opts.outputFormat, 'input'));
+                table.appendChild(createOption('Include PK', opts.includePrimaryKey, 'checkbox'));
+                table.appendChild(createOption('Verbose errors', opts.verboseErrors, 'checkbox'));                
                 var button = document.createElement('input');
                 button.type = 'button';
                 button.file = file;
                 button.value = messages.generate;
                 button.addEventListener('click', handleGenerate, false);
-                addStep(messages.step2, [button]);
+                addStep(messages.step2, [table,button]);
             }).catch(function(err){
                 errMessage.textContent=err.message;
             });
