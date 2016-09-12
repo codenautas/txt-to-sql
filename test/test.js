@@ -69,6 +69,7 @@ describe("fixtures", function(){
         {path:'mysql-example-one'},
         {path:'mysql-pk-complex-all'},
         {path:'mysql-adapt'},
+        // {path:'sqlite-example-one'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -192,9 +193,9 @@ describe("input errors", function(){
         { name:'no tableName and columnNamesFormat',
           param:{txt:'dummy', opts:optBadFieldFormat},
           errors:[eNoTable, eBadFieldFormat]},
-        { name:'bad output format',
-          param:{tableName:'t1', txt:'dummy', opts:{outputEngine: 'inexistent output format'}},
-          errors:["inexistent output format 'inexistent output format'"]},
+        { name:'unsupported engine',
+          param:{tableName:'t1', txt:'dummy', opts:{outputEngine: 'badEngineName'}},
+          errors:["unsupported output engine 'badEngineName'"]},
         { name:'all bad params',
           param:{opts:optBadFieldFormat},
           errors:[eNoTable, eNoTXT, eBadFieldFormat]},
