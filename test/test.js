@@ -107,7 +107,7 @@ describe("fixtures", function(){
                         var pks = pts[1]
                                     ? pts[1].split('(')[1].split(')')[0].split(',').map(function(pk) { return pk.trim(); })
                                     : [];
-                        var quoteChar = param.opts && param.opts.outputEngine && param.opts.outputEngine == 'mysql' ? '`' : '"';
+                        var quoteChar = txtToSql.engines[expected.opts.outputEngine].quote.chr;
                         expected.columns = cols.map(function(column) {
                             var mid = column.lastIndexOf(quoteChar);
                             var name = column.substr(0, mid+1);
