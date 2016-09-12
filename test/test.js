@@ -74,6 +74,7 @@ describe("fixtures", function(){
         {path:'sqlite-pk-complex-all'},
         {path:'sqlite-adapt'},
         {path:'mssql-example-one'},
+        {path:'oracle-example-one'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -148,7 +149,6 @@ describe("fixtures", function(){
                 }).then(function(generated){
                     // prepared
                     // console.log("columns", prepared.columns);  console.log("ex", expected.columns);
-                    // console.log("keys", prepared.columns)
                     expect(prepared.opts).to.eql(expected.opts);
                     expect(prepared.columns).to.eql(expected.columns);
                     // generated
