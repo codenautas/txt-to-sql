@@ -73,6 +73,7 @@ describe("fixtures", function(){
         {path:'sqlite-example-one'},
         {path:'sqlite-pk-complex-all'},
         {path:'sqlite-adapt'},
+        {path:'mssql-example-one'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
