@@ -66,6 +66,7 @@ describe("fixtures", function(){
         {path:'comma-align-with-max'},
         {path:'adapt'},
         {path:'column-names'},
+        {path:'columns-with-spaces'},
         {path:'mysql-example-one'},
         {path:'mysql-pk-complex-all'},
         {path:'mysql-adapt'},
@@ -105,10 +106,11 @@ describe("fixtures", function(){
                         var pks = pts[1]
                                     ? pts[1].split('(')[1].split(')')[0].split(',').map(function(pk) { return pk.trim(); })
                                     : [];
+                        var quoteChar = param.opts && param.opts.outputEngine && param.opts.outputEngine == 'mysql' ? '`' : '"';
                         expected.columns = cols.map(function(column) {
-                            var fyt = column.split(' ');
-                            var name = fyt[0];
-                            var type = fyt.slice(1).join(' ').split('(')[0]; // remuevo length
+                            var mid = column.lastIndexOf(quoteChar);
+                            var name = column.substr(0, mid+1);
+                            var type = column.substring(mid+1).split('(')[0].trim(); // remuevo length
                             return {
                                 name:name,
                                 type:type,
@@ -143,7 +145,7 @@ describe("fixtures", function(){
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
                     // prepared
-                    //console.log("param", prepared.opts, "ex", expected.opts)
+                    // console.log("columns", prepared.columns);  console.log("ex", expected.columns);
                     // console.log("keys", prepared.columns)
                     expect(prepared.opts).to.eql(expected.opts);
                     expect(prepared.columns).to.eql(expected.columns);
