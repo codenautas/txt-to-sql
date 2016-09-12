@@ -64,11 +64,11 @@ describe("fixtures", function(){
         {path:'comma-align-one-column'},
         {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.columns; }},
         {path:'comma-align-with-max'},
-        {path:'example-one-mysql'},
-        {path:'pk-complex-all-mysql'},
         {path:'adapt'},
-        {path:'adapt-mysql'},
         {path:'column-names'},
+        {path:'mysql-adapt'},
+        {path:'mysql-example-one'},
+        {path:'mysql-pk-complex-all'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
