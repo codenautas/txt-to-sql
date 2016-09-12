@@ -66,9 +66,9 @@ describe("fixtures", function(){
         {path:'comma-align-with-max'},
         {path:'adapt'},
         {path:'column-names'},
-        {path:'mysql-adapt'},
         {path:'mysql-example-one'},
         {path:'mysql-pk-complex-all'},
+        {path:'mysql-adapt'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -141,6 +141,7 @@ describe("fixtures", function(){
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
                     // prepared
+                    //console.log("param", prepared.opts, "ex", expected.opts)
                     expect(prepared.opts).to.eql(expected.opts);
                     expect(prepared.columns).to.eql(expected.columns);
                     // generated
@@ -192,7 +193,7 @@ describe("input errors", function(){
           param:{txt:'dummy', opts:optBadFieldFormat},
           errors:[eNoTable, eBadFieldFormat]},
         { name:'bad output format',
-          param:{tableName:'t1', txt:'dummy', opts:{outputFormat: 'inexistent output format'}},
+          param:{tableName:'t1', txt:'dummy', opts:{outputEngine: 'inexistent output format'}},
           errors:["inexistent output format 'inexistent output format'"]},
         { name:'all bad params',
           param:{opts:optBadFieldFormat},

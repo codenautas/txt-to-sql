@@ -1,2 +1,2 @@
 includePrimaryKey: false
-outputFormat: mysql
+outputEngine: mysql
