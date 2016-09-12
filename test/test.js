@@ -176,10 +176,11 @@ describe("specials", function(){
 describe("input errors", function(){
     var eNoTXT='no txt in input',
         eNoTable='undefined table name',
-        eBadFieldFormat="inexistent field format 'inexistent_format'",
-        eBadOutFormat="inexistent output format 'inexistent output format'";
-    var optBadFieldFormat = {fieldFormat: 'inexistent_format'};
-    var optBadOutFormat = {outputFormat: 'inexistent output format'};
+        eBadFieldFormat="inexistent field format 'inexistent_format'";
+    var optBadFieldFormat = {fieldFormat: 'inexistent_format'},
+        optColumnTxt = 'text-field;int-field;num-field;big;double\n'+
+                        'hello;1;3.141592;1234567890;1.12e-101\n'+
+                        ';;;0;0.0';
     [
         { name:'no txt',
           param:{tableName:'t1'},
@@ -191,12 +192,15 @@ describe("input errors", function(){
           param:{txt:'dummy', opts:optBadFieldFormat},
           errors:[eNoTable, eBadFieldFormat]},
         { name:'bad output format',
-          param:{tableName:'t1', txt:'dummy', opts:optBadOutFormat},
-          errors:[eBadOutFormat]},
+          param:{tableName:'t1', txt:'dummy', opts:{outputFormat: 'inexistent output format'}},
+          errors:["inexistent output format 'inexistent output format'"]},
         { name:'all bad params',
           param:{opts:optBadFieldFormat},
           errors:[eNoTable, eNoTXT, eBadFieldFormat]},
-    ].forEach(function(check){
+        { name:'wrong number of column names',
+          param:{tableName:'t1', txt:optColumnTxt, opts:{columnNames:['one','two','three']}},
+          errors:['wrong number of column names: expected 5, obtained 3']},
+          ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
         } else {
