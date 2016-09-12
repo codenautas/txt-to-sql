@@ -1,0 +1,2 @@
+includePrimaryKey: false
+outputEngine: sqlite
