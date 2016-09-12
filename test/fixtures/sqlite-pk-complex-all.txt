@@ -1,0 +1,5 @@
+TextCol;integerCol;NumericWith"quotes"
+hello;1;3.141592
+ciao;2;3
+hello;1;2
+ciao;2;4

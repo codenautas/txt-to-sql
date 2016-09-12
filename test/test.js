@@ -70,6 +70,7 @@ describe("fixtures", function(){
         {path:'mysql-pk-complex-all'},
         {path:'mysql-adapt'},
         {path:'sqlite-example-one'},
+        {path:'sqlite-pk-complex-all'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -143,6 +144,7 @@ describe("fixtures", function(){
                 }).then(function(generated){
                     // prepared
                     //console.log("param", prepared.opts, "ex", expected.opts)
+                    // console.log("keys", prepared.columns)
                     expect(prepared.opts).to.eql(expected.opts);
                     expect(prepared.columns).to.eql(expected.columns);
                     // generated
