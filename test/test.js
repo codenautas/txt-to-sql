@@ -200,6 +200,9 @@ describe("input errors", function(){
         { name:'wrong number of column names',
           param:{tableName:'t1', txt:optColumnTxt, opts:{columnNames:['one','two','three']}},
           errors:['wrong number of column names: expected 5, obtained 3']},
+        { name:'duplicated column names',
+          param:{tableName:'t1', txt:optColumnTxt, opts:{columnNames:['one','two','three','one','three']}},
+          errors:["duplicated column name '\"one\"'", "duplicated column name '\"three\"'"]},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
