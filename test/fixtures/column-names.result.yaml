@@ -1,0 +1,7 @@
+opts:
+  columnNames:
+    - mi-text
+    - mi-int
+    - mi-num
+    - mi-big
+    - mi-double
