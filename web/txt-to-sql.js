@@ -55,6 +55,10 @@ var engines = {
     'mysql': {
         types:mapTypes(['integer','bigint','numeric','double precision','varchar']),
         quote:quoteBackTick
+    },
+    'sqlite': {
+        types:mapTypes(['integer','integer','numeric','real','text']),
+        quote:quoteDouble
     }
 };
 
