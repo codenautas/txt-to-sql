@@ -1,3 +1,3 @@
 errors:
-  - duplicated field name '"campo1"'
-  - duplicated field name '"campo4"'
+  - duplicated column name '"campo1"'
+  - duplicated column name '"campo4"'

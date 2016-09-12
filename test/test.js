@@ -200,7 +200,7 @@ describe("input errors", function(){
         { name:'wrong number of column names',
           param:{tableName:'t1', txt:optColumnTxt, opts:{columnNames:['one','two','three']}},
           errors:['wrong number of column names: expected 5, obtained 3']},
-          ].forEach(function(check){
+    ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
         } else {
