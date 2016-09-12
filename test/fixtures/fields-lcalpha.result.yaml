@@ -1,2 +1,2 @@
 opts:
-  fieldFormat: lowercased_alpha
+  columnNamesFormat: lowercased_alpha

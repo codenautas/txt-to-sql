@@ -1,5 +1,5 @@
 opts:
-  fieldFormat: lowercased_names
+  columnNamesFormat: lowercased_names
   separator: ';'
   includePrimaryKey: true
   columnAlignedCommas: false

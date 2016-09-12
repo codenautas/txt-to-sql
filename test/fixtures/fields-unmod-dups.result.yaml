@@ -1,5 +1,5 @@
 opts:
-  fieldFormat: unmodified
+  columnNamesFormat: unmodified
 errors:
   - duplicated column name '"FIELD2"'
   - duplicated column name '"FiElD5"'

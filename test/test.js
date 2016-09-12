@@ -176,8 +176,8 @@ describe("specials", function(){
 describe("input errors", function(){
     var eNoTXT='no txt in input',
         eNoTable='undefined table name',
-        eBadFieldFormat="inexistent field format 'inexistent_format'";
-    var optBadFieldFormat = {fieldFormat: 'inexistent_format'},
+        eBadFieldFormat="inexistent column names format 'inexistent_format'";
+    var optBadFieldFormat = {columnNamesFormat: 'inexistent_format'},
         optColumnTxt = 'text-field;int-field;num-field;big;double\n'+
                         'hello;1;3.141592;1234567890;1.12e-101\n'+
                         ';;;0;0.0';
@@ -188,7 +188,7 @@ describe("input errors", function(){
         { name:'no txt and tableName',
           param:{},
           errors:[eNoTable, eNoTXT]},
-        { name:'no tableName and fieldFormat',
+        { name:'no tableName and columnNamesFormat',
           param:{txt:'dummy', opts:optBadFieldFormat},
           errors:[eNoTable, eBadFieldFormat]},
         { name:'bad output format',
