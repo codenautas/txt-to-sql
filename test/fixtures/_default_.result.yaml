@@ -6,5 +6,5 @@ opts:
   columnAlignedMaxWidth: 100
   outputEngine: postgresql
   verboseErrors: false
-  inputEncoding: ASCII7
-  outputEncoding: ASCII7
+  inputEncoding: UTF8
+  outputEncoding: UTF8

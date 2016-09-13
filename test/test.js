@@ -80,12 +80,17 @@ describe("fixtures", function(){
             it.skip("fixture: "+fixture.path);
         } else {
             it("fixture: "+fixture.path, function(done){
+                var defaultOpts = {inputEncoding:'UTF8', outputEncoding:'UTF8'};
                 var param={tableName:fixture.path};
                 var expected={};
                 var basePath='./test/fixtures/'+fixture.path;
                 var prepared;
                 setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
-                    if(param.opts) { param.opts = yaml.safeLoad(param.opts); }
+                    if(param.opts) {
+                        param.opts = changing(defaultOpts, yaml.safeLoad(param.opts));
+                    } else {
+                        param.opts = defaultOpts;
+                    }
                     return setIfFileExists(basePath+'.txt', param, 'txt', {});
                 }).then(function() {
                     return loadDefaultExpectedResult();

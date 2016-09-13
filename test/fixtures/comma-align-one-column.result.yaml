@@ -1,5 +1,3 @@
 opts:
   columnAlignedCommas: true
   separator: ';'
-  inputEncoding: UTF8
-  outputEncoding: UTF8

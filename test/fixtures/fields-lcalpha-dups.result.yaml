@@ -1,6 +1,4 @@
 opts:
   columnNamesFormat: lowercased_alpha
-  inputEncoding: UTF8
-  outputEncoding: UTF8
 errors:
   - duplicated column name '"esdrujulo"'
