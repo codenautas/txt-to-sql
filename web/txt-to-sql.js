@@ -170,12 +170,8 @@ function processEncodingOptions(info) {
         info.inputEncodingDetected = encoding;
         if(! info.opts.inputEncoding) { info.opts.inputEncoding = info.inputEncodingDetected; }
         if(! info.opts.outputEncoding) { info.opts.outputEncoding = info.inputEncodingDetected; }
-        try {
-            info.decodedBuffer = info.opts.inputEncoding==='ANSI' ? iconv.decode(info.txt, "utf8") : info.txt.toString('utf8');
-        } catch(e) {
-            console.log("ENC error", e)
-            throw e;
-        }
+        //console.log("DETECTED", info.inputEncodingDetected)
+        info.decodedBuffer = info.opts.inputEncoding==='ANSI' ? iconv.decode(info.txt, "utf8") : info.txt.toString('utf8');
         return info;
     });
 }

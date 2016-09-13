@@ -1,0 +1,2 @@
+int-field;text-field
+1;pu√±o y letra "‚(°"

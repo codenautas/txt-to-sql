@@ -75,6 +75,7 @@ describe("fixtures", function(){
         {path:'sqlite-adapt'},
         {path:'mssql-example-one'},
         {path:'oracle-example-one'},
+        {path:'utf8-invalid'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
