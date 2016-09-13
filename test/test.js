@@ -8,9 +8,9 @@ var differences = selfExplain.assert.allDifferences;
 var changing = require('best-globals').changing;
 var yaml = require('js-yaml');
 
-function setIfFileExists(fileName, outObject, outProperty) {
+function setIfFileExists(fileName, outObject, outProperty, options) {
     return fs.exists(fileName).then(function(exists) {
-        if(exists) { return fs.readFile(fileName, {encoding:'utf8'}); }
+        if(exists) { return fs.readFile(fileName, (options || {encoding:'utf8'})); }
         return { notExists: true };
     }).then(function(content) {
         if(! content.notExists) { outObject[outProperty] = content; }
@@ -86,7 +86,7 @@ describe("fixtures", function(){
                 var prepared;
                 setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
                     if(param.opts) { param.opts = yaml.safeLoad(param.opts); }
-                    return setIfFileExists(basePath+'.txt', param, 'txt');
+                    return setIfFileExists(basePath+'.txt', param, 'txt', {});
                 }).then(function() {
                     return loadDefaultExpectedResult();
                 }).then(function() {
@@ -127,7 +127,7 @@ describe("fixtures", function(){
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                     if(expected.columns) {
-                        var lines=param.txt.split(/\r?\n/);
+                        var lines=param.txt.toString().split(/\r?\n/);
                         lines.shift(); // elimino headers
                         lines = lines.filter(function(line){ return line.trim()!==""; })
                                      .map(function(line) {
