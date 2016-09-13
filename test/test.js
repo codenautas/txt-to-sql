@@ -224,44 +224,6 @@ describe("input errors", function(){
     });
 });
 
-// devuelve 'ASCII7', 'UTF8' o 'ANSI'
-function getEncoding(buf) {
-    // si es un continuador
-    function cont(code) { return code>=128 && code<192; }
-    function case1(code) { return code>=192 && code<224; }
-    function case2(code) { return code>=224 && code<240; }
-    function case3(code) { return code>=240 && code<248; }
-    
-    return Promise.resolve(buf).then(function(buf) {
-        var type = 'ASCII7';
-        var i=0;
-        var code;
-        while(i<buf.length) {
-            //console.log(buf[i])
-            if(buf[i]>127) {
-                type = 'UTF8';
-                if(case1(buf[i]) && cont(buf[i+1])) {
-                    i+=2;
-                    continue;
-                }
-                if(case2(buf[i]) && cont(buf[i+1]) && cont(buf[i+2])) {
-                    i+=3;
-                    continue;
-                }
-                if(case3(buf[i]) && cont(buf[i+1]) && cont(buf[i+2]) && cont(buf[i+3])) {
-                    i+=4;
-                    continue;
-                }
-                type = 'ANSI';
-                break;
-            } else {
-                i+=1;
-            }
-        }
-        return type;
-    });
-}
-
 describe("file encoding", function(){
     [
         { name:'ascii7', file:'ascii7.txt', type:'ASCII7' },
@@ -274,7 +236,7 @@ describe("file encoding", function(){
         } else {
             it(check.name, function(done){
                 fs.readFile('./test/encoding/'+check.file).then(function(buffer){
-                    return getEncoding(buffer);
+                    return txtToSql.getEncoding(buffer);
                 }).then(function(encoding) {
                     //console.log("EXP", check.type, "RES", encoding)
                     expect(encoding).to.eql(check.type);
