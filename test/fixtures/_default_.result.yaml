@@ -8,3 +8,4 @@ opts:
   verboseErrors: false
   inputEncoding: UTF8
   outputEncoding: UTF8
+  addDropTable: false

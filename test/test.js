@@ -76,6 +76,7 @@ describe("fixtures", function(){
         {path:'mssql-example-one'},
         {path:'oracle-example-one'},
         {path:'utf8-invalid'},
+        {path:'with-drop-table'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -104,7 +105,8 @@ describe("fixtures", function(){
                     expected.columns = [];
                     if(expected.sqls) {
                         expected.sqls = makeSqlArray(expected.sqls);
-                        var pts = expected.sqls[0].split('primary key');
+                        var pos = expected.sqls.length==3?1:0;
+                        var pts = expected.sqls[pos].split('primary key');
                         var cols = pts[0].split(/(?:,[^0-9])/);
                         cols[0]=cols[0].split('(')[1]; // remuevo create table
                         cols = cols.map(function(column) {
