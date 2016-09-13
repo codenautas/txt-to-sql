@@ -3,6 +3,7 @@
 var txtToSql = {};
 
 var changing = require('best-globals').changing;    
+//var iconv = require('iconv-lite');
 
 var margin = ' ';
 var separators=';,\t|';
@@ -104,7 +105,9 @@ txtToSql.defaultOpts = {
     columnAlignedCommas: false,
     columnAlignedMaxWidth: 100,
     outputEngine: 'postgresql',
-    verboseErrors: false
+    verboseErrors: false,
+    inputEncoding: false,
+    outputEncoding: false
 };
 
 var letterTranslator = {
@@ -155,12 +158,16 @@ function verifyInputParams(info){
 }
 
 function determineEncodings(info) {
-    info.inputEncodingDetected = getEncoding(info.txt);
-    return info;
+    return getEncoding(info.txt).then(function(encoding) {
+        info.inputEncodingDetected = encoding;
+        if(! info.opts.inputEncoding) { info.opts.inputEncoding = info.inputEncodingDetected; }
+        if(! info.opts.outputEncoding) { info.opts.outputEncoding = info.inputEncodingDetected; }
+        return info;
+    });
 }
 
 function separateLines(info){
-    info.lines = info.txt.toString('utf8').split(/\r?\n/);
+    info.lines = info.txt.toString().split(/\r?\n/);
     info.headers = info.lines.shift();
     return info;
 }

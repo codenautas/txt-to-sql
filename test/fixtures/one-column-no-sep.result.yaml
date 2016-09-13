@@ -1,2 +1,5 @@
 errors:
   - no separator detected
+opts:
+  inputEncoding: UTF8
+  outputEncoding: UTF8
