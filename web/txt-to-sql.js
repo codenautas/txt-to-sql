@@ -154,6 +154,11 @@ function verifyInputParams(info){
     return info;
 }
 
+function getInputEncoding(info) {
+    info.detectedEncoding = getEncoding(info.txt);
+    return info;
+}
+
 function separateLines(info){
     info.lines = info.txt.split(/\r?\n/);
     info.headers = info.lines.shift();
@@ -356,6 +361,7 @@ function generateInsertScript(info){
 function setup(info) {
     return Promise.resolve(info)
         .then(verifyInputParams)
+        .then(getInputEncoding)
         .then(separateLines)
         .then(determineSeparator)
         .then(separateColumns)
@@ -382,7 +388,7 @@ function prepare(info) {
             delete col.columnLength;
             return col;
         });
-        return {opts:info.opts, columns:columns};
+        return {opts:info.opts, columns:columns, detectedEncoding:info.detectedEncoding};
     }).catch(catchErrors.bind(null, info));
 }
 
