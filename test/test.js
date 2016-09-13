@@ -231,7 +231,7 @@ function getEncoding(buf) {
         var i=0;
         while(i<buf.length) {
             //console.log(buf[i])
-            if(buf[i]>128) {
+            if(buf[i]>127) {
                 type = 'UTF8';
             }
             ++i;
@@ -243,6 +243,8 @@ function getEncoding(buf) {
 describe("file encoding", function(){
     [
         { name:'ascii7', file:'ascii7.txt', type:'ASCII7' },
+        { name:'utf8', file:'utf8.txt', type:'UTF8', skip:true },
+        { name:'utf8-bom', file:'utf8-bom.txt', type:'UTF8', skip:true },
         { name:'ansi', file:'ansi.txt', type:'ANSI', skip:true },
     ].forEach(function(check){
         if(check.skip) {
