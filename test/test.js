@@ -227,23 +227,23 @@ describe("input errors", function(){
 // devuelve 'ASCII7', 'UTF8' o 'ANSI'
 function getEncoding(buf) {
     return Promise.resolve(buf).then(function(buf) {
-        var type = 'ASCII';
+        var type = 'ASCII7';
         var i=0;
         while(i<buf.length) {
             //console.log(buf[i])
-            
+            if(buf[i]>128) {
+                type = 'UTF8';
+            }
             ++i;
         }
         return type;
     });
 }
 
-describe.skip("file encoding", function(){
+describe("file encoding", function(){
     [
-        { name:'ansi',
-          file:'ansi.txt',
-          type:'ANSI'
-        },
+        { name:'ascii7', file:'ascii7.txt', type:'ASCII7' },
+        { name:'ansi', file:'ansi.txt', type:'ANSI', skip:true },
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
@@ -252,7 +252,7 @@ describe.skip("file encoding", function(){
                 fs.readFile('./test/encoding/'+check.file).then(function(buffer){
                     return getEncoding(buffer);
                 }).then(function(encoding) {
-                    console.log("EXP", check.type, "RES", encoding)
+                    //console.log("EXP", check.type, "RES", encoding)
                     expect(encoding).to.eql(check.type);
                 }).then(done,done);
             });
