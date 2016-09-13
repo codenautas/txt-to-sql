@@ -224,3 +224,39 @@ describe("input errors", function(){
     });
 });
 
+// devuelve 'ASCII7', 'UTF8' o 'ANSI'
+function getEncoding(buf) {
+    return Promise.resolve(buf).then(function(buf) {
+        var type = 'ASCII';
+        var i=0;
+        while(i<buf.length) {
+            //console.log(buf[i])
+            
+            ++i;
+        }
+        return type;
+    });
+}
+
+describe.skip("file encoding", function(){
+    [
+        { name:'ansi',
+          file:'ansi.txt',
+          type:'ANSI'
+        },
+    ].forEach(function(check){
+        if(check.skip) {
+            it.skip(check.name);
+        } else {
+            it(check.name, function(done){
+                fs.readFile('./test/encoding/'+check.file).then(function(buffer){
+                    return getEncoding(buffer);
+                }).then(function(encoding) {
+                    console.log("EXP", check.type, "RES", encoding)
+                    expect(encoding).to.eql(check.type);
+                }).then(done,done);
+            });
+        }
+    });
+});
+
