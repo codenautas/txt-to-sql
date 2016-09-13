@@ -132,6 +132,12 @@ var formatFunctions = {
     },
 };
 
+function checkEncodingParam(encoding, inOrOut, errors) {
+    if(encoding && ! encoding.match(/^(ASCII7|UTF8|ANSI)$/)) {
+        errors.push("unsupported "+inOrOut+" encoding '"+encoding+"'");
+    }
+}
+
 function verifyInputParams(info){
     info.opts = changing(txtToSql.defaultOpts, info.opts || {});
     var errors=[];
@@ -143,6 +149,8 @@ function verifyInputParams(info){
     if(! (info.opts.outputEngine in engines)) {
         errors.push("unsupported output engine '"+info.opts.outputEngine+"'");
     }
+    checkEncodingParam(info.opts.inputEncoding, 'input', errors);
+    checkEncodingParam(info.opts.outputEncoding, 'output', errors);
     throwIfErrors(errors);
     var outputEngine=engines[info.opts.outputEngine];
     info.typePatterns = outputEngine.types;

@@ -165,9 +165,9 @@ describe("fixtures", function(){
 
 describe("specials", function(){
     it("manage mixed line ends", function(done){
-        var txt="text-field;int-field;num-field;big;double\n"+
-            "hello;1;3.141592;1234567890;1.12e-101\r\n"+
-            ";;;0;0.0";
+        var txt=new Buffer("text-field;int-field;num-field;big;double\n"+
+                           "hello;1;3.141592;1234567890;1.12e-101\r\n"+
+                           ";;;0;0.0", 'binary');
         Promise.resolve().then(function(){
             return txtToSql.generateScripts({tableName:'example-one', txt:txt});
         }).then(function(generated){
@@ -186,9 +186,10 @@ describe("input errors", function(){
         eNoTable='undefined table name',
         eBadFieldFormat="inexistent column names format 'inexistent_format'";
     var optBadFieldFormat = {columnNamesFormat: 'inexistent_format'},
-        optColumnTxt = 'text-field;int-field;num-field;big;double\n'+
-                        'hello;1;3.141592;1234567890;1.12e-101\n'+
-                        ';;;0;0.0';
+        optColumnTxt = new Buffer('text-field;int-field;num-field;big;double\n'+
+                                  'hello;1;3.141592;1234567890;1.12e-101\n'+
+                                  ';;;0;0.0', 'binary'),
+        optDummyTxt = new Buffer('dummy', 'binary');
     [
         { name:'no txt',
           param:{tableName:'t1'},
@@ -197,10 +198,10 @@ describe("input errors", function(){
           param:{},
           errors:[eNoTable, eNoTXT]},
         { name:'no tableName and columnNamesFormat',
-          param:{txt:'dummy', opts:optBadFieldFormat},
+          param:{txt:optDummyTxt, opts:optBadFieldFormat},
           errors:[eNoTable, eBadFieldFormat]},
         { name:'unsupported engine',
-          param:{tableName:'t1', txt:'dummy', opts:{outputEngine: 'badEngineName'}},
+          param:{tableName:'t1', txt:optDummyTxt, opts:{outputEngine: 'badEngineName'}},
           errors:["unsupported output engine 'badEngineName'"]},
         { name:'all bad params',
           param:{opts:optBadFieldFormat},
@@ -211,6 +212,12 @@ describe("input errors", function(){
         { name:'duplicated column names',
           param:{tableName:'t1', txt:optColumnTxt, opts:{columnNames:['one','two','three','one','three']}},
           errors:["duplicated column name '\"one\"'", "duplicated column name '\"three\"'"]},
+        { name:'unsupported encoding',
+          param:{tableName:'t1', txt:optDummyTxt, opts:{outputEncoding: 'win1252'}},
+          errors:["unsupported output encoding 'win1252'"]},
+        { name:'unsupported encodings',
+          param:{tableName:'t1', txt:optDummyTxt, opts:{inputEncoding: 'win1252', outputEncoding: 'miEnco'}},
+          errors:["unsupported input encoding 'win1252'", "unsupported output encoding 'miEnco'"]},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
