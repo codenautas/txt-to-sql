@@ -216,7 +216,7 @@ describe("input errors", function(){
           param:{tableName:'t1', txt:optDummyTxt, opts:{outputEncoding: 'win1252'}},
           errors:["unsupported output encoding 'win1252'"]},
         { name:'unsupported encodings',
-          param:{tableName:'t1', txt:optDummyTxt, opts:{inputEncoding: 'win1252', outputEncoding: 'miEnco'}},
+          param:{tableName:'t1', txt:optDummyTxt, opts:{outputEncoding: 'miEnco', inputEncoding: 'win1252'}},
           errors:["unsupported input encoding 'win1252'", "unsupported output encoding 'miEnco'"]},
     ].forEach(function(check){
         if(check.skip) {
@@ -245,7 +245,6 @@ describe("file encoding", function(){
                 fs.readFile('./test/encoding/'+check.file).then(function(buffer){
                     return txtToSql.getEncoding(buffer);
                 }).then(function(encoding) {
-                    //console.log("EXP", check.type, "RES", encoding)
                     expect(encoding).to.eql(check.type);
                 }).then(done,done);
             });

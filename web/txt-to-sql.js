@@ -3,7 +3,7 @@
 var txtToSql = {};
 
 var changing = require('best-globals').changing;    
-//var iconv = require('iconv-lite');
+var iconv = require('iconv-lite');
 
 var margin = ' ';
 var separators=';,\t|';
@@ -170,12 +170,13 @@ function determineEncodings(info) {
         info.inputEncodingDetected = encoding;
         if(! info.opts.inputEncoding) { info.opts.inputEncoding = info.inputEncodingDetected; }
         if(! info.opts.outputEncoding) { info.opts.outputEncoding = info.inputEncodingDetected; }
+        info.decodedBuffer = info.inputEncodingDetected==='ANSI' ? iconv.decode(info.txt, "utf8") : info.txt.toString('utf8');
         return info;
     });
 }
 
 function separateLines(info){
-    info.lines = info.txt.toString().split(/\r?\n/);
+    info.lines = info.decodedBuffer.split(/\r?\n/);
     info.headers = info.lines.shift();
     return info;
 }
