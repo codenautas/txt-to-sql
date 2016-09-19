@@ -47,7 +47,6 @@ html(lang=lang)
   script(src='js-to-html.js')
   
   script.
-    console.log("PROBANDO si hay us-ascii: ", (iconv.encodingExists("us-ascii")?"YES":"NO"));
     var options = {};
     var messages={
       es:{
@@ -193,7 +192,7 @@ html(lang=lang)
                     createOption(messages.opts.pk, 'includePrimaryKey', options.includePrimaryKey, 1),
                     createOption(messages.opts.verbose, 'verboseErrors', options.verboseErrors, 1)
                 ]).create();
-                console.log("column", prepared.columns);
+                //console.log("column", prepared.columns);
                 var fields = prepared.columns.map(function(column) {
                     var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                     return html.tr([
@@ -216,7 +215,7 @@ html(lang=lang)
                                         html.td(messages.cols.cn)
                                ]));
                 fields.unshift(html.th({colspan:7}, [html.td("Fields")]));
-                console.log("fields", fields)
+                //console.log("fields", fields)
                 var tblFields = html.table({class:'inner'}, fields).create();
                 addStep(messages.step2, [html.table({class:'outer'}, [
                                             html.tr([
