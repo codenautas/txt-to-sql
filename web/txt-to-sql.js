@@ -58,8 +58,9 @@ var engines = {
         dropTable: dropTableStd
     },
     'oracle': {
-        types:mapTypes(['integer','longinteger','number','number','varchar2']),
-        quote:quoteDouble
+        types:mapTypes(['integer','long','number','number','varchar2']),
+        quote:quoteDouble,
+        noCompactInsert:true
     },
     'sqlite': {
         types:mapTypes(['integer','integer','numeric','real','text']),
