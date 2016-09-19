@@ -40,6 +40,7 @@ function makeSqlArray(sqls) {
 describe("fixtures", function(){
     [
         {path:'example-one'},
+        /*
         {path:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
         {path:'pk-complex', changeExpected:function(exp) { exp.opts.separator = '|'; }},
         {path:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|';}},
@@ -77,6 +78,7 @@ describe("fixtures", function(){
         {path:'oracle-example-one'},
         {path:'utf8-invalid'},
         {path:'with-drop-table'},
+        */
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
