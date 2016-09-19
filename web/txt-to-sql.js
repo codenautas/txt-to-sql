@@ -373,6 +373,28 @@ function generateCreateScript(info){
     return info;
 }
 
+function createInsertValues(rows, columnsInfo) {
+    return rows.map(function(row){
+        var owedLength = 0;
+        return margin+"("+row.map(function(adaptedValue,columnIndex){
+            var column = columnsInfo[columnIndex];
+            var recoveredLength = 0;
+            if(adaptedValue.length>column.columnLength-owedLength){
+                owedLength=adaptedValue.length-(column.columnLength-owedLength);
+                recoveredLength = column.columnLength-adaptedValue.length;
+            }else{
+                recoveredLength = owedLength;
+                owedLength = 0;
+                if(adaptedValue.length>column.columnLength-recoveredLength){
+                    owedLength=adaptedValue.length-(column.columnLength-recoveredLength);
+                    recoveredLength=recoveredLength-owedLength;
+                }
+            }
+            return column.typeInfo.pad(column.columnLength-recoveredLength, adaptedValue);
+        }).join(', ')+')';
+    });
+}
+
 function generateInsertScript(info){
     var adaptedRows = info.rows.map(function(row, rowIndex) {
         return info.columnsInfo.map(function(column, columnIndex) {
@@ -392,43 +414,14 @@ function generateInsertScript(info){
     var insertInto = "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
             return columnInfo.name;
         }).join(', ')+") values";
-    var insHead, insEnd, insLine, insJoin, insLast;
+    var insertValues = createInsertValues(adaptedRows, info.columnsInfo);
+    var ins;
     if(info.outputEngine.noCompactInsert) {
-        insHead = '';
-        insEnd = ");\n";
-        insLine = insertInto;
-        insJoin = '';
-        insLast = ');';
+        ins = insertValues.map(function(c) { return insertInto + c + ";"; }).join('\n');
     } else {
-        insHead = insertInto + "\n";
-        insEnd = ",\n";
-        insLine = '';
-        insJoin = ")";
-        insLast = ';';
+        ins = insertInto + '\n' +insertValues.join(',\n')+';';
     }
-    info.scripts.push({type:'insert', sql:
-        insHead+
-        adaptedRows.map(function(row){
-            var owedLength = 0;
-            return insLine+margin+"("+row.map(function(adaptedValue,columnIndex){
-                var column = info.columnsInfo[columnIndex];
-                var recoveredLength = 0;
-                var debug=false;
-                if(adaptedValue.length>column.columnLength-owedLength){
-                    owedLength=adaptedValue.length-(column.columnLength-owedLength);
-                    recoveredLength = column.columnLength-adaptedValue.length;
-                }else{
-                    recoveredLength = owedLength;
-                    owedLength = 0;
-                    if(adaptedValue.length>column.columnLength-recoveredLength){
-                        owedLength=adaptedValue.length-(column.columnLength-recoveredLength);
-                        recoveredLength=recoveredLength-owedLength;
-                    }
-                }
-                return column.typeInfo.pad(column.columnLength-recoveredLength, adaptedValue);
-            }).join(', ')+insJoin;
-        }).join(insEnd)+insLast
-    });
+    info.scripts.push({type:'insert', sql:ins});
     return info;
 }
 
