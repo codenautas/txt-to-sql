@@ -1,6 +1,6 @@
 create table `mysql-adapt` (
  `texts` varchar(20),
- `integers` integer(1)
+ `integers` integer
 );
 
 insert into `mysql-adapt` (`texts`, `integers`) values

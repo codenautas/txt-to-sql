@@ -1,6 +1,6 @@
 create table "sqlite-pk-complex-all" (
  "TextCol" text(5),
- "integerCol" integer(1),
+ "integerCol" integer,
  "NumericWith""quotes""" numeric(8,6),
  primary key ("TextCol", "integerCol", "NumericWith""quotes""")
 );

@@ -1,6 +1,6 @@
 create table "sqlite-adapt" (
  "texts" text(20),
- "integers" integer(1)
+ "integers" integer
 );
 
 insert into "sqlite-adapt" ("texts", "integers") values

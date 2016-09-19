@@ -1,9 +1,9 @@
 create table "oracle-example-one" (
  "text col" varchar2(5),
- "int col" integer(1),
+ "int col" integer,
  "num col" number(8,6),
- "big col" longinteger(10),
- "double col" number(9,7)
+ "big col" longinteger,
+ "double col" number
 );
 
 insert into "oracle-example-one" ("text col", "int col", "num col", "big col", "double col") values

@@ -2,10 +2,10 @@ drop table if exists "with-drop-table";
 
 create table "with-drop-table" (
  "text-field" character varying(5),
- "int-field" integer(1),
+ "int-field" integer,
  "num-field" numeric(8,6),
- "big" bigint(10),
- "double" double precision(9,7)
+ "big" bigint,
+ "double" double precision
 );
 
 insert into "with-drop-table" ("text-field", "int-field", "num-field", "big", "double") values

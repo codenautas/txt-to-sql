@@ -67,7 +67,6 @@ describe("fixtures", function(){
         {path:'adapt'},
         {path:'column-names'},
         {path:'columns-with-spaces'},
-        /*
         {path:'mysql-example-one'},
         {path:'mysql-pk-complex-all'},
         {path:'mysql-adapt'},
@@ -78,7 +77,6 @@ describe("fixtures", function(){
         {path:'oracle-example-one'},
         {path:'utf8-invalid'},
         {path:'with-drop-table'},
-        */
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);

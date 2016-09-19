@@ -1,5 +1,5 @@
 create table "utf8-invalid" (
- "int-field" integer(1),
+ "int-field" integer,
  "text-field" character varying(16)
 );
 

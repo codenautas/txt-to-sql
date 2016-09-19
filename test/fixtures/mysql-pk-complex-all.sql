@@ -1,6 +1,6 @@
 create table `mysql-pk-complex-all` (
  `'text'field` varchar(5),
- ```int``field` integer(1),
+ ```int``field` integer,
  `"num"1` numeric(8,6),
  primary key (`'text'field`, ```int``field`, `"num"1`)
 );
