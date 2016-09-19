@@ -75,8 +75,8 @@ describe("fixtures", function(){
         {path:'sqlite-adapt'},
         {path:'mssql-example-one'},
         {path:'oracle-example-one'},
-        {path:'utf8-invalid'},
         {path:'with-drop-table'},
+        {path:'utf8-invalid', skip:true},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -244,7 +244,7 @@ describe("file encoding", function(){
         { name:'ascii7', file:'ascii7.txt', type:'ASCII7' },
         { name:'utf8', file:'utf8.txt', type:'UTF8'},
         { name:'utf8-bom', file:'utf8-bom.txt', type:'UTF8' },
-        { name:'ansi', file:'ansi.txt', type:'ANSI' },
+        { name:'ansi', file:'ansi.txt', type:'ANSI' }
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);

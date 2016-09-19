@@ -174,7 +174,22 @@ function processEncodingOptions(info) {
         if(! info.opts.inputEncoding) { info.opts.inputEncoding = info.inputEncodingDetected; }
         if(! info.opts.outputEncoding) { info.opts.outputEncoding = info.inputEncodingDetected; }
         //console.log("DETECTED", info.inputEncodingDetected, "INPUT", info.opts.inputEncoding)
-        info.decodedBuffer = info.opts.inputEncoding==='ANSI' ? iconv.decode(info.txt, "utf8") : info.txt.toString('utf8');
+        if(info.opts.inputEncoding==='ANSI') {
+            var inUTF = info.txt.toString();;
+            if(inUTF.substr(1).indexOf('\uFFFD')<0) {
+                throw new Error('ansi -> utf8: replacement character not found');
+            }
+            info.decodedBuffer = iconv.decode(info.txt, "utf8");
+            if(info.decodedBuffer==info.txt) {
+                throw new Error('ansi -> utf8: no conversion performed');
+            }
+            var encoded = iconv.encode(info.decodedBuffer, info.opts.inputEncoding);
+            if(encoded !== info.txt) {
+                throw new Error('ansi -> utf8: revert operation failed');
+            }
+        } else {
+            info.decodedBuffer = info.txt.toString('utf8');
+        }
         return info;
     });
 }
