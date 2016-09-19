@@ -415,13 +415,12 @@ function generateInsertScript(info){
             return columnInfo.name;
         }).join(', ')+") values";
     var insertValues = createInsertValues(adaptedRows, info.columnsInfo);
-    var ins;
-    if(info.outputEngine.noCompactInsert) {
-        ins = insertValues.map(function(c) { return insertInto + c + ";"; }).join('\n');
-    } else {
-        ins = insertInto + '\n' +insertValues.join(',\n')+';';
-    }
-    info.scripts.push({type:'insert', sql:ins});
+    info.scripts.push({
+        type:'insert',
+        sql:info.outputEngine.noCompactInsert ?
+            insertValues.map(function(c) { return insertInto + c + ";"; }).join('\n') :
+            insertInto + '\n' +insertValues.join(',\n')+';'
+    });
     return info;
 }
 
