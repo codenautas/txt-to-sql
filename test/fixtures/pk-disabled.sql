@@ -1,6 +1,6 @@
 create table "pk-disabled" (
  "text-field" character varying(5),
- "int-field" integer(1),
+ "int-field" integer,
  "num""1""" numeric(8,6)
 );
 

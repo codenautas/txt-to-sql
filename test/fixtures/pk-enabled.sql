@@ -1,6 +1,6 @@
 create table "pk-enabled" (
  "f1" character varying(5),
- "f2" integer(1),
+ "f2" integer,
  "f3" numeric(8,6),
  primary key ("f1", "f2", "f3")
 );

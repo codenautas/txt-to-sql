@@ -40,17 +40,17 @@ function makeSqlArray(sqls) {
 describe("fixtures", function(){
     [
         {path:'example-one'},
-        /*
         {path:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
         {path:'pk-complex', changeExpected:function(exp) { exp.opts.separator = '|'; }},
         {path:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|';}},
         {path:'pk-very-simple', changeExpected:function(exp) { exp.opts.separator = ',';}},
         {path:'pk-very-simple2', changeExpected:function(exp) { exp.opts.separator = ',';}},
-        {path:'without-pk-2'},
         {path:'pk-simple-nn', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
         {path:'pk-complex-nn'},
         {path:'pk-complex-nn2'},
         {path:'pk-space-simple', changeExpected:function(exp) { exp.opts.separator = /\s+/; } },
+        {path:'without-pk-2'},
+        /*
         {path:'fields-unmod'},
         {path:'fields-lcnames'},
         {path:'fields-lcalpha'},
