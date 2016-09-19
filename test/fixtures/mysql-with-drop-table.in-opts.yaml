@@ -1,0 +1,3 @@
+columnNamesFormat: lowercased_names
+outputEngine: mysql
+addDropTable: true

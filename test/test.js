@@ -75,9 +75,10 @@ describe("fixtures", function(){
         {path:'sqlite-adapt'},
         {path:'mssql-example-one'},
         {path:'oracle-example-one'},
-        {path:'with-drop-table'},
         {path:'invalid-utf8'},
         {path:'invalid-ansi'},
+        {path:'with-drop-table'},
+        {path:'mysql-with-drop-table'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);

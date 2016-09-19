@@ -51,7 +51,8 @@ var engines = {
     },
     'mysql': {
         types:mapTypes(['integer','bigint','numeric','double precision','varchar']),
-        quote:quoteBackTick
+        quote:quoteBackTick,
+        dropTable: function(tableName) { return "drop table if exists "+tableName; }
     },
     'oracle': {
         types:mapTypes(['integer','longinteger','number','number','varchar2']),
@@ -193,7 +194,7 @@ function processEncodingOptions(info) {
                 throw new Error('ansi -> utf8: replacement character not found');
             }
             info.decodedBuffer = iconv.decode(info.txt, "utf8");
-            if(compareBuffers(info.decodedBuffer,info.txt) == -1) {
+            if(compareBuffers(info.decodedBuffer, info.txt) === -1) {
                 throw new Error('ansi -> utf8: no conversion performed');
             }
             checkBuffers(info.txt, new Buffer(info.decodedBuffer));
