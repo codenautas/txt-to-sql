@@ -1,6 +1,6 @@
 create table "comma-align" (
  "text-field" character varying(15),
- "int-field" integer(2),
+ "int-field" integer,
  "numerico-el-1" numeric(9,6),
  primary key ("text-field", "int-field", "numerico-el-1")
 );

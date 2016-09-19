@@ -1,6 +1,6 @@
 create table "adapt" (
  "texts" character varying(20),
- "integers" integer(1)
+ "integers" integer
 );
 
 insert into "adapt" ("texts", "integers") values

@@ -1,9 +1,9 @@
 create table "columns-with-spaces" (
  "mi text" character varying(5),
- "mi  int" integer(1),
+ "mi  int" integer,
  "mi   num" numeric(8,6),
- "mi    big" bigint(10),
- "mi     double" double precision(9,7)
+ "mi    big" bigint,
+ "mi     double" double precision
 );
 
 insert into "columns-with-spaces" ("mi text", "mi  int", "mi   num", "mi    big", "mi     double") values

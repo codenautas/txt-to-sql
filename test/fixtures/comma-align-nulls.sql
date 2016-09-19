@@ -1,6 +1,6 @@
 create table "comma-align-nulls" (
  "text-field" character varying(15),
- "int-field" integer(2),
+ "int-field" integer,
  "numerico-el-1" numeric(8,6),
  "todosnulos" integer,
  "numerico-el-2" numeric(6,2)

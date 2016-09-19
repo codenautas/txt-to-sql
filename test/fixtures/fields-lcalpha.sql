@@ -1,9 +1,9 @@
 create table "fields_lcalpha" (
  "conene" character varying(13),
- "esdrujulo" integer(1),
+ "esdrujulo" integer,
  "masdias" numeric(8,6),
- "faltanaeeiiuoooo" bigint(10),
- "_1numeroyacento" double precision(9,7),
+ "faltanaeeiiuoooo" bigint,
+ "_1numeroyacento" double precision,
  "maas" integer
 );
 
