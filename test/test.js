@@ -76,7 +76,7 @@ describe("fixtures", function(){
         {path:'mssql-example-one'},
         {path:'oracle-example-one'},
         {path:'with-drop-table'},
-        {path:'utf8-invalid', skip:true},
+        {path:'utf8-invalid'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -102,7 +102,6 @@ describe("fixtures", function(){
                     expected = changing(JSON.parse(JSON.stringify(defaultExpectedResult)), yml);
                     return setIfFileExists(basePath+'.sql', expected, 'sqls');
                 }).then(function() {
-                    expected.columns = [];
                     if(expected.sqls) {
                         expected.sqls = makeSqlArray(expected.sqls);
                         var pos = expected.sqls.length==3?1:0;
