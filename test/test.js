@@ -76,7 +76,8 @@ describe("fixtures", function(){
         {path:'mssql-example-one'},
         {path:'oracle-example-one'},
         {path:'with-drop-table'},
-        {path:'utf8-invalid'},
+        {path:'invalid-utf8'},
+        {path:'invalid-ansi'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
