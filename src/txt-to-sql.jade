@@ -35,11 +35,19 @@ html(lang=lang)
     pre#errMessage(style={color:'red'})
   script.
     var module = {};
-  script(src='require-bro.js')
-  script(src='best-globals.js')
-  script(src='txt-to-sql.js')  
-  script(src='js-to-html.js')  
+  script(src='iconv-lite.js')
   script.
+    var iconv = require('iconv-lite');
+    delete window.require;
+  script(src='require-bro.js')
+  script.
+    window.require.definedModules['iconv-lite'] = iconv;
+  script(src='best-globals.js')
+  script(src='txt-to-sql.js')
+  script(src='js-to-html.js')
+  
+  script.
+    console.log("PROBANDO si hay us-ascii: ", (iconv.encodingExists("us-ascii")?"YES":"NO"));
     var options = {};
     var messages={
       es:{

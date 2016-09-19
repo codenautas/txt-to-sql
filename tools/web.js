@@ -62,6 +62,15 @@ function processDirectory(srcDir, destDir, only) {
     });
 }
 
+function bundlePromise(browserifyObject) {
+    return Promises.make(function(resolve, reject) {
+        browserifyObject.bundle(function(err, buf) {
+           if(err) { return reject(err); }
+           return resolve(buf);
+        });
+    });
+}
+
 function generateWeb() {
     console.log("Generating web content...");
     var desDir = './web';
@@ -75,6 +84,13 @@ function generateWeb() {
         return processDirectory('./node_modules/require-bro/lib', desDir);
     }).then(function() {
         return fs.copy('./node_modules/js-to-html/js-to-html.js', desDir+'/js-to-html.js');
+    }).then(function() {
+        var browserify = require('browserify');
+        var b = browserify();
+        b.require('./node_modules/iconv-lite/lib/index.js', {expose: 'iconv-lite'});
+        return bundlePromise(b);
+    }).then(function(bfbuf) {
+        return fs.writeFile(desDir+'/iconv-lite.js', bfbuf);
     }).catch(function(err) {
         console.log("Error", err, err.stack);
         process.exit(1);
