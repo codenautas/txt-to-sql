@@ -187,9 +187,9 @@ function processEncodingOptions(info) {
         if(! info.opts.inputEncoding) { info.opts.inputEncoding = info.inputEncodingDetected; }
         if(! info.opts.outputEncoding) { info.opts.outputEncoding = info.inputEncodingDetected; }
         //console.log("DETECTED", info.inputEncodingDetected, "INPUT", info.opts.inputEncoding)
+        var inFromToString = info.txt.toString("utf8");
         if(info.opts.inputEncoding==='ANSI') {
-            var inUTF = info.txt.toString("utf8");
-            if(inUTF.substr(1).indexOf('\uFFFD')<0) {
+            if(inFromToString.substr(1).indexOf('\uFFFD')<0) {
                 throw new Error('ansi -> utf8: replacement character not found');
             }
             info.decodedBuffer = iconv.decode(info.txt, "utf8");
@@ -198,10 +198,10 @@ function processEncodingOptions(info) {
             }
             checkBuffers(info.txt, new Buffer(info.decodedBuffer));
         } else if(info.opts.inputEncoding==='UTF8') {
-            info.decodedBuffer = info.txt.toString('utf8');
+            info.decodedBuffer = inFromToString;
             checkBuffers(info.txt, new Buffer(info.decodedBuffer, 'utf8'));
         } else {
-            info.decodedBuffer = info.txt.toString('utf8');
+            info.decodedBuffer = inFromToString;
         }
         return info;
     });
