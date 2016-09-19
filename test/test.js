@@ -73,7 +73,7 @@ describe("fixtures", function(){
         {path:'sqlite-example-one'},
         {path:'sqlite-pk-complex-all'},
         {path:'sqlite-adapt'},
-        //{path:'mssql-example-one'},
+        {path:'mssql-example-one'},
         {path:'oracle-example-one'},
         {path:'invalid-utf8'},
         {path:'invalid-ansi'},
