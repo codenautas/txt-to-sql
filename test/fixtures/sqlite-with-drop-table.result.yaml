@@ -1,0 +1,3 @@
+opts:
+  outputEngine: sqlite
+  addDropTable: true

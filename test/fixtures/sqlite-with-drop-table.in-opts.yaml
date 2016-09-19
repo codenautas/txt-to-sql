@@ -1,0 +1,2 @@
+outputEngine: sqlite
+addDropTable: true
