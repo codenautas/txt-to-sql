@@ -1,11 +1,4 @@
-BEGIN
-   EXECUTE IMMEDIATE 'DROP TABLE "oracle-with-drop-table"';
-EXCEPTION
-   WHEN OTHERS THEN
-      IF SQLCODE != -942 THEN
-         RAISE;
-      END IF;
-END;
+drop table "oracle-with-drop-table";
 
 create table "oracle-with-drop-table" (
  "text col" varchar2(5),

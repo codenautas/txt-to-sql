@@ -1,2 +1,3 @@
 opts:
   outputEngine: oracle
+  addDropTable: true
