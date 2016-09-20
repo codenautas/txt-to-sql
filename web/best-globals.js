@@ -1,6 +1,4 @@
 "use strict";
-/*jshint eqnull:true */
-/*jshint node:true */
 
 (function codenautasModuleDefinition(root, name, factory) {
     /* global define */
@@ -290,6 +288,7 @@ bestGlobals.createOptionsToFunction(bestGlobals.changing);
 
 bestGlobals.setGlobals = function setGlobals(theGlobalObj){
     /*jshint forin:false */
+    /* eslint guard-for-in: 0 */
     for(var name in bestGlobals){
         theGlobalObj[name] = bestGlobals[name];
     }
@@ -306,9 +305,53 @@ bestGlobals.constructorName = function constructorName(obj) {
     }
 };
 
-bestGlobals.escapeRegExp = function escapeRegExp(string){
+bestGlobals.escapeRegExp = function escapeRegExp(text){
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Using_special_characters
-  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
+var letterTranslator = {
+    'à':'a', 'á':'a', 'â':'a', 'ã':'a', 'ä':'a', 'å':'a', 'À':'a', 'Á':'a', 'Â':'a', 'Ã':'a', 'Ä':'a', 'Å':'a',
+    'è':'e', 'é':'e', 'ê':'e', 'ë':'e', 'È':'e', 'É':'e', 'Ê':'e', 'Ë':'e',
+    'ì':'i', 'í':'i', 'î':'i', 'ï':'i', 'Ì':'i', 'Í':'i', 'Î':'i', 'Ï':'i',
+    'ò':'o', 'ó':'o', 'ô':'o', 'õ':'o', 'ö':'o', 'Ò':'o', 'Ó':'o', 'Ô':'o', 'Õ':'o', 'Ö':'o',
+    'ù':'u', 'ú':'u', 'û':'u', 'ü':'u', 'Ù':'u', 'Ú':'u', 'Û':'u', 'Ü':'u',
+    'ñ':'nzzzzzzzzzz', 'Ñ':'nzzzzzzzzzz'
+};
+
+var letterTranslatorRegexp = new RegExp(
+    '['+
+    bestGlobals.escapeRegExp(Object.keys(letterTranslator).join(''))+
+    ']','g'
+);
+
+bestGlobals.forOrder = function forOrder(text){
+    if(text==null){
+        return 'zzz(null)';
+    }
+    if(text instanceof Date){
+        return text.toISOString();
+    }
+    var coalesce = bestGlobals.coalesce;
+    var main=[];
+    var signs=[];
+    var normal=text.toString()
+    .replace(letterTranslatorRegexp, function(letter){ return letterTranslator[letter]; })
+    .replace(
+        /([a-z]+)|(0*([1-9][0-9]*)(\.[0-9]+)?)|([^a-z0-9])/ig, 
+        function(t, letters, nums, integer, decimals, sign){
+            if(letters){
+                main.push(' '+letters.toLowerCase());
+            }
+            if(nums){
+                main.push('  '+String.fromCharCode(64+coalesce(integer,'').length)+coalesce(integer,'')+coalesce(decimals,''));
+            }
+            if(sign){
+                signs.push(' , '+sign);
+            }
+        }
+    );
+    return main.join('')+signs.join('')+'   '+text;
 };
 
 return bestGlobals;

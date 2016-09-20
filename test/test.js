@@ -104,7 +104,7 @@ describe("fixtures", function(){
                     return loadYamlIfFileExists(basePath+'.result.yaml');
                 }).then(function(yml) {
                     expected = changing(JSON.parse(JSON.stringify(defaultExpectedResult)), yml);
-                    return setIfFileExists(basePath+'.sql', expected, 'sqls');
+                    return setIfFileExists(basePath+'.sql', expected, 'sqls', {encoding: (! param.opts.outputEncoding ? 'binary' : 'utf8')});
                 }).then(function() {
                     if(expected.sqls) {
                         expected.sqls = makeSqlArray(expected.sqls);
@@ -153,18 +153,20 @@ describe("fixtures", function(){
                         });
                     }
                 }).then(function() {
-                    console.log('------------- param',param);
+                    //console.log('------------- param',param);
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
                     prepared = preparedResult;
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
                     // prepared
-                    // console.log("columns", prepared.columns);  console.log("ex", expected.columns);
+                    //console.log("P columns", prepared.columns);  console.log("E columns", expected.columns);
+                    // console.log("ex", prepared.opts);
                     expect(prepared.opts).to.eql(expected.opts);
                     expect(prepared.columns).to.eql(expected.columns);
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
+                    //console.log("E SQL", expected.sqls);  console.log("G sqls", generated.sqls);
                     expect(generated.sqls).to.eql(expected.sqls);
                     expect(differences(generated.sqls,expected.sqls)).to.eql(null);
                     // coherencia entre prepared y generated
