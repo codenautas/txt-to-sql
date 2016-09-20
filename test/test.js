@@ -81,6 +81,7 @@ describe("fixtures", function(){
         {path:'mysql-with-drop-table'},
         {path:'sqlite-with-drop-table'},
         {path:'fields-ansi-lcalpha'}, // ansi
+        {path:'mssql-comma-align'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);

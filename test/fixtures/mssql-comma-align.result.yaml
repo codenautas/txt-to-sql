@@ -1,0 +1,3 @@
+opts:
+  outputEngine: mssql
+  columnAlignedCommas: true
