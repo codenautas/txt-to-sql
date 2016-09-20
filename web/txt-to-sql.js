@@ -39,36 +39,36 @@ var quoteBackTick = { chr:'`', fun:function(objectName) { return '`'+objectName.
 var quoteBracket = { chr:']', fun:function(objectName) { return '['+objectName.replace(/]/g,']]')+']'; } };
 var quoteDouble = { chr:'"', fun:function(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; } };
 
-function dropTableStd(tableName) { return "drop table if exists "+tableName; }
+function dropTableIfExists(tableName) { return "drop table if exists "+tableName; }
+function dropTable(tableName) { return "drop table "+tableName; }
 
 var engines = {
     'postgresql': {
         types:mapTypes(['integer','bigint','numeric','double precision','character varying']),
         quote:quoteDouble,
-        dropTable: dropTableStd
+        dropTable:dropTableIfExists
     },
     'mssql': {
         types:mapTypes(['integer','bigint','numeric','real','varchar']),
         quote:quoteBracket,
         noCompactInsert:true,
-        dropTable: function(tableName) {
-            return "if object_id('[dbo]."+tableName+"', 'U') is not null drop table [dbo]."+tableName;
-        }
+        dropTable:dropTable
     },
     'mysql': {
         types:mapTypes(['integer','bigint','numeric','double precision','varchar']),
         quote:quoteBackTick,
-        dropTable: dropTableStd
+        dropTable:dropTableIfExists
     },
     'oracle': {
         types:mapTypes(['integer','long','number','number','varchar2']),
         quote:quoteDouble,
-        noCompactInsert:true
+        noCompactInsert:true,
+        dropTable:dropTable
     },
     'sqlite': {
         types:mapTypes(['integer','integer','numeric','real','text']),
         quote:quoteDouble,
-        dropTable: dropTableStd
+        dropTable:dropTableIfExists
     }
 };
 

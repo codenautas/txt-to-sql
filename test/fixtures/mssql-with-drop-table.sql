@@ -1,4 +1,4 @@
-if object_id('[dbo].[mssql-with-drop-table]', 'U') is not null drop table [dbo].[mssql-with-drop-table];
+drop table [mssql-with-drop-table];
 
 create table [mssql-with-drop-table] (
  [text col] varchar(21),

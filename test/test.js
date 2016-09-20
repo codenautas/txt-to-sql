@@ -118,18 +118,15 @@ describe("fixtures", function(){
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
-                    //console.log('------------- param',param);
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
                     prepared = preparedResult;
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
-                    // prepared
                     expect(prepared.opts).to.eql(expected.opts);
                     if(expected.columns) { expect(prepared.columns).to.eql(expected.columns); }
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
-                    //console.log("E SQL", expected.sqls);  console.log("G sqls", generated.sqls);
                     expect(generated.sqls).to.eql(expected.sqls);
                     expect(differences(generated.sqls,expected.sqls)).to.eql(null);
                     // coherencia entre prepared y generated
