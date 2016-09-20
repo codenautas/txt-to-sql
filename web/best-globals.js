@@ -99,8 +99,15 @@ bestGlobals.isPlainObject = function isPlainObject(x){
 
 bestGlobals.changing = function changing(original, changes){
     var opts = bestGlobals.changing.retreiveOptions(arguments);
-    if(original===null || !bestGlobals.isPlainObject(original) && !(original instanceof Error)){
-        if(changes!==undefined){
+    if(original===null ||
+        !bestGlobals.isPlainObject(original) &&
+            !(original instanceof Error) &&
+            (!opts.mostlyPlain || typeof original != "object" || !bestGlobals.isPlainObject(changes))
+         // && !bestGlobals.changing
+    ){
+        if(!arguments[3]){
+            throw new Error("changing with non Plain Object");
+        }else if(changes!==undefined){
             return changes;
         }else{
             return original;
@@ -117,7 +124,7 @@ bestGlobals.changing = function changing(original, changes){
                 }else if('deletingValue' in opts && changes[name]===opts.deletingValue){
                     // empty
                 }else{
-                    result[name] = changing(original[name], changes[name]);
+                    result[name] = changing(original[name], changes[name], bestGlobals.changing.options(opts), true);
                 }
             }
             for(name in changes){
@@ -130,6 +137,8 @@ bestGlobals.changing = function changing(original, changes){
         }
     }
 };
+
+bestGlobals.createOptionsToFunction(bestGlobals.changing);
 
 function npad(num, width) {
     var n=num+''; // to string
@@ -283,8 +292,6 @@ bestGlobals.timeInterval = function timeInterval(time) {
     };
     return d;
 };
-
-bestGlobals.createOptionsToFunction(bestGlobals.changing);
 
 bestGlobals.setGlobals = function setGlobals(theGlobalObj){
     /*jshint forin:false */
