@@ -76,10 +76,11 @@ describe("fixtures", function(){
         {path:'mssql-example-one'},
         {path:'oracle-example-one'},
         {path:'invalid-utf8'},
-        {path:'invalid-ansi'},
+        {path:'invalid-ansi', skip:true},
         {path:'with-drop-table'},
         {path:'mysql-with-drop-table'},
         {path:'sqlite-with-drop-table'},
+        {path:'fields-ansi-lcalpha'}, // ansi
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -152,6 +153,7 @@ describe("fixtures", function(){
                         });
                     }
                 }).then(function() {
+                    console.log('------------- param',param);
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
                     prepared = preparedResult;

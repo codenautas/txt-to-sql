@@ -1,0 +1,4 @@
+opts:
+  columnNamesFormat: lowercased_alpha
+  inputEncoding: ANSI
+  outputEncoding: ANSI
