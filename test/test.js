@@ -13,7 +13,10 @@ function setIfFileExists(fileName, outObject, outProperty, options) {
         if(exists) { return fs.readFile(fileName, (options || {encoding:'utf8'})); }
         return { notExists: true };
     }).then(function(content) {
-        if(! content.notExists) { outObject[outProperty] = content; }
+        if(! content.notExists) {
+            //console.log("setIfFileExists("+fileName+"): "+txtToSql.getEncodingSinc(content));
+            outObject[outProperty] = content;
+        }
     });
 }
 
@@ -33,6 +36,8 @@ function loadDefaultExpectedResult() {
 }
 
 function makeSqlArray(sqls) {
+    //console.log("typeof sqls", typeof sqls)
+    sqls = typeof sqls === 'string' ? sqls : sqls.toString('binary');
     return sqls.split(/(\r?\n){2}/g)
                .filter(function(sqls){ return !sqls.match(/^(\r?\n)$/); });
 }
@@ -111,10 +116,13 @@ describe("fixtures", function(){
                         console.log("OE", param.opts.outputEncoding)
                         throw new Error('Unhandled output test! Re-think next setIfFileExists() line!!');
                     }
-                    return setIfFileExists(basePath+'.sql', expected, 'sqls', {encoding: (! param.opts.outputEncoding ? 'binary' : 'utf8')});
+                    //return setIfFileExists(basePath+'.sql', expected, 'sqls', {encoding: (! param.opts.outputEncoding ? 'binary' : 'utf8')});
+                    return setIfFileExists(basePath+'.sql', expected, 'sqls', (! param.opts.outputEncoding ? {} : undefined));
                 }).then(function() {
                     if(expected.sqls) {
+                        //console.log(fixture.path+" expected.sqls: "+txtToSql.getEncodingSinc(expected.sqls));
                         expected.sqls = makeSqlArray(expected.sqls);
+                        //console.log(fixture.path+" expected.sqls: [1] "+txtToSql.getEncodingSinc(expected.sqls[1]));
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
