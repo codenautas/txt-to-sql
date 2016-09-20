@@ -431,20 +431,6 @@ function processOutputBuffer(info) {
     if(info.opts.outputEncoding !== 'UTF8') {
         sqls:info.scripts.map(function(script){
             return iconv.encode(script.sql, "win1252").toString('binary');
-            console.log("--------------------")
-            var ori = new Buffer(script.sql, 'utf8');
-            console.log("O", ori, script.sql)
-            var b= iconv.encode(script.sql, "win1252");
-            var bs = b.toString('binary');
-            console.log("C", b, bs);
-            var cv = compareBuffers(ori, b);
-            console.log("SON ", (cv===-1?"IGUALES":"DISTINTOS"), cv)
-            if(cv !== -1) {
-                var bb = new Buffer(bs.substr(190), 'binary');
-                console.log("B", bb)
-                console.log("DIFF", bs.substring(cv))
-            }
-            return bs;
         })
     }
     return info;
