@@ -1,2 +1,38 @@
 opts:
   includePrimaryKey: false
+columns:
+  - name: '"mi text"'
+    type: character varying
+    inPrimaryKey: false
+    maxLength: 5
+    maxScale: null
+    hasNullValues: true
+    hasCientificNotation: null
+  - name: '"mi  int"'
+    type: integer
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: true
+    hasCientificNotation: null
+  - name: '"mi   num"'
+    type: numeric
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 6
+    hasNullValues: true
+    hasCientificNotation: null
+  - name: '"mi    big"'
+    type: bigint
+    inPrimaryKey: false
+    maxLength: 10
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: '"mi     double"'
+    type: double precision
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 7
+    hasNullValues: false
+    hasCientificNotation: true

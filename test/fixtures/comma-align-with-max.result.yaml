@@ -1,3 +1,25 @@
 opts:
   columnAlignedCommas: true
   columnAlignedMaxWidth: 14
+columns:
+  - name: '"text-field"'
+    type: character varying
+    inPrimaryKey: true
+    maxLength: 15
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: '"int-field"'
+    type: integer
+    inPrimaryKey: true
+    maxLength: 2
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: '"numerico-el-1"'
+    type: numeric
+    inPrimaryKey: false
+    maxLength: 2
+    maxScale: 6
+    hasNullValues: false
+    hasCientificNotation: null

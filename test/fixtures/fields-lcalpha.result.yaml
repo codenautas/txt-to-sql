@@ -1,2 +1,45 @@
 opts:
   columnNamesFormat: lowercased_alpha
+columns:
+  - name: '"conene"'
+    type: character varying
+    inPrimaryKey: false
+    maxLength: 13
+    maxScale: null
+    hasNullValues: true
+    hasCientificNotation: null
+  - name: '"esdrujulo"'
+    type: integer
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: true
+    hasCientificNotation: null
+  - name: '"masdias"'
+    type: numeric
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 6
+    hasNullValues: true
+    hasCientificNotation: null
+  - name: '"faltanaeeiiuoooo"'
+    type: bigint
+    inPrimaryKey: false
+    maxLength: 10
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: '"_1numeroyacento"'
+    type: double precision
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 7
+    hasNullValues: false
+    hasCientificNotation: true
+  - name: '"maas"'
+    type: integer
+    inPrimaryKey: false
+    maxLength: 0
+    maxScale: 0
+    hasNullValues: true
+    hasCientificNotation: null

@@ -115,52 +115,8 @@ describe("fixtures", function(){
                 }).then(function() {
                     if(expected.sqls) {
                         expected.sqls = makeSqlArray(expected.sqls);
-                        var pos = expected.sqls.length==3?1:0;
-                        
-                        var pts = expected.sqls[pos].split('primary key');
-                        var cols = pts[0].split(/(?:,[^0-9])/);
-                        cols[0]=cols[0].split('(')[1]; // remuevo create table
-                        cols = cols.map(function(column) {
-                            return column.trim().replace(/(\n\);)$/,'');
-                        }).filter(function(col) {
-                            return col.length>0
-                        });
-                        var pks = pts[1]
-                                    ? pts[1].split('(')[1].split(')')[0].split(',').map(function(pk) { return pk.trim(); })
-                                    : [];
-                        var quoteChar = txtToSql.engines[expected.opts.outputEngine].quote.chr;
-                        expected.columns = cols.map(function(column) {
-                            var mid = column.lastIndexOf(quoteChar);
-                            var name = column.substr(0, mid+1);
-                            var type = column.substring(mid+1).split('(')[0].trim(); // remuevo length
-                            return {
-                                name:name,
-                                type:type,
-                                inPrimaryKey: pks.indexOf(name) !== -1,
-                                maxLength:0,
-                                maxScale:txtToSql.isTextType(type)?null:0,
-                                hasNullValues:false,
-                                hasCientificNotation:type==='double precision'?false:null
-                            };
-                        });
-                        
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
-                    if(expected.columns) {
-                        var lines=param.rawTable.toString().split(/\r?\n/);
-                        lines.shift(); // elimino headers
-                        lines = lines.filter(function(line){ return line.trim()!==""; })
-                                     .map(function(line) {
-                            return line.split(expected.opts.separator).forEach(function(val, index) {
-                               var col = expected.columns[index];
-                               var lenInfo = txtToSql.getLengthInfo(val, col.type);
-                               if(col.maxLength<lenInfo.length) { col.maxLength = lenInfo.length; }
-                               if(col.maxScale!==null && col.maxScale<lenInfo.scale) { col.maxScale=lenInfo.scale; }
-                               if(! col.hasNullValues && ! val) { col.hasNullValues=true; }
-                               if(col.hasCientificNotation===false && val.match(/[eE]/)) { col.hasCientificNotation=true; }
-                           });
-                        });
-                    }
                 }).then(function() {
                     //console.log('------------- param',param);
                     return txtToSql.prepare(param);
@@ -169,11 +125,8 @@ describe("fixtures", function(){
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
                     // prepared
-                    // console.log("ex", prepared.opts);
                     expect(prepared.opts).to.eql(expected.opts);
-                    if(expected.columns) {
-                        expect(prepared.columns).to.eql(expected.columns);
-                    }
+                    if(expected.columns) { expect(prepared.columns).to.eql(expected.columns); }
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
                     //console.log("E SQL", expected.sqls);  console.log("G sqls", generated.sqls);
