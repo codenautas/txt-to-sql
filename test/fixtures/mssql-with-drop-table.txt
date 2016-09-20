@@ -1,0 +1,6 @@
+text col;num col
+pi;3.141592
+one or two;1.2
+four and five;4.5
+sixty seven dot three;67.3
+;
