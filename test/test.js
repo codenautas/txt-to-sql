@@ -104,6 +104,10 @@ describe("fixtures", function(){
                     return loadYamlIfFileExists(basePath+'.result.yaml');
                 }).then(function(yml) {
                     expected = changing(JSON.parse(JSON.stringify(defaultExpectedResult)), yml);
+                    if(param.opts.outputEncoding !== null && param.opts.outputEncoding !== 'UTF8') {
+                        console.log("OE", param.opts.outputEncoding)
+                        throw new Error('Unhandled output test! Re-think next setIfFileExists() line!!');
+                    }
                     return setIfFileExists(basePath+'.sql', expected, 'sqls', {encoding: (! param.opts.outputEncoding ? 'binary' : 'utf8')});
                 }).then(function() {
                     if(expected.sqls) {
