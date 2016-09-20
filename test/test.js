@@ -83,6 +83,7 @@ describe("fixtures", function(){
         {path:'fields-ansi-lcalpha'}, // ansi
         {path:'mssql-comma-align'},
         {path:'mssql-with-drop-table'},
+        {path:'oracle-with-drop-table', skip:true},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);

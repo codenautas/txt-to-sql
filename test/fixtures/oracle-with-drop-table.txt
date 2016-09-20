@@ -1,0 +1,3 @@
+text col;int col;num col;big col;double col
+hello;1;3.141592;1234567890;1.12e-101
+;;;0;0.0
