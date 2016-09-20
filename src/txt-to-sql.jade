@@ -34,19 +34,28 @@ html(lang=lang)
     pre#log
     pre#errMessage(style={color:'red'})
   script.
+    /* space */
     var module = {};
+    /* space */
+  script(src='buffer.js')
   script(src='iconv-lite.js')
   script.
+    /* space */
+    var Buffer = require('buffer').Buffer;
     var iconv = require('iconv-lite');
+    /* space */
     delete window.require;
+    /* space */
   script(src='require-bro.js')
   script.
+    /* space */
     window.require.definedModules['iconv-lite'] = iconv;
+    /* space */
   script(src='best-globals.js')
   script(src='txt-to-sql.js')
   script(src='js-to-html.js')
-  
   script.
+    /* space */
     var options = {};
     var messages={
       es:{
@@ -61,13 +70,15 @@ html(lang=lang)
             separator:'Separador',
             outformat:'Formato salida',
             pk:'Incluir PK',
-            verbose:'Errores verborrágicos'
+            verbose:'Errores verborrágicos',
+            inputEncoding:'Formato de entrada',
+            outputEncoding:'Formato de salida',
           },
           cols:{
             name:'Nombre',
             type:'Tipo',
             pk:'En PK',
-            nuls:'NULL\'s',
+            nuls:'NULLs',
             len:'Longitud',
             scale:'Escala',
             cn:'NotaciónCientífica'
@@ -87,13 +98,15 @@ html(lang=lang)
             separator:'Field separator',
             outformat:'Output format',
             pk:'Include PK',
-            verbose:'Verbose errors'
+            verbose:'Verbose errors',
+            inputEncoding:'Input encoding',
+            outputEncoding:'Output encoding',
           },
           cols:{
             name:'Name',
             type:'Type',
             pk:'In PK',
-            nuls:'NULL\'s',
+            nuls:'NULLs',
             len:'Length',
             scale:'Scale',
             cn:'CientificNotation'
@@ -120,13 +133,15 @@ html(lang=lang)
                 reader.onload = function(event){
                     resolve(event.target.result);
                 };
-                reader.readAsText(file);
+                reader.readAsArrayBuffer(file);
             }catch(err){
                 reject(err);
             }
         });
-        return promise.then(function(txt){
-            return {tableName:tableName, txt:txt, opts:options};
+        return promise.then(function(arrayBuffer){
+            return new Buffer(arrayBuffer);
+        }).then(function(buf){
+            return {tableName:tableName, txt:buf, opts:options};
         }).catch(function(err){
             errMessage.textContent=err.message;
         });
@@ -190,7 +205,9 @@ html(lang=lang)
                     createOption(messages.opts.separator, 'separator', options.separator, 1),
                     createOption(messages.opts.outformat, 'outputEngine', options.outputEngine, 10),
                     createOption(messages.opts.pk, 'includePrimaryKey', options.includePrimaryKey, 1),
-                    createOption(messages.opts.verbose, 'verboseErrors', options.verboseErrors, 1)
+                    createOption(messages.opts.verbose, 'verboseErrors', options.verboseErrors, 1),
+                    createOption(messages.opts.inputEncoding, 'inputEncoding', options.inputEncoding, 1),
+                    createOption(messages.opts.outputEncoding, 'outputEncoding', options.outputEncoding, 1),
                 ]).create();
                 //console.log("column", prepared.columns);
                 var fields = prepared.columns.map(function(column) {

@@ -91,6 +91,13 @@ function generateWeb() {
         return bundlePromise(b);
     }).then(function(bfbuf) {
         return fs.writeFile(desDir+'/iconv-lite.js', bfbuf);
+    }).then(function() {
+        var browserify = require('browserify');
+        var b = browserify();
+        b.require('./node_modules/buffer/index.js', {expose: 'buffer'});
+        return bundlePromise(b);
+    }).then(function(bfbuf) {
+        return fs.writeFile(desDir+'/buffer.js', bfbuf);
     }).catch(function(err) {
         console.log("Error", err, err.stack);
         process.exit(1);

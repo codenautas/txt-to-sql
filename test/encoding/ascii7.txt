@@ -1,2 +1,2 @@
 Este es un archivo
-totalmente ascii7
+totalmente ascii7 sin acentos

@@ -175,9 +175,11 @@ describe("fixtures", function(){
 
 describe("specials", function(){
     it("manage mixed line ends", function(done){
-        var txt=new Buffer("text-field;int-field;num-field;big;double\n"+
-                           "hello;1;3.141592;1234567890;1.12e-101\r\n"+
-                           ";;;0;0.0", 'binary');
+        var txt=new Buffer(
+            "text-field;int-field;num-field;big;double\n"+
+            "hello;1;3.141592;1234567890;1.12e-101\r\n"+
+            ";;;0;0.0", 'binary'
+        );
         Promise.resolve().then(function(){
             return txtToSql.generateScripts({tableName:'example-one', txt:txt});
         }).then(function(generated){
@@ -192,14 +194,16 @@ describe("specials", function(){
 });
 
 describe("input errors", function(){
-    var eNoTXT='no txt in input',
-        eNoTable='undefined table name',
-        eBadFieldFormat="inexistent column names format 'inexistent_format'";
-    var optBadFieldFormat = {columnNamesFormat: 'inexistent_format'},
-        optColumnTxt = new Buffer('text-field;int-field;num-field;big;double\n'+
-                                  'hello;1;3.141592;1234567890;1.12e-101\n'+
-                                  ';;;0;0.0', 'binary'),
-        optDummyTxt = new Buffer('dummy', 'binary');
+    var eNoTXT='no txt in input';
+    var eNoTable='undefined table name';
+    var eBadFieldFormat="inexistent column names format 'inexistent_format'";
+    var optBadFieldFormat = {columnNamesFormat: 'inexistent_format'};
+    var optColumnTxt = new Buffer(
+        'text-field;int-field;num-field;big;double\n'+
+        'hello;1;3.141592;1234567890;1.12e-101\n'+
+        ';;;0;0.0', 'binary'
+    );
+    var optDummyTxt = new Buffer('dummy', 'binary');
     [
         { name:'no txt',
           param:{tableName:'t1'},
