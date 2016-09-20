@@ -116,6 +116,7 @@ describe("fixtures", function(){
                     if(expected.sqls) {
                         expected.sqls = makeSqlArray(expected.sqls);
                         var pos = expected.sqls.length==3?1:0;
+                        
                         var pts = expected.sqls[pos].split('primary key');
                         var cols = pts[0].split(/(?:,[^0-9])/);
                         cols[0]=cols[0].split('(')[1]; // remuevo create table
@@ -142,6 +143,7 @@ describe("fixtures", function(){
                                 hasCientificNotation:type==='double precision'?false:null
                             };
                         });
+                        
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                     if(expected.columns) {
@@ -167,10 +169,11 @@ describe("fixtures", function(){
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
                     // prepared
-                    //console.log("P columns", prepared.columns);  console.log("E columns", expected.columns);
                     // console.log("ex", prepared.opts);
                     expect(prepared.opts).to.eql(expected.opts);
-                    expect(prepared.columns).to.eql(expected.columns);
+                    if(expected.columns) {
+                        expect(prepared.columns).to.eql(expected.columns);
+                    }
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
                     //console.log("E SQL", expected.sqls);  console.log("G sqls", generated.sqls);
