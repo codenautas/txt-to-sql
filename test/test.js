@@ -99,7 +99,7 @@ describe("fixtures", function(){
                     } else {
                         param.opts = defaultOpts;
                     }
-                    return setIfFileExists(basePath+'.txt', param, 'txt', {});
+                    return setIfFileExists(basePath+'.txt', param, 'rawTable', {});
                 }).then(function() {
                     return loadDefaultExpectedResult();
                 }).then(function() {
@@ -144,7 +144,7 @@ describe("fixtures", function(){
                     }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                     if(expected.columns) {
-                        var lines=param.txt.toString().split(/\r?\n/);
+                        var lines=param.rawTable.toString().split(/\r?\n/);
                         lines.shift(); // elimino headers
                         lines = lines.filter(function(line){ return line.trim()!==""; })
                                      .map(function(line) {
@@ -185,13 +185,13 @@ describe("fixtures", function(){
 
 describe("specials", function(){
     it("manage mixed line ends", function(done){
-        var txt=new Buffer(
+        var rawTable=new Buffer(
             "text-field;int-field;num-field;big;double\n"+
             "hello;1;3.141592;1234567890;1.12e-101\r\n"+
             ";;;0;0.0", 'binary'
         );
         Promise.resolve().then(function(){
-            return txtToSql.generateScripts({tableName:'example-one', txt:txt});
+            return txtToSql.generateScripts({tableName:'example-one', rawTable:rawTable});
         }).then(function(generated){
             return fs.readFile('./test/fixtures/example-one.sql', {encoding:'utf8'}).then(function(sqls){
                 sqls = makeSqlArray(sqls);
@@ -204,7 +204,7 @@ describe("specials", function(){
 });
 
 describe("input errors", function(){
-    var eNoTXT='no txt in input';
+    var eNoTXT='no rawTable in input';
     var eNoTable='undefined table name';
     var eBadFieldFormat="inexistent column names format 'inexistent_format'";
     var optBadFieldFormat = {columnNamesFormat: 'inexistent_format'};
@@ -215,36 +215,36 @@ describe("input errors", function(){
     );
     var optDummyTxt = new Buffer('dummy', 'binary');
     [
-        { name:'no txt',
+        { name:'no rawTable',
           param:{tableName:'t1'},
           errors:[eNoTXT]},
-        { name:'no txt and tableName',
+        { name:'no rawTable and tableName',
           param:{},
           errors:[eNoTable, eNoTXT]},
         { name:'no tableName and columnNamesFormat',
-          param:{txt:optDummyTxt, opts:optBadFieldFormat},
+          param:{rawTable:optDummyTxt, opts:optBadFieldFormat},
           errors:[eNoTable, eBadFieldFormat]},
         { name:'unsupported engine',
-          param:{tableName:'t1', txt:optDummyTxt, opts:{outputEngine: 'badEngineName'}},
+          param:{tableName:'t1', rawTable:optDummyTxt, opts:{outputEngine: 'badEngineName'}},
           errors:["unsupported output engine 'badEngineName'"]},
         { name:'all bad params',
           param:{opts:optBadFieldFormat},
           errors:[eNoTable, eNoTXT, eBadFieldFormat]},
         { name:'wrong number of column names',
-          param:{tableName:'t1', txt:optColumnTxt, opts:{columnNames:['one','two','three']}},
+          param:{tableName:'t1', rawTable:optColumnTxt, opts:{columnNames:['one','two','three']}},
           errors:['wrong number of column names: expected 5, obtained 3']},
         { name:'duplicated column names',
-          param:{tableName:'t1', txt:optColumnTxt, opts:{columnNames:['one','two','three','one','three']}},
+          param:{tableName:'t1', rawTable:optColumnTxt, opts:{columnNames:['one','two','three','one','three']}},
           errors:["duplicated column name '\"one\"'", "duplicated column name '\"three\"'"]},
         { name:'unsupported encoding',
-          param:{tableName:'t1', txt:optDummyTxt, opts:{outputEncoding: 'win1252'}},
+          param:{tableName:'t1', rawTable:optDummyTxt, opts:{outputEncoding: 'win1252'}},
           errors:["unsupported output encoding 'win1252'"]},
         { name:'unsupported encodings',
-          param:{tableName:'t1', txt:optDummyTxt, opts:{outputEncoding: 'miEnco', inputEncoding: 'win1252'}},
+          param:{tableName:'t1', rawTable:optDummyTxt, opts:{outputEncoding: 'miEnco', inputEncoding: 'win1252'}},
           errors:["unsupported input encoding 'win1252'", "unsupported output encoding 'miEnco'"]},
-        { name:'txt is not a Buffer',
-          param:{tableName:'t1', txt:'not a buffer', opts:{columnNames:['one','two','three']}},
-          errors:['info.txt must be an Buffer']},
+        { name:'rawTable is not a Buffer',
+          param:{tableName:'t1', rawTable:'not a buffer', opts:{columnNames:['one','two','three']}},
+          errors:['info.rawTable must be an Buffer']},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);

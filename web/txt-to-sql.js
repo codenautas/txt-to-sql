@@ -153,7 +153,7 @@ function verifyInputParams(info){
     info.opts = changing(txtToSql.defaultOpts, info.opts || {});
     var errors=[];
     if(! info.tableName) { errors.push('undefined table name'); }
-    if(! info.txt) { errors.push('no txt in input'); } else if(!(info.txt instanceof Buffer)){ errors.push('info.txt must be an Buffer');}
+    if(! info.rawTable) { errors.push('no rawTable in input'); } else if(!(info.rawTable instanceof Buffer)){ errors.push('info.rawTable must be an Buffer');}
     if(! (info.opts.columnNamesFormat in formatFunctions)) {
         errors.push("inexistent column names format '"+info.opts.columnNamesFormat+"'");
     }
@@ -183,23 +183,23 @@ function compareBuffers(one, two) {
 }
 
 function processEncodingOptions(info) {
-    return getEncoding(info.txt).then(function(encoding) {
+    return getEncoding(info.rawTable).then(function(encoding) {
         info.inputEncodingDetected = encoding;
         if(! info.opts.inputEncoding) { info.opts.inputEncoding = info.inputEncodingDetected; }
         if(! info.opts.outputEncoding) { info.opts.outputEncoding = info.inputEncodingDetected; }
         //console.log("DETECTED", info.inputEncodingDetected, "INPUT", info.opts.inputEncoding)
-        var inFromToString = info.txt.toString("utf8");
+        var inFromToString = info.rawTable.toString("utf8");
         if(info.opts.inputEncoding==='ANSI') {
             if(inFromToString.substr(1).indexOf('\uFFFD')<0) {
                 throw new Error('ansi -> utf8: replacement character not found');
             }
-            info.decodedBuffer = iconv.decode(info.txt, "win1252");
-            if(compareBuffers(info.decodedBuffer, info.txt) === -1) {
+            info.decodedBuffer = iconv.decode(info.rawTable, "win1252");
+            if(compareBuffers(info.decodedBuffer, info.rawTable) === -1) {
                 throw new Error('ansi -> utf8: no conversion performed');
             }
         } else if(info.opts.inputEncoding==='UTF8') {
             info.decodedBuffer = inFromToString;
-            var result = compareBuffers(info.txt, new Buffer(info.decodedBuffer, 'utf8'));
+            var result = compareBuffers(info.rawTable, new Buffer(info.decodedBuffer, 'utf8'));
             if(result !== -1) {
                 throw new Error('utf8 check failed in position: '+result);
             }

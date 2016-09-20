@@ -93,7 +93,7 @@ function processFile(file, messageText) {
     return promise.then(function(arrayBuffer){
         return new Buffer(arrayBuffer);
     }).then(function(buf){
-        return {tableName:tableName, txt:buf, opts:options};
+        return {tableName:tableName, rawTable:buf, opts:options};
     }).catch(function(err){
         errMessage.textContent=err.message;
     });
