@@ -179,13 +179,6 @@ function compareBuffers(one, two) {
     return -1;
 }
 
-function checkBuffers(one, two) {
-    var result = compareBuffers(one, two);
-    if(result !== -1) {
-        throw new Error('utf8 check failed in position: '+result);
-    }
-}
-
 function processEncodingOptions(info) {
     return getEncoding(info.txt).then(function(encoding) {
         info.inputEncodingDetected = encoding;
@@ -194,19 +187,19 @@ function processEncodingOptions(info) {
         //console.log("DETECTED", info.inputEncodingDetected, "INPUT", info.opts.inputEncoding)
         var inFromToString = info.txt.toString("utf8");
         if(info.opts.inputEncoding==='ANSI') {
-            if(info.inputEncodingDetected!=='ANSI' && inFromToString.substr(1).indexOf('\uFFFD')<0) {
+            if(inFromToString.substr(1).indexOf('\uFFFD')<0) {
                 throw new Error('ansi -> utf8: replacement character not found');
             }
             info.decodedBuffer = iconv.decode(info.txt, "win1252");
-            if(info.inputEncodingDetected!=='ANSI'){
-                if(compareBuffers(info.decodedBuffer, info.txt) === -1) {
-                    throw new Error('ansi -> utf8: no conversion performed');
-                }
-                checkBuffers(info.txt, new Buffer(info.decodedBuffer));
+            if(compareBuffers(info.decodedBuffer, info.txt) === -1) {
+                throw new Error('ansi -> utf8: no conversion performed');
             }
         } else if(info.opts.inputEncoding==='UTF8') {
             info.decodedBuffer = inFromToString;
-            checkBuffers(info.txt, new Buffer(info.decodedBuffer, 'utf8'));
+            var result = compareBuffers(info.txt, new Buffer(info.decodedBuffer, 'utf8'));
+            if(result !== -1) {
+                throw new Error('utf8 check failed in position: '+result);
+            }
         } else {
             info.decodedBuffer = inFromToString;
         }
@@ -451,7 +444,7 @@ function setup(info) {
 }
 
 function catchErrors(info, err) {
-    //console.log("err", err); console.log("err.stack", err.stack)
+    //console.log("err", err); console.log("err.stack", err.stack); console.log("opts", info.opts)
     var errors = (err.errors || [err.message]);
     if(info.opts.verboseErrors) { errors.push(err.stack); }
     return { errors: errors, opts:info.opts};
