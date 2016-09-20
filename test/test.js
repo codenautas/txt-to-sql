@@ -240,6 +240,9 @@ describe("input errors", function(){
         { name:'unsupported encodings',
           param:{tableName:'t1', txt:optDummyTxt, opts:{outputEncoding: 'miEnco', inputEncoding: 'win1252'}},
           errors:["unsupported input encoding 'win1252'", "unsupported output encoding 'miEnco'"]},
+        { name:'txt is not a Buffer',
+          param:{tableName:'t1', txt:'not a buffer', opts:{columnNames:['one','two','three']}},
+          errors:['info.txt must be an Buffer']},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
