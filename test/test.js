@@ -35,11 +35,28 @@ function loadDefaultExpectedResult() {
     });
 }
 
+/*
 function makeSqlArray(sqls) {
     //console.log("typeof sqls", typeof sqls)
     sqls = typeof sqls === 'string' ? sqls : sqls.toString('binary');
     return sqls.split(/(\r?\n){2}/g)
                .filter(function(sqls){ return !sqls.match(/^(\r?\n)$/); });
+}
+*/
+function makeSqlArray(sqlsBuf) {
+    var iNL=0;
+    var sqlsArr=[];
+    while((iNL=sqlsBuf.indexOf(10,iNL))>=0){
+        if(sqlsBuf[iNL+1]===10 || sqlsBuf[iNL+1]===13 && sqlsBuf[iNL+2]===10){
+            sqlsArr.push(sqlsBuf.slice(0,iNL-(sqlsBuf[iNL-1]===13?1:0)));
+            sqlsBuf = sqlsBuf.slice(iNL+(sqlsBuf[iNL+1]===13?3:2));
+            iNL=0;
+        }else{
+            iNL++;
+        }
+    }
+    sqlsArr.push(sqlsBuf);
+    return sqlsArr;
 }
 
 describe("fixtures", function(){
@@ -117,13 +134,8 @@ describe("fixtures", function(){
                         throw new Error('Unhandled output test! Re-think next setIfFileExists() line!!');
                     }
                     //return setIfFileExists(basePath+'.sql', expected, 'sqls', {encoding: (! param.opts.outputEncoding ? 'binary' : 'utf8')});
-                    return setIfFileExists(basePath+'.sql', expected, 'sqls', (! param.opts.outputEncoding ? {} : undefined));
+                    return setIfFileExists(basePath+'.sql', expected, 'rawSql', {} /*(! param.opts.outputEncoding ? {} : undefined)*/);
                 }).then(function() {
-                    if(expected.sqls) {
-                        //console.log(fixture.path+" expected.sqls: "+txtToSql.getEncodingSinc(expected.sqls));
-                        expected.sqls = makeSqlArray(expected.sqls);
-                        //console.log(fixture.path+" expected.sqls: [1] "+txtToSql.getEncodingSinc(expected.sqls[1]));
-                    }
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
                     return txtToSql.prepare(param);
@@ -135,8 +147,8 @@ describe("fixtures", function(){
                     if(expected.columns) { expect(prepared.columns).to.eql(expected.columns); }
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
-                    expect(generated.sqls).to.eql(expected.sqls);
-                    expect(differences(generated.sqls,expected.sqls)).to.eql(null);
+                    expect(generated.rawSql).to.eql(expected.rawSql);
+                    expect(differences(generated.rawSql,expected.rawSql)).to.eql(null);
                     // coherencia entre prepared y generated
                     expect(generated.errors).to.eql(prepared.errors);
                }).then(done,done);
@@ -155,10 +167,9 @@ describe("specials", function(){
         Promise.resolve().then(function(){
             return txtToSql.generateScripts({tableName:'example-one', rawTable:rawTable});
         }).then(function(generated){
-            return fs.readFile('./test/fixtures/example-one.sql', {encoding:'utf8'}).then(function(sqls){
-                sqls = makeSqlArray(sqls);
-                expect(generated.sqls).to.eql(sqls);
-                expect(differences(generated.sqls,sqls)).to.eql(null);
+            return fs.readFile('./test/fixtures/example-one.sql').then(function(rawSql){
+                expect(generated.rawSql).to.eql(rawSql);
+                expect(differences(generated.rawSql,rawSql)).to.eql(null);
                 return;
             });
         }).then(done,done);

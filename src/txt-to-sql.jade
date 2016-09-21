@@ -176,7 +176,7 @@ html(lang=lang)
             return generateScripts(param);
         }).then(function(generated) {
             if(generated.errors) { throw new Error(generated.errors.join('\n')); }
-            var blob = new Blob(generated.sqls.map(function(sql) { return sql+'\n'; }), {type: 'text/plain'})
+            var blob = new Blob([generated.rawSql.buffer], {type: 'text/plain'})
             var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
             var link = html.a({href:url}, messages.download).create();
             link.setAttribute("download", tableName+".sql");
