@@ -189,9 +189,6 @@ describe("old errors", function(){
     );
     var optDummyTxt = new Buffer('dummy', 'binary');
     [
-        { name:'unsupported encodings',
-          param:{tableName:'t1', rawTable:optDummyTxt, opts:{outputEncoding: 'miEnco', inputEncoding: 'win1252'}},
-          errors:["unsupported input encoding 'win1252'", "unsupported output encoding 'miEnco'"]},
         { name:'rawTable is not a Buffer',
           param:{tableName:'t1', rawTable:'not a buffer', opts:{columnNames:['one','two','three']}},
           errors:['info.rawTable must be an Buffer']},
@@ -218,7 +215,7 @@ describe("input errors", function(){
         { name:'all-bad-params'},
         { name:'wrong-number-of-column-names'},
         { name:'duplicated-column-names'},
-        { name:'unsupported-encoding', change:function(param) { param.rawTable = dummyBuffer; }},
+        { name:'unsupported-encodings', change:function(param) { param.rawTable = dummyBuffer; }},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
