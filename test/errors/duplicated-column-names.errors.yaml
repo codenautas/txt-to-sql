@@ -1,0 +1,3 @@
+errors:
+  - duplicated column name '"one"'
+  - duplicated column name '"three"'

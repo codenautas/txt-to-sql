@@ -189,9 +189,6 @@ describe("old errors", function(){
     );
     var optDummyTxt = new Buffer('dummy', 'binary');
     [
-        { name:'duplicated column names',
-          param:{tableName:'t1', rawTable:rawTable, opts:{columnNames:['one','two','three','one','three']}},
-          errors:["duplicated column name '\"one\"'", "duplicated column name '\"three\"'"]},
         { name:'unsupported encoding',
           param:{tableName:'t1', rawTable:optDummyTxt, opts:{outputEncoding: 'win1252'}},
           errors:["unsupported output encoding 'win1252'"]},
@@ -218,11 +215,12 @@ describe("input errors", function(){
     var dummyBuffer = new Buffer('dummy', 'binary');
     [
         { name:'no-rawtable'},
-        { name:'no-table-and-rawtable' },
-        { name:'no-table-bad-column-format', change:function(param) { param.rawTable = dummyBuffer; } },
-        { name:'unsupported engine', change:function(param) { param.rawTable = dummyBuffer; } },
-        { name:'all-bad-params' },
-        { name:'wrong-number-of-column-names' },
+        { name:'no-table-and-rawtable'},
+        { name:'no-table-bad-column-format', change:function(param) { param.rawTable = dummyBuffer; }},
+        { name:'unsupported engine', change:function(param) { param.rawTable = dummyBuffer; }},
+        { name:'all-bad-params'},
+        { name:'wrong-number-of-column-names'},
+        { name:'duplicated-column-names'},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);

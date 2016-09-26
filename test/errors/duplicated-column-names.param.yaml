@@ -1,0 +1,8 @@
+tableName: t1
+opts:
+  columnNames:
+     - one
+     - two
+     - three
+     - one
+     - three
