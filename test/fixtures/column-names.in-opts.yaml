@@ -1,6 +1,6 @@
-columnNames:
-    - mi-text
-    - mi-int
-    - mi-num
-    - mi-big
-    - mi-double
+columns:
+    - name: mi-text
+    - name: mi-int
+    - name: mi-num
+    - name: mi-big
+    - name: mi-double

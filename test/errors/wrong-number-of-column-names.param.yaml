@@ -1,6 +1,6 @@
 tableName: t1
 opts:
-  columnNames:
-     - one
-     - two
-     - three
+  columns:
+     - name: one
+     - name: two
+     - name: three
