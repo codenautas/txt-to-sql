@@ -8,7 +8,8 @@ delete window.require;
 /* space */</script><script src="require-bro.js"></script><script>/* space */
 window.require.definedModules['iconv-lite'] = iconv;
 /* space */</script><script src="best-globals.js"></script><script src="txt-to-sql.js"></script><script src="js-to-html.js"></script><script>/* space */
-var options = {};
+var userOptions = {};
+var preparedColumns = {};
 var messages={
   es:{
       loading:'cargando',
@@ -68,7 +69,7 @@ var messages={
   }
 }[window.lang||'es'];
 function resetPage() {
-    options = {
+    userOptions = {
         verboseErrors:true,
         columnAlignedCommas:true
     };
@@ -93,7 +94,7 @@ function processFile(file, messageText) {
     return promise.then(function(arrayBuffer){
         return new Buffer(arrayBuffer);
     }).then(function(buf){
-        return {tableName:tableName, rawTable:buf, opts:options};
+        return {tableName:tableName, rawTable:buf, opts:userOptions};
     }).catch(function(err){
         errMessage.textContent=err.message;
     });
@@ -102,8 +103,9 @@ var html = jsToHtml.html;
 function addStep(labelText, elements) {
     steps.appendChild(html.div([html.label(labelText)].concat(elements)).create());
 }
-function createInput(name, value, width) {
+function createInput(name, value, width, id) {
     var attrs = {name:name};
+    if(id) { attrs.id = id; }
     if(typeof(value)==='boolean') {
         attrs.type = 'checkbox',
         attrs.checked = value;
@@ -114,13 +116,29 @@ function createInput(name, value, width) {
     }
     return html.input(attrs);
 }
-function createOption(label, name, value, width) {
+function createOption(label, name, value, width, id) {
     return html.tr([
         html.td([html.label(label)]),
-        html.td([createInput(name, value, width)])            
+        html.td([createInput(name, value, width, id)])            
     ]).create();
 }
 function handleGenerate(event){
+    // modify userOptions according to prepare()
+    var addColumns = false;
+    if(! userOptions.columns) {
+        userOptions.columns = [];
+        addColumns = true;
+    }
+    preparedColumns.forEach(function(column, index) {
+        var colName = document.getElementById('col_name_'+index);
+        if(addColumns) {
+            userOptions.columns.push({name:colName.value});
+        } else {
+            userOptions.columns[index].name = colName.value;
+        }
+    });
+    
+    // Process files
     var file = event.target.file; // FileList object
     var tableName;
     processFile(file, messages.generating).then(function(param) {
@@ -145,27 +163,27 @@ function handlePrepare(event){
             return prepare(param);
         }).then(function(prepared) {
             if(prepared.errors) { throw new Error(prepared.errors.join('\n')); }
-            options = prepared.opts;
-            var button = html.input({type:'button', value:messages.generate}).create();
-            button.file = file;
-            button.addEventListener('click', handleGenerate, false);
+            preparedColumns = prepared.columns;
+            var butGenerate = html.input({type:'button', value:messages.generate}).create();
+            butGenerate.file = file;
+            butGenerate.addEventListener('click', handleGenerate, false);
             var tblOpts = html.table({class:'inner'},[
                 html.th({colspan:2},[html.td("Options")]).create(),
-                createOption(messages.opts.commas, 'columnAlignedCommas', options.columnAlignedCommas, 1),
-                createOption(messages.opts.width, 'columnAlignedMaxWidth', options.columnAlignedMaxWidth, 1),
-                createOption(messages.opts.format, 'columnNamesFormat', options.columnNamesFormat, 15),
-                createOption(messages.opts.separator, 'separator', options.separator, 1),
-                createOption(messages.opts.outformat, 'outputEngine', options.outputEngine, 10),
-                createOption(messages.opts.pk, 'includePrimaryKey', options.includePrimaryKey, 1),
-                createOption(messages.opts.verbose, 'verboseErrors', options.verboseErrors, 1),
-                createOption(messages.opts.inputEncoding, 'inputEncoding', options.inputEncoding, 1),
-                createOption(messages.opts.outputEncoding, 'outputEncoding', options.outputEncoding, 1),
+                createOption(messages.opts.commas, 'columnAlignedCommas', prepared.opts.columnAlignedCommas, 1),
+                createOption(messages.opts.width, 'columnAlignedMaxWidth', prepared.opts.columnAlignedMaxWidth, 1),
+                createOption(messages.opts.format, 'columnNamesFormat', prepared.opts.columnNamesFormat, 15),
+                createOption(messages.opts.separator, 'separator', prepared.opts.separator, 1),
+                createOption(messages.opts.outformat, 'outputEngine', prepared.opts.outputEngine, 10),
+                createOption(messages.opts.pk, 'includePrimaryKey', prepared.opts.includePrimaryKey, 1),
+                createOption(messages.opts.verbose, 'verboseErrors', prepared.opts.verboseErrors, 1),
+                createOption(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, 1),
+                createOption(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, 1),
             ]).create();
             //console.log("column", prepared.columns);
-            var fields = prepared.columns.map(function(column) {
+            var fields = prepared.columns.map(function(column, index) {
                 var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                 return html.tr([
-                            html.td([createInput('name', column.name.substr(1,column.name.length-2), 15)]),
+                            html.td([createInput('name', column.name.substr(1,column.name.length-2), 15, 'col_name_'+index)]),
                             html.td([createInput('type', column.type, 10)]),
                             html.td([createInput('inPrimaryKey', column.inPrimaryKey)]),
                             html.td([createInput('hasNullValues', column.hasNullValues)]),
@@ -191,7 +209,7 @@ function handlePrepare(event){
                                             html.td([tblOpts]),
                                             html.td([tblFields])
                                         ]),
-                                        button
+                                        butGenerate
                                     ]).create()]);
         }).catch(function(err){
             errMessage.textContent=err.message;
