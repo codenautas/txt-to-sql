@@ -84,7 +84,6 @@ describe("fixtures", function(){
         {path:'comma-align-nulls'},
         {path:'comma-align-one-column'},
         {path:'comma-align-with-max'},
-        {path:'one-column-no-sep', changeExpected:function(exp) { exp.opts.separator = false; delete exp.columns; }},
         {path:'adapt'},
         {path:'column-names'},
         {path:'columns-with-spaces'},
@@ -189,6 +188,7 @@ describe("input errors", function(){
         { name:'fields-lcalpha-dups'},
         { name:'fields-lcnames-dups'},
         { name:'fields-unmod-dups'},
+        { name:'one-column-no-sep'},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
