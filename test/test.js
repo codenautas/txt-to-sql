@@ -95,7 +95,6 @@ describe("fixtures", function(){
         {path:'sqlite-adapt'},
         {path:'mssql-example-one'},
         {path:'oracle-example-one'},
-        {path:'invalid-utf8'},
         {path:'invalid-ansi', skip:true},
         {path:'with-drop-table'},
         {path:'mysql-with-drop-table'},
@@ -189,6 +188,7 @@ describe("input errors", function(){
         { name:'fields-lcnames-dups'},
         { name:'fields-unmod-dups'},
         { name:'one-column-no-sep'},
+        { name:'invalid-utf8'},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);

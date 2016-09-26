@@ -1,5 +1,0 @@
-opts:
-  includePrimaryKey: false
-  separator: false
-errors:
-  - "utf8 check failed in position: 39"

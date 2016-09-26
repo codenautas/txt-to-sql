@@ -1,0 +1,5 @@
+tableName: t1
+opts:
+  includePrimaryKey: false
+  inputEncoding: UTF8
+  outputEncoding: UTF8
