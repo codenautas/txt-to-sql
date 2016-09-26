@@ -190,6 +190,7 @@ describe("input errors", function(){
         { name:'invalid-utf8'},
         { name:'invalid-ansi', skip:true},
         { name:'row-diff-num-columns'},
+        { name:'missing-col-names'},
     ].forEach(function(check){
         if(check.skip) {
             it.skip("error: "+check.name);

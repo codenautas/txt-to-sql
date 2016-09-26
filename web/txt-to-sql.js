@@ -42,7 +42,7 @@ function adaptPlain(x){
 
 function adaptText(x){
     if(x===''){ return 'null'; }
-    return "'"+x.replace(/'/g,"''").replace(/\r/g,"' || chr(10) || '").replace(/\n/g,"' || chr(13) || '")+"'"; 
+    return "'"+x.replace(/'/g,"''").replace(/\r/g,"' || LQ(10) || '").replace(/\n/g,"' || LQ(13) || '")+"'"; 
 }
 
 function filling(columnLength, val) { return val.length>=columnLength?'':new Array(columnLength - val.length + 1).join(' '); }
@@ -61,10 +61,10 @@ function mapTypes(typeNames) {
     return typeNames.map(function(type, index) { return Object.assign({typeName:type}, types[index]); });
 }
 
-var quoteBackTick = { chr:'`', fun:function(objectName) { return '`'+objectName.replace(/`/g,'``')+'`'; } };
+var quoteBackTick = { LQ:'`', RQ:'`', fun:function(objectName) { return '`'+objectName.replace(/`/g,'``')+'`'; } };
 // Solo hay que escapar ']' de acuerdo con: https://technet.microsoft.com/en-us/library/ms176027(v=sql.105).aspx
-var quoteBracket = { chr:']', fun:function(objectName) { return '['+objectName.replace(/]/g,']]')+']'; } };
-var quoteDouble = { chr:'"', fun:function(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; } };
+var quoteBracket = { LQ:'[', RQ:']', fun:function(objectName) { return '['+objectName.replace(/]/g,']]')+']'; } };
+var quoteDouble = { LQ:'"', RQ:'"', fun:function(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; } };
 
 function dropTableIfExists(tableName) { return "drop table if exists "+tableName; }
 function dropTable(tableName) { return "drop table "+tableName; }
@@ -299,14 +299,19 @@ function transformNames(info) {
     return info;
 }
 
-function verifyColumnNameDuplication(info) {
+function verifyColumnNames(info) {
     var errors=[];
     var namesHash = {};
+    var empty = info.outputEngine.quote.LQ+info.outputEngine.quote.RQ;
     info.columnsInfo.forEach(function(columnInfo, columnIndex){
-        if(columnInfo.name in namesHash) {
-            errors.push("duplicated column name '"+columnInfo.name+"'");
+        if(columnInfo.name===empty) {
+            errors.push("missing name for column #"+(columnIndex+1));
         } else {
-            namesHash[columnInfo.name] = true;
+            if(columnInfo.name in namesHash) {
+                errors.push("duplicated column name '"+columnInfo.name+"'");
+            } else {
+                namesHash[columnInfo.name] = true;
+            }
         }
     });
     throwIfErrors(errors);
@@ -481,7 +486,7 @@ function setup(info) {
         .then(separateColumns)
         .then(verifyColumnCount)
         .then(transformNames)
-        .then(verifyColumnNameDuplication)
+        .then(verifyColumnNames)
         .then(determineColumnTypes)
         .then(determinePrimaryKey)
         .then(determineColumnValuesInfo);
