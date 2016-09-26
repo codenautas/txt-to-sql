@@ -178,9 +178,6 @@ describe("old errors", function(){
     );
     var optDummyTxt = new Buffer('dummy', 'binary');
     [
-        { name:'unsupported engine',
-          param:{tableName:'t1', rawTable:optDummyTxt, opts:{outputEngine: 'badEngineName'}},
-          errors:["unsupported output engine 'badEngineName'"]},
         { name:'all bad params',
           param:{opts:optBadFieldFormat},
           errors:[eNoTable, eNoTXT, eBadFieldFormat]},
@@ -218,6 +215,7 @@ describe("input errors", function(){
         { name:'no-rawtable'},
         { name:'no-table-and-rawtable' },
         { name:'no-table-bad-column-format', change:function(param) { param.rawTable = dummyBuffer; } },
+        { name:'unsupported engine', change:function(param) { param.rawTable = dummyBuffer; } },
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);

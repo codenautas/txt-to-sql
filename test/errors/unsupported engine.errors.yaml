@@ -1,0 +1,2 @@
+errors:
+  - "unsupported output engine 'badEngineName'"
