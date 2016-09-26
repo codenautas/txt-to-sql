@@ -14,7 +14,6 @@ function setIfFileExists(fileName, outObject, outProperty, options) {
         return { notExists: true };
     }).then(function(content) {
         if(! content.notExists) {
-            //console.log("setIfFileExists("+fileName+"): "+txtToSql.getEncodingSinc(content));
             outObject[outProperty] = content;
         }
     });
@@ -35,14 +34,6 @@ function loadDefaultExpectedResult() {
     });
 }
 
-/*
-function makeSqlArray(sqls) {
-    //console.log("typeof sqls", typeof sqls)
-    sqls = typeof sqls === 'string' ? sqls : sqls.toString('binary');
-    return sqls.split(/(\r?\n){2}/g)
-               .filter(function(sqls){ return !sqls.match(/^(\r?\n)$/); });
-}
-*/
 function makeSqlArray(sqlsBuf) {
     var iNL=0;
     var sqlsArr=[];
@@ -133,8 +124,7 @@ describe("fixtures", function(){
                         console.log("OE", param.opts.outputEncoding)
                         throw new Error('Unhandled output test! Re-think next setIfFileExists() line!!');
                     }
-                    //return setIfFileExists(basePath+'.sql', expected, 'sqls', {encoding: (! param.opts.outputEncoding ? 'binary' : 'utf8')});
-                    return setIfFileExists(basePath+'.sql', expected, 'rawSql', {} /*(! param.opts.outputEncoding ? {} : undefined)*/);
+                    return setIfFileExists(basePath+'.sql', expected, 'rawSql', {});
                 }).then(function() {
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
