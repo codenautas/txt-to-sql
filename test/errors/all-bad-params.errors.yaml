@@ -1,0 +1,5 @@
+errors:
+  - 'undefined table name'
+  - 'no rawTable in input'
+  - "inexistent column names format 'not a format'"
+  - "unsupported output engine 'not an engine'"

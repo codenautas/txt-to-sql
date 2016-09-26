@@ -178,9 +178,6 @@ describe("old errors", function(){
     );
     var optDummyTxt = new Buffer('dummy', 'binary');
     [
-        { name:'all bad params',
-          param:{opts:optBadFieldFormat},
-          errors:[eNoTable, eNoTXT, eBadFieldFormat]},
         { name:'wrong number of column names',
           param:{tableName:'t1', rawTable:rawTable, opts:{columnNames:['one','two','three']}},
           errors:['wrong number of column names: expected 5, obtained 3']},
@@ -216,6 +213,7 @@ describe("input errors", function(){
         { name:'no-table-and-rawtable' },
         { name:'no-table-bad-column-format', change:function(param) { param.rawTable = dummyBuffer; } },
         { name:'unsupported engine', change:function(param) { param.rawTable = dummyBuffer; } },
+        { name:'all-bad-params' },
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
