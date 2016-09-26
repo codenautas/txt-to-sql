@@ -37,6 +37,7 @@ html(lang=lang)
     /* space */
     var module = {};
     /* space */
+    function getID(id) { return document.getElementById(id); }
   script(src='buffer.js')
   script(src='iconv-lite.js')
   script.
@@ -149,8 +150,8 @@ html(lang=lang)
     }
     var html = jsToHtml.html;
     function addStep(labelText, elements) {
-        var existe = document.getElementById(labelText);
-        if(existe) { steps.removeChild(document.getElementById(labelText)); }
+        var existe = getID(labelText);
+        if(existe) { steps.removeChild(existe); }
         steps.appendChild(html.div({id:labelText}, [html.label(labelText)].concat(elements)).create());
     }
     function createInput(name, value, width, id) {
@@ -169,7 +170,7 @@ html(lang=lang)
     function createOption(label, name, value, width, id) {
         return html.tr([
             html.td([html.label(label)]),
-            html.td([createInput(name, value, width, id)])            
+            html.td([createInput(name, value, width, id || name)])            
         ]).create();
     }
     function handleGenerate(event){
@@ -179,8 +180,17 @@ html(lang=lang)
             userOptions.columns = [];
             addColumns = true;
         }
+        userOptions.columnAlignedCommas   = getID('columnAlignedCommas').checked;
+        userOptions.columnAlignedMaxWidth = getID('columnAlignedMaxWidth').value;
+        userOptions.columnNamesFormat     = getID('columnNamesFormat').value;
+        userOptions.separator             = getID('separator').value;
+        userOptions.outputEngine          = getID('outputEngine').value;
+        userOptions.includePrimaryKey     = getID('includePrimaryKey').checked;
+        userOptions.verboseErrors         = getID('verboseErrors').checked;
+        userOptions.inputEncoding         = getID('inputEncoding').value;
+        userOptions.outputEncoding        = getID('outputEncoding').value;
         preparedColumns.forEach(function(column, index) {
-            var colName = document.getElementById('col_name_'+index);
+            var colName = getID('col_name_'+index);
             if(addColumns) {
                 userOptions.columns.push({name:colName.value});
             } else {
@@ -226,8 +236,8 @@ html(lang=lang)
                     createOption(messages.opts.outformat, 'outputEngine', prepared.opts.outputEngine, 10),
                     createOption(messages.opts.pk, 'includePrimaryKey', prepared.opts.includePrimaryKey, 1),
                     createOption(messages.opts.verbose, 'verboseErrors', prepared.opts.verboseErrors, 1),
-                    createOption(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, 1),
-                    createOption(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, 1),
+                    createOption(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, 7),
+                    createOption(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, 7),
                 ]).create();
                 //console.log("column", prepared.columns);
                 var fields = prepared.columns.map(function(column, index) {
@@ -266,7 +276,7 @@ html(lang=lang)
             });
         });
     }
-    document.getElementById('inputFile').addEventListener('change', handlePrepare, false);
+    getID('inputFile').addEventListener('change', handlePrepare, false);
     // para el F5 post "npm run web"
     resetPage();
     inputFile.value = "";
