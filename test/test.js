@@ -191,6 +191,7 @@ describe("input errors", function(){
         { name:'invalid-ansi', skip:true},
         { name:'row-diff-num-columns'},
         { name:'missing-col-names'},
+        { name:'missing-pk', skip:true},
     ].forEach(function(check){
         if(check.skip) {
             it.skip("error: "+check.name);
@@ -213,7 +214,7 @@ describe("input errors", function(){
                     //console.log(check.name, param);
                     return txtToSql.prepare(param);
                 }).then(function(prepared){
-                    //console.log(check.name, prepared.errors, expected.errors)
+                    //console.log(check.name, "prep", prepared.errors, "expe", expected.errors)
                     expect(prepared.errors).to.eql(expected.errors);
                 }).then(done,done);
             });
