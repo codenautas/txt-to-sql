@@ -166,21 +166,18 @@ describe("specials", function(){
     });
 });
 
-describe("input errors", function(){
+describe("old errors", function(){
     var eNoTXT='no rawTable in input';
     var eNoTable='undefined table name';
     var eBadFieldFormat="inexistent column names format 'inexistent_format'";
     var optBadFieldFormat = {columnNamesFormat: 'inexistent_format'};
-    var optColumnTxt = new Buffer(
+    var rawTable = new Buffer(
         'text-field;int-field;num-field;big;double\n'+
         'hello;1;3.141592;1234567890;1.12e-101\n'+
         ';;;0;0.0', 'binary'
     );
     var optDummyTxt = new Buffer('dummy', 'binary');
     [
-        { name:'no rawTable',
-          param:{tableName:'t1'},
-          errors:[eNoTXT]},
         { name:'no rawTable and tableName',
           param:{},
           errors:[eNoTable, eNoTXT]},
@@ -194,10 +191,10 @@ describe("input errors", function(){
           param:{opts:optBadFieldFormat},
           errors:[eNoTable, eNoTXT, eBadFieldFormat]},
         { name:'wrong number of column names',
-          param:{tableName:'t1', rawTable:optColumnTxt, opts:{columnNames:['one','two','three']}},
+          param:{tableName:'t1', rawTable:rawTable, opts:{columnNames:['one','two','three']}},
           errors:['wrong number of column names: expected 5, obtained 3']},
         { name:'duplicated column names',
-          param:{tableName:'t1', rawTable:optColumnTxt, opts:{columnNames:['one','two','three','one','three']}},
+          param:{tableName:'t1', rawTable:rawTable, opts:{columnNames:['one','two','three','one','three']}},
           errors:["duplicated column name '\"one\"'", "duplicated column name '\"three\"'"]},
         { name:'unsupported encoding',
           param:{tableName:'t1', rawTable:optDummyTxt, opts:{outputEncoding: 'win1252'}},
@@ -215,6 +212,36 @@ describe("input errors", function(){
             it(check.name, function(done){
                 txtToSql.prepare(check.param).then(function(prepared){
                     expect(prepared.errors).to.eql(check.errors);
+                }).then(done,done);
+            });
+        }
+    });
+});
+
+describe("input errors", function(){
+    [
+        { name:'no-rawtable' },
+    ].forEach(function(check){
+        if(check.skip) {
+            it.skip(check.name);
+        } else {
+            it("error: "+check.name, function(done){
+                var basePath='./test/errors/'+check.name;
+                var loaded={};
+                var param={};
+                var expected={};
+                setIfFileExists(basePath+'.param.yaml', loaded, 'param').then(function() {
+                    if(loaded.param) { param = yaml.safeLoad(loaded.param); }
+                    if(! param.opts) { param.opts={}; }
+                    return setIfFileExists(basePath+'.txt', param, 'rawTable', {});
+                }).then(function() {
+                    return loadYamlIfFileExists(basePath+'.errors.yaml');
+                }).then(function(yaml) {
+                    expected = yaml;
+                }).then(function() {
+                    return txtToSql.prepare(param);
+                }).then(function(prepared){
+                    expect(prepared.errors).to.eql(expected.errors);
                 }).then(done,done);
             });
         }
