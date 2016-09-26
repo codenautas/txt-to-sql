@@ -1,0 +1,3 @@
+errors:
+  - 'undefined table name'
+  - 'no rawTable in input'

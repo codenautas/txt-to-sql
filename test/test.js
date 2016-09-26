@@ -178,9 +178,6 @@ describe("old errors", function(){
     );
     var optDummyTxt = new Buffer('dummy', 'binary');
     [
-        { name:'no rawTable and tableName',
-          param:{},
-          errors:[eNoTable, eNoTXT]},
         { name:'no tableName and columnNamesFormat',
           param:{rawTable:optDummyTxt, opts:optBadFieldFormat},
           errors:[eNoTable, eBadFieldFormat]},
@@ -221,6 +218,7 @@ describe("old errors", function(){
 describe("input errors", function(){
     [
         { name:'no-rawtable' },
+        { name:'no-table-and-rawtable' },
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
