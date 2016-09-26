@@ -345,21 +345,34 @@ function getLengthInfo(val, typeName) {
     return {length:num[0].length, scale:num.length===2?num[1].length:0};
 }
 
+function haveColumnInfo(info, prop) {
+    return (info.opts.columns && info.opts.columns.length && info.opts.columns[0].hasOwnProperty(prop) ? true : false);
+}
+function setCol(info, prop, index, defVal, stateArray) {
+    if(haveColumnInfo(info, prop)) {
+        stateArray[prop] = true;
+        return info.opts.columns[prop];
+    }
+    stateArray[prop] = false;
+    return defVal;
+}
+
 function determineColumnValuesInfo(info) {
-    info.columnsInfo.forEach(function(columnInfo) {
-        columnInfo.maxLength            = 0;
-        columnInfo.maxScale             = isTextType(columnInfo.typeInfo.typeName)?null:0; // maxima cantidad de decimales
-        columnInfo.hasNullValues        = false;
-        columnInfo.hasCientificNotation = hasCientificNotation(columnInfo.typeInfo.typeName);
+    var defaults = new Array(info.columnsInfo.length);
+    info.columnsInfo.forEach(function(colInfo, colIndex) {
+        colInfo.maxLength            = setCol(info, 'maxLength', colIndex, 0, defaults);
+        colInfo.maxScale             = setCol(info, 'maxScale', colIndex, isTextType(colInfo.typeInfo.typeName)?null:0, defaults); // maxima cantidad de decimales
+        colInfo.hasNullValues        = setCol(info, 'hasNullValues', colIndex, false, defaults);
+        colInfo.hasCientificNotation = setCol(info, 'hasCientificNotation', colIndex, hasCientificNotation(colInfo.typeInfo.typeName), defaults);
     });
     info.rows.forEach(function(row) {
         info.columnsInfo.forEach(function(column, columnIndex) {
             var val=row[columnIndex];
             var lenInfo = getLengthInfo(val, column.typeInfo.typeName);
-            if(column.maxLength<lenInfo.length) { column.maxLength=lenInfo.length; }
-            if(column.maxScale!==null && column.maxScale<lenInfo.scale) { column.maxScale=lenInfo.scale; }
-            if(! column.hasNullValues && ! val) { column.hasNullValues=true; }
-            if(column.hasCientificNotation===false && val.match(/[eE]/)) { column.hasCientificNotation=true; }
+            if(! defaults.maxLength && column.maxLength<lenInfo.length) { column.maxLength=lenInfo.length; }
+            if(! defaults.maxScale && column.maxScale!==null && column.maxScale<lenInfo.scale) { column.maxScale=lenInfo.scale; }
+            if(! defaults.hasNullValues && ! column.hasNullValues && ! val) { column.hasNullValues=true; }
+            if(! defaults.hasCientificNotation && column.hasCientificNotation===false && val.match(/[eE]/)) { column.hasCientificNotation=true; }
         });
     });
     return  info;
@@ -367,6 +380,11 @@ function determineColumnValuesInfo(info) {
 
 function determinePrimaryKey(info) {
     if(info.opts.includePrimaryKey) {
+        if(haveColumnInfo(info, 'inPrimaryKey') && info.columnsInfo.filter(function(col) {
+            return info.opts.columns.inPrimaryKey==true;
+        }).length==0) {
+            throw new Error("includePrimaryKey is on but no columns were selected");
+        }
         try{
             var combinedKeys=new Array(info.rows.length);
             info.columnsInfo.some(function(column, columnIndex) {
@@ -496,7 +514,7 @@ function setup(info) {
 }
 
 function catchErrors(info, err) {
-    //console.log("err", err); console.log("err.stack", err.stack); console.log("opts", info.opts)
+    // console.log("err", err); console.log("err.stack", err.stack); console.log("opts", info.opts)
     var errors = (err.errors || [err.message]);
     if(info.opts.verboseErrors) { errors.push(err.stack); }
     return { errors: errors, opts:info.opts};
