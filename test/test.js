@@ -177,34 +177,6 @@ describe("specials", function(){
     });
 });
 
-describe("old errors", function(){
-    var eNoTXT='no rawTable in input';
-    var eNoTable='undefined table name';
-    var eBadFieldFormat="inexistent column names format 'inexistent_format'";
-    var optBadFieldFormat = {columnNamesFormat: 'inexistent_format'};
-    var rawTable = new Buffer(
-        'text-field;int-field;num-field;big;double\n'+
-        'hello;1;3.141592;1234567890;1.12e-101\n'+
-        ';;;0;0.0', 'binary'
-    );
-    var optDummyTxt = new Buffer('dummy', 'binary');
-    [
-        { name:'rawTable is not a Buffer',
-          param:{tableName:'t1', rawTable:'not a buffer', opts:{columnNames:['one','two','three']}},
-          errors:['info.rawTable must be an Buffer']},
-    ].forEach(function(check){
-        if(check.skip) {
-            it.skip(check.name);
-        } else {
-            it(check.name, function(done){
-                txtToSql.prepare(check.param).then(function(prepared){
-                    expect(prepared.errors).to.eql(check.errors);
-                }).then(done,done);
-            });
-        }
-    });
-});
-
 describe("input errors", function(){
     var dummyBuffer = new Buffer('dummy', 'binary');
     [
@@ -216,6 +188,7 @@ describe("input errors", function(){
         { name:'wrong-number-of-column-names'},
         { name:'duplicated-column-names'},
         { name:'unsupported-encodings', change:function(param) { param.rawTable = dummyBuffer; }},
+        { name:'bad-rawtable', change:function(param) { param.rawTable = 'not a Buffer'; }},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
