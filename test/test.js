@@ -26,6 +26,17 @@ function loadYamlIfFileExists(fileName) {
     });
 }
 
+function loadYaml(fileName) {
+    var res = {};
+    return setIfFileExists(fileName, res, 'all').then(function() {
+        if(!res.all) {
+            throw new Error('"'+fileName+'" debe existir');
+        }
+        return yaml.safeLoad(res.all);
+    });
+}
+
+
 var defaultExpectedResult;
 function loadDefaultExpectedResult() {
     if(defaultExpectedResult) { return Promise.resolve(defaultExpectedResult); }
@@ -178,9 +189,6 @@ describe("old errors", function(){
     );
     var optDummyTxt = new Buffer('dummy', 'binary');
     [
-        { name:'wrong number of column names',
-          param:{tableName:'t1', rawTable:rawTable, opts:{columnNames:['one','two','three']}},
-          errors:['wrong number of column names: expected 5, obtained 3']},
         { name:'duplicated column names',
           param:{tableName:'t1', rawTable:rawTable, opts:{columnNames:['one','two','three','one','three']}},
           errors:["duplicated column name '\"one\"'", "duplicated column name '\"three\"'"]},
@@ -214,6 +222,7 @@ describe("input errors", function(){
         { name:'no-table-bad-column-format', change:function(param) { param.rawTable = dummyBuffer; } },
         { name:'unsupported engine', change:function(param) { param.rawTable = dummyBuffer; } },
         { name:'all-bad-params' },
+        { name:'wrong-number-of-column-names' },
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
@@ -229,13 +238,14 @@ describe("input errors", function(){
                     return setIfFileExists(basePath+'.txt', param, 'rawTable', {});
                 }).then(function() {
                     if(check.change) { check.change(param); }
-                    return loadYamlIfFileExists(basePath+'.errors.yaml');
+                    return loadYaml(basePath+'.errors.yaml');
                 }).then(function(yaml) {
                     expected = yaml;
                 }).then(function() {
-                    //console.log(check.name, param)
+                    //console.log(check.name, param);
                     return txtToSql.prepare(param);
                 }).then(function(prepared){
+                    //console.log(check.name, prepared.errors, expected.errors)
                     expect(prepared.errors).to.eql(expected.errors);
                 }).then(done,done);
             });
