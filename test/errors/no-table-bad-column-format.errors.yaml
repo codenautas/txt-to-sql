@@ -1,0 +1,3 @@
+errors:
+  - 'undefined table name'
+  - "inexistent column names format 'inexistent_format'"

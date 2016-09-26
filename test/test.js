@@ -178,9 +178,6 @@ describe("old errors", function(){
     );
     var optDummyTxt = new Buffer('dummy', 'binary');
     [
-        { name:'no tableName and columnNamesFormat',
-          param:{rawTable:optDummyTxt, opts:optBadFieldFormat},
-          errors:[eNoTable, eBadFieldFormat]},
         { name:'unsupported engine',
           param:{tableName:'t1', rawTable:optDummyTxt, opts:{outputEngine: 'badEngineName'}},
           errors:["unsupported output engine 'badEngineName'"]},
@@ -216,9 +213,11 @@ describe("old errors", function(){
 });
 
 describe("input errors", function(){
+    var dummyBuffer = new Buffer('dummy', 'binary');
     [
-        { name:'no-rawtable' },
+        { name:'no-rawtable'},
         { name:'no-table-and-rawtable' },
+        { name:'no-table-bad-column-format', change:function(param) { param.rawTable = dummyBuffer; } },
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
@@ -233,10 +232,12 @@ describe("input errors", function(){
                     if(! param.opts) { param.opts={}; }
                     return setIfFileExists(basePath+'.txt', param, 'rawTable', {});
                 }).then(function() {
+                    if(check.change) { check.change(param); }
                     return loadYamlIfFileExists(basePath+'.errors.yaml');
                 }).then(function(yaml) {
                     expected = yaml;
                 }).then(function() {
+                    //console.log(check.name, param)
                     return txtToSql.prepare(param);
                 }).then(function(prepared){
                     expect(prepared.errors).to.eql(expected.errors);
