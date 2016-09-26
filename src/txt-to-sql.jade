@@ -149,7 +149,9 @@ html(lang=lang)
     }
     var html = jsToHtml.html;
     function addStep(labelText, elements) {
-        steps.appendChild(html.div([html.label(labelText)].concat(elements)).create());
+        var existe = document.getElementById(labelText);
+        if(existe) { steps.removeChild(document.getElementById(labelText)); }
+        steps.appendChild(html.div({id:labelText}, [html.label(labelText)].concat(elements)).create());
     }
     function createInput(name, value, width, id) {
         var attrs = {name:name};
