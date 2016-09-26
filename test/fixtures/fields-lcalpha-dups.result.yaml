@@ -1,4 +1,0 @@
-opts:
-  columnNamesFormat: lowercased_alpha
-errors:
-  - duplicated column name '"esdrujulo"'

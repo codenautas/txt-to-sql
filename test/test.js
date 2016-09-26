@@ -81,7 +81,6 @@ describe("fixtures", function(){
         {path:'fields-lcalpha'},
         {path:'fields-unmod-dups', changeExpected:function(exp) { delete exp.columns; }},
         {path:'fields-lcnames-dups', changeExpected:function(exp) { delete exp.columns; }},
-        {path:'fields-lcalpha-dups', changeExpected:function(exp) { delete exp.columns; }},
         {path:'separator', changeExpected:function(exp) { exp.opts.separator = '/'; }},
         {path:'comma-align'},
         {path:'comma-align-nulls'},
@@ -189,6 +188,7 @@ describe("input errors", function(){
         { name:'duplicated-column-names'},
         { name:'unsupported-encodings', change:function(param) { param.rawTable = dummyBuffer; }},
         { name:'bad-rawtable', change:function(param) { param.rawTable = 'not a Buffer'; }},
+        { name:'fields-lcalpha-dups'},
     ].forEach(function(check){
         if(check.skip) {
             it.skip(check.name);
