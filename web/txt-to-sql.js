@@ -280,6 +280,19 @@ function separateColumns(info){
     return info;
 }
 
+function verifyColumnCount(info) {
+    // row #2 has 4 fields, should have 5
+    var errors=[];
+    info.rows.forEach(function(row, index) {
+        if(row.length !== info.columnsInfo.length) {
+            // index 0 son los nombres de campo
+            errors.push("row #"+(index+1)+" has "+row.length+" fields, should have "+info.columnsInfo.length);
+        } 
+    });
+    throwIfErrors(errors);
+    return info;
+}
+
 function transformNames(info) {
     info.formatedTableName = info.transform(info.tableName);
     info.columnsInfo.forEach(function(column){ column.name=info.transform(column.name); });
@@ -466,6 +479,7 @@ function setup(info) {
         .then(separateLines)
         .then(determineSeparator)
         .then(separateColumns)
+        .then(verifyColumnCount)
         .then(transformNames)
         .then(verifyColumnNameDuplication)
         .then(determineColumnTypes)

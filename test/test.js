@@ -189,6 +189,7 @@ describe("input errors", function(){
         { name:'one-column-no-sep'},
         { name:'invalid-utf8'},
         { name:'invalid-ansi', skip:true},
+        { name:'row-diff-num-columns'},
     ].forEach(function(check){
         if(check.skip) {
             it.skip("error: "+check.name);
