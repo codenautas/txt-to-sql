@@ -1,19 +1,19 @@
 columns:
-  - name: '"x"'
+  - name: x
     type: character varying
     inPrimaryKey: true
     maxLength: 2
     maxScale: null
     hasNullValues: false
     hasCientificNotation: null
-  - name: '"y"'
+  - name: y
     type: character varying
     inPrimaryKey: true
     maxLength: 2
     maxScale: null
     hasNullValues: false
     hasCientificNotation: null
-  - name: '"z"'
+  - name: z
     type: character varying
     inPrimaryKey: false
     maxLength: 1

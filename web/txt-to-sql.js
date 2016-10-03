@@ -197,9 +197,6 @@ function verifyInputParams(info){
     info.nameColumn = function(columnInfo) {
         var name = columnInfo.name+" "+columnInfo.typeInfo.typeName;
         if(! columnInfo.typeInfo.useLength) { return name; }
-        // console.log("name SI usa length", name)
-        // console.log("columnInfo.maxLength", columnInfo.maxLength)
-        // console.log("columnInfo.maxScale", columnInfo.maxScale)
         var scale = columnInfo.maxScale!==null?columnInfo.maxScale:0;
         var precision = columnInfo.maxLength+scale+(scale>0?1:0);
         return name + (columnInfo.maxLength<1 ?'':('('+precision+(scale>0 ? ','+scale:'')+')'));
@@ -352,14 +349,11 @@ function haveColumnInfo(info, prop, index) {
     return (info.opts.columns && info.opts.columns.length && info.opts.columns[index].hasOwnProperty(prop) ? true : false);
 }
 function setCol(info, prop, index, defVal, stateArray) {
-    //console.log("setCol(", info.columnsInfo[index].name, prop, index, defVal,",*)");
     if(haveColumnInfo(info, prop, index)) {
         stateArray[prop] = true;
-        //console.log("  OK ->", info.opts.columns[prop])
-        return info.opts.columns[prop];
+        return info.opts.columns[index][prop];
     }
     stateArray[prop] = false;
-    //console.log("  DEF ->", defVal)
     return defVal;
 }
 
