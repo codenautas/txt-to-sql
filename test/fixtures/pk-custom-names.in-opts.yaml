@@ -1,0 +1,30 @@
+columnNamesFormat: unmodified
+columns:
+  - name: CustomV
+    type: character varying
+    inPrimaryKey: false
+    maxLength: 2
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: CustomX
+    type: character varying
+    inPrimaryKey: true
+    maxLength: 2
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: YCustom
+    type: character varying
+    inPrimaryKey: true
+    maxLength: 2
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: ZCustom
+    type: character varying
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null

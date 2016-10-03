@@ -104,6 +104,7 @@ describe("fixtures", function(){
         {path:'oracle-with-drop-table'},
         {path:'pk-explicit'},
         {path:'pk-custom'},
+        {path:'pk-custom-names'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -145,8 +146,8 @@ describe("fixtures", function(){
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
                     if(txtToSql.compareBuffers(generated.rawSql, expected.rawSql) !==-1) {
-                        console.log("generated", generated.rawSql.toString());
-                        console.log(" expected", expected.rawSql.toString());
+                        console.log("GEN", generated.rawSql.toString());
+                        console.log("EXP", expected.rawSql.toString());
                     }
                     expect(generated.rawSql).to.eql(expected.rawSql);
                     expect(differences(generated.rawSql,expected.rawSql)).to.eql(null);
