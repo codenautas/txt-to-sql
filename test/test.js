@@ -103,6 +103,7 @@ describe("fixtures", function(){
         {path:'mssql-with-drop-table'},
         {path:'oracle-with-drop-table'},
         {path:'pk-explicit'},
+        {path:'pk-custom'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -143,7 +144,10 @@ describe("fixtures", function(){
                     if(expected.columns) { expect(prepared.columns).to.eql(expected.columns); }
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
-                    //console.log("GS", generated.rawSql.toString());  console.log("ES", expected.rawSql.toString());
+                    if(txtToSql.compareBuffers(generated.rawSql, expected.rawSql) !==-1) {
+                        console.log("generated", generated.rawSql.toString());
+                        console.log(" expected", expected.rawSql.toString());
+                    }
                     expect(generated.rawSql).to.eql(expected.rawSql);
                     expect(differences(generated.rawSql,expected.rawSql)).to.eql(null);
                     // coherencia entre prepared y generated
