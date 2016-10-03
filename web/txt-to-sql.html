@@ -80,7 +80,8 @@ function resetPage() {
 }
 function processFile(file, messageText) {
     var tableName=file.name.replace(/^(.*[\\/])?([^\\/\.]+)\.[^\\/\.]+$/,'$2');
-    log.textContent+="\n"+messageText+' '+file.name;
+    // log.textContent+="\n"+messageText+' '+file.name;
+    log.textContent=messageText+' '+file.name;
     var promise = new Promise(function(resolve, reject){
         try{
             var reader = new FileReader();
@@ -141,12 +142,34 @@ function handleGenerate(event){
     userOptions.verboseErrors         = getID('verboseErrors').checked;
     userOptions.inputEncoding         = getID('inputEncoding').value;
     userOptions.outputEncoding        = getID('outputEncoding').value;
+    
     preparedColumns.forEach(function(column, index) {
         var colName = getID('col_name_'+index);
+        var colType = getID('col_type_'+index);
+        var colPK = getID('col_pk_'+index);
+        var colNulls = getID('col_nulls_'+index);
+        var colLen = getID('col_len_'+index);
+        var colScale = getID('col_scale_'+index);
+        var colCN = getID('col_cn_'+index);
+        console.log("colLen", index, colLen.value)
         if(addColumns) {
-            userOptions.columns.push({name:colName.value});
+            userOptions.columns.push({
+                name:colName.value,
+                type:colType.value,
+                inPrimaryKey:colPK.checked,
+                hasNullValues:colNulls.checked,
+                maxLength:colLen.value,
+                maxScale:colScale.value,
+                hasCientificNotation:colCN.checked
+            });
         } else {
             userOptions.columns[index].name = colName.value;
+            userOptions.columns[index].type = colType.value;
+            userOptions.columns[index].inPrimaryKey = colPK.checked;
+            userOptions.columns[index].hasNullValues = colNulls.checked;
+            userOptions.columns[index].maxLength = colLen.value;
+            userOptions.columns[index].maxScale = colScale.value;
+            userOptions.columns[index].hasCientificNotation = colCN.checked;
         }
     });
     
@@ -196,12 +219,12 @@ function handlePrepare(event){
                 var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                 return html.tr([
                             html.td([createInput('name', column.name.substr(1,column.name.length-2), 15, 'col_name_'+index)]),
-                            html.td([createInput('type', column.type, 10)]),
-                            html.td([createInput('inPrimaryKey', column.inPrimaryKey)]),
-                            html.td([createInput('hasNullValues', column.hasNullValues)]),
-                            html.td([createInput('maxLength', column.maxLength)]),
-                            html.td([createInput('maxScale', column.maxScale || 0)]),
-                            html.td([createInput('hasCientificNotation', hcn)]),
+                            html.td([createInput('type', column.type, 10, 'col_type_'+index)]),
+                            html.td([createInput('inPrimaryKey', column.inPrimaryKey, 0, 'col_pk_'+index)]),
+                            html.td([createInput('hasNullValues', column.hasNullValues, 0, 'col_nulls_'+index)]),
+                            html.td([createInput('maxLength', column.maxLength, 0, 'col_len_'+index)]),
+                            html.td([createInput('maxScale', column.maxScale || 0, 0, 'col_scale_'+index)]),
+                            html.td([createInput('hasCientificNotation', hcn, 0, 'col_cn_'+index)])
                        ]);
             });
             fields.unshift(html.tr([
