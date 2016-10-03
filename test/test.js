@@ -198,6 +198,7 @@ describe("input errors", function(){
         { name:'row-diff-num-columns'},
         { name:'missing-col-names'},
         { name:'include-pk-without-pk-columns'},
+        { name:'req-columns-no-pk'},
     ].forEach(function(check){
         if(check.skip) {
             it.skip("error: "+check.name);

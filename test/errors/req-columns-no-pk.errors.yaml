@@ -1,0 +1,2 @@
+errors:
+  - "requested columns failed to be a PrimaryKey"
