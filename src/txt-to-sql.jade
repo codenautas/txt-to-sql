@@ -264,12 +264,15 @@ html(lang=lang)
                 ]).create();
                 //console.log("column", prepared.columns);
                 var fields = prepared.columns.map(function(column, index) {
+                    console.log("column", column)
+                    var ipk = column.inPrimaryKey!==null && column.inPrimaryKey;
+                    var hnv = column.hasNullValues!==null && column.hasNullValues;
                     var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                     return html.tr([
                                 html.td([createInput('name', column.name.substr(1,column.name.length-2), 15, 'col_name_'+index)]),
                                 html.td([createInput('type', column.type, 10, 'col_type_'+index)]),
-                                html.td([createInput('inPrimaryKey', column.inPrimaryKey, 0, 'col_pk_'+index)]),
-                                html.td([createInput('hasNullValues', column.hasNullValues, 0, 'col_nulls_'+index)]),
+                                html.td([createInput('inPrimaryKey', ipk, 0, 'col_pk_'+index)]),
+                                html.td([createInput('hasNullValues', hnv, 0, 'col_nulls_'+index)]),
                                 html.td([createInput('maxLength', column.maxLength, 0, 'col_len_'+index)]),
                                 html.td([createInput('maxScale', column.maxScale || 0, 0, 'col_scale_'+index)]),
                                 html.td([createInput('hasCientificNotation', hcn, 0, 'col_cn_'+index)])

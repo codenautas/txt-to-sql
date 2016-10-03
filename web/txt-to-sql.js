@@ -197,8 +197,8 @@ function verifyInputParams(info){
     info.nameColumn = function(columnInfo) {
         var name = columnInfo.name+" "+columnInfo.typeInfo.typeName;
         if(! columnInfo.typeInfo.useLength) { return name; }
-        var scale = columnInfo.maxScale!==null?columnInfo.maxScale:0;
-        var precision = columnInfo.maxLength+scale+(scale>0?1:0);
+        var scale = parseInt(columnInfo.maxScale!==null?columnInfo.maxScale:0);
+        var precision = parseInt(columnInfo.maxLength)+scale+(scale>0?1:0);
         return name + (columnInfo.maxLength<1 ?'':('('+precision+(scale>0 ? ','+scale:'')+')'));
     };
     
