@@ -199,7 +199,6 @@ html(lang=lang)
             var colLen = getID('col_len_'+index);
             var colScale = getID('col_scale_'+index);
             var colCN = getID('col_cn_'+index);
-            console.log("colLen", index, colLen.value)
             if(addColumns) {
                 userOptions.columns.push({
                     name:colName.value,
@@ -262,9 +261,7 @@ html(lang=lang)
                     createOption(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, 7),
                     createOption(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, 7),
                 ]).create();
-                //console.log("column", prepared.columns);
                 var fields = prepared.columns.map(function(column, index) {
-                    console.log("column", column)
                     var ipk = column.inPrimaryKey!==null && column.inPrimaryKey;
                     var hnv = column.hasNullValues!==null && column.hasNullValues;
                     var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
@@ -288,7 +285,6 @@ html(lang=lang)
                                         html.td(messages.cols.cn)
                                ]));
                 fields.unshift(html.th({colspan:7}, [html.td("Fields")]));
-                //console.log("fields", fields)
                 var tblFields = html.table({class:'inner'}, fields).create();
                 addStep(messages.step2, [html.table({class:'outer'}, [
                                             html.tr([
@@ -297,6 +293,7 @@ html(lang=lang)
                                             ]),
                                             butGenerate
                                         ]).create()]);
+               errMessage.textContent=""; // if all goes ok, clear' em
             }).catch(function(err){
                 errMessage.textContent=err.message;
             });
