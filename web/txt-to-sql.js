@@ -197,6 +197,9 @@ function verifyInputParams(info){
     info.nameColumn = function(columnInfo) {
         var name = columnInfo.name+" "+columnInfo.typeInfo.typeName;
         if(! columnInfo.typeInfo.useLength) { return name; }
+        // console.log("name SI usa length", name)
+        // console.log("columnInfo.maxLength", columnInfo.maxLength)
+        // console.log("columnInfo.maxScale", columnInfo.maxScale)
         var scale = columnInfo.maxScale!==null?columnInfo.maxScale:0;
         var precision = columnInfo.maxLength+scale+(scale>0?1:0);
         return name + (columnInfo.maxLength<1 ?'':('('+precision+(scale>0 ? ','+scale:'')+')'));
@@ -345,15 +348,18 @@ function getLengthInfo(val, typeName) {
     return {length:num[0].length, scale:num.length===2?num[1].length:0};
 }
 
-function haveColumnInfo(info, prop) {
-    return (info.opts.columns && info.opts.columns.length && info.opts.columns[0].hasOwnProperty(prop) ? true : false);
+function haveColumnInfo(info, prop, index) {
+    return (info.opts.columns && info.opts.columns.length && info.opts.columns[index].hasOwnProperty(prop) ? true : false);
 }
 function setCol(info, prop, index, defVal, stateArray) {
-    if(haveColumnInfo(info, prop)) {
+    //console.log("setCol(", info.columnsInfo[index].name, prop, index, defVal,",*)");
+    if(haveColumnInfo(info, prop, index)) {
         stateArray[prop] = true;
+        //console.log("  OK ->", info.opts.columns[prop])
         return info.opts.columns[prop];
     }
     stateArray[prop] = false;
+    //console.log("  DEF ->", defVal)
     return defVal;
 }
 
@@ -381,8 +387,9 @@ function determineColumnValuesInfo(info) {
 function determinePrimaryKey(info) {
     if(info.opts.includePrimaryKey) {
         var excludedFromPK = [];
-        if(haveColumnInfo(info, 'inPrimaryKey') && info.columnsInfo.filter(function(col, colIndex) {
-            if(info.opts.columns.inPrimaryKey==true) { return true; }
+        if(haveColumnInfo(info, 'inPrimaryKey', 0) && info.columnsInfo.filter(function(col, colIndex) {
+            //console.log("IPK", info.opts.columns[colIndex].inPrimaryKey)
+            if(info.opts.columns[colIndex].inPrimaryKey==true) { return true; }
             excludedFromPK.push(colIndex);
             return false;
         }).length==0) {

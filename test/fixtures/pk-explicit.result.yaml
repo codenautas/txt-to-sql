@@ -1,0 +1,23 @@
+opts:
+  columns:
+  - name: '"x"'
+    type: character varying
+    inPrimaryKey: true
+    maxLength: 2
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: '"y"'
+    type: character varying
+    inPrimaryKey: true
+    maxLength: 2
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: '"z"'
+    type: character varying
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
