@@ -419,7 +419,12 @@ function determinePrimaryKey(info) {
             if(err.message!=="haveNullColumns") { throw err; }
         }
         if(haveCustomKeys.length && (! info.primaryKey || ! info.primaryKey.length)) {
-            throw new Error("requested columns failed to be a PrimaryKey");
+            var failingColumns = columnsInKey.map(function(col) {
+                var quote = info.outputEngine.quote;
+                var name = info.columnsInfo[col].name;
+                return name.substr(quote.LQ.length, name.length-quote.RQ.length-quote.LQ.length);
+            }).join(',');
+            throw new Error('requested columns ('+failingColumns+') failed to be a PrimaryKey');
         }
     }
     var primaryKey = info.primaryKey || [];
