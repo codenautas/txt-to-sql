@@ -142,12 +142,18 @@ describe("fixtures", function(){
                     return txtToSql.generateScripts(param);
                 }).then(function(generated){
                     expect(prepared.opts).to.eql(expected.opts);
-                    if(expected.columns) { expect(prepared.columns).to.eql(expected.columns); }
+                    if(expected.columns) {
+                        //console.log("PC", prepared.columns);
+                        //console.log("EC", expected.columns);
+                        expect(prepared.columns).to.eql(expected.columns);
+                    }
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
-                    if(txtToSql.compareBuffers(generated.rawSql, expected.rawSql) !==-1) {
+                    var comp = txtToSql.compareBuffers(generated.rawSql, expected.rawSql);
+                    if(comp !==-1) {
                         console.log("GEN", generated.rawSql.toString());
                         console.log("EXP", expected.rawSql.toString());
+                        console.log("diff in ", comp, expected.rawSql.toString().substring(comp))
                     }
                     expect(generated.rawSql).to.eql(expected.rawSql);
                     expect(differences(generated.rawSql,expected.rawSql)).to.eql(null);
