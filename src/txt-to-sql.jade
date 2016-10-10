@@ -82,6 +82,7 @@ html(lang=lang)
             verbose:'Errores verborrágicos',
             inputEncoding:'Formato de entrada',
             outputEncoding:'Formato de salida',
+            ignoreNullLines:'Ignorar líneas nulas',
           },
           cols:{
             name:'Nombre',
@@ -110,6 +111,7 @@ html(lang=lang)
             verbose:'Verbose errors',
             inputEncoding:'Input encoding',
             outputEncoding:'Output encoding',
+            ignoreNullLines:'Ignore NULL lines',
           },
           cols:{
             name:'Name',
@@ -201,6 +203,7 @@ html(lang=lang)
         userOptions.verboseErrors         = getID('verboseErrors').checked;
         userOptions.inputEncoding         = getID('inputEncoding').value;
         userOptions.outputEncoding        = getID('outputEncoding').value;
+        userOptions.ignoreNullLines       = getID('ignoreNullLines').checked;
         
         preparedColumns.forEach(function(column, index) {
             var colName = getID('col_name_'+index);
@@ -273,6 +276,7 @@ html(lang=lang)
                     createOption(messages.opts.verbose, 'verboseErrors', prepared.opts.verboseErrors, 1),
                     createOption(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, 7),
                     createOption(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, 7),
+                    createOption(messages.opts.ignoreNullLines, 'ignoreNullLines', prepared.opts.ignoreNullLines, 1),
                 ]).create();
                 var fields = prepared.columns.map(function(column, index) {
                     var ipk = column.inPrimaryKey!==null && column.inPrimaryKey;
