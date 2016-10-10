@@ -395,33 +395,25 @@ function determinePrimaryKey(info) {
             throw new Error("includePrimaryKey is on but no columns were selected");
         }
         try{
-            var numRows = info.rows.length;
             var combinedKeys=new Array(info.rows.length);
-            combinedKeys.fill('')
-            // console.log("combinedKeys.length", combinedKeys.length); console.log("combinedKeys", combinedKeys)
             columnsInKey.some(function(column, columnIndex) {
                 var combinedKeysHash = {};
-                if(!info.rows.every(function(row, rowIndex) {
-                    //var val = row[columnIndex];
+                info.rows.forEach(function(row, index) {
                     var val = row[column];
-                    //console.log("Testing ["+val+"]", columnIndex, rowIndex)
                     if(val==='') {
-                        //console.log("  HNC")
                         throw new Error("haveNullColumns");
                     }
-                    combinedKeys[rowIndex] = combinedKeys[rowIndex]+JSON.stringify(val);
+                    combinedKeys[index] = combinedKeys[index]+JSON.stringify(val);
+                });
+                if(!info.rows.every(function(row, rowIndex) {
                     if(combinedKeysHash[combinedKeys[rowIndex]]){
-                        //console.log("   IN HASH ["+combinedKeys[rowIndex]+"] is in ", combinedKeysHash)
                         return false;
                     }
-                    //console.log("   PREV HASH", combinedKeysHash)
                     combinedKeysHash[combinedKeys[rowIndex]]=true;
                     return true;
                 })){
                     return false;
                 }else{
-                    //info.primaryKey = info.columnsInfo.slice(columnsInKey[0],columnIndex+1).map(function(col) { return col.name; });
-                    //info.primaryKey = info.columnsInfo.slice(columnsInKey[0],columnsInKey[columnIndex]+1).map(function(col) { return col.name; });
                     info.primaryKey = info.columnsInfo.slice(columnsInKey[0],columnsInKey[columnIndex]+1).map(function(col) { return info.quote(col.name); });
                     return true; 
                 }
