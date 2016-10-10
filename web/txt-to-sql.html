@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><!-- UTF-8: Sí--><head><title>txt-to-sql</title><meta charset="UTF-8"><link rel="icon" href="txt-to-sql.png" type="image/png"><link rel="shortcut icon" href="txt-to-sql.png" type="image/png"><link rel="apple-touch-icon" href="txt-to-sql.png"><link href="txt-to-sql.css" rel="stylesheet"></head><body><a href="https://github.com/codenautas/txt-to-sql"><img style="position: absolute; top: 0; right: 0; border: 0" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a><div style="float:right;height:300px;margin:80px 30px"><img src="txt-to-sql.png"></div><a href="https://github.com/codenautas/txt-to-sql/issues"><img style="position: absolute; top: 270px; right: 60px; border: 0" src="new-issue-es.png" alt="New issue"></a><h1>txt-to-sql</h1><div><label>Paso 1: </label><input value="Elegir" type="file" id="inputFile"></div><div id="steps"></div><pre id="log"></pre><pre id="errMessage" style="color:red"></pre></body><script>/* space */
+<!DOCTYPE html><html><!-- UTF-8: Sí--><head><title>txt-to-sql</title><meta charset="UTF-8"><link rel="icon" href="txt-to-sql.png" type="image/png"><link rel="shortcut icon" href="txt-to-sql.png" type="image/png"><link rel="apple-touch-icon" href="txt-to-sql.png"><link href="txt-to-sql.css" rel="stylesheet"></head><body><a href="https://github.com/codenautas/txt-to-sql"><img style="position: absolute; top: 0; right: 0; border: 0" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a><div style="float:right;height:300px;margin:80px 30px"><img src="txt-to-sql.png"></div><a href="https://github.com/codenautas/txt-to-sql/issues"><img style="position: absolute; top: 270px; right: 60px; border: 0" src="new-issue-es.png" alt="New issue"></a><h1>txt-to-sql</h1><div><label>Paso 1: </label><label>Separador: </label><input type="text" id="inputSeparator" size="1" title="Definir separador, si vacío, auto-detecta"><span>&nbsp;</span><input value="Elegir" type="file" id="inputFile"></div><div id="steps"></div><pre id="log"></pre><pre id="errMessage" style="color:red"></pre></body><script>/* space */
 var module = {};
 /* space */
 function getID(id) { return document.getElementById(id); }</script><script src="buffer.js"></script><script src="iconv-lite.js"></script><script>/* space */
@@ -74,6 +74,10 @@ function resetPage() {
         verboseErrors:true,
         columnAlignedCommas:true
     };
+    defSeparator = getID('inputSeparator');
+    if(defSeparator && defSeparator.value !=='') {
+        userOptions.separator = defSeparator.value;
+    }
     while(steps.lastChild) { steps.removeChild(steps.lastChild); }
     log.textContent="";
     errMessage.textContent="";
@@ -190,9 +194,11 @@ function handleGenerate(event){
     });
 }
 function handlePrepare(event){
-    var files = event.target.files; // FileList object
+    var files = getID('inputFile').files;
+    //var files = event.target.files; // FileList object
     resetPage();
     Array.prototype.forEach.call(files, function(file){
+        console.log('file: '+file.name)
         processFile(file, messages.loading).then(function(param) {
             return prepare(param);
         }).then(function(prepared) {
@@ -252,6 +258,7 @@ function handlePrepare(event){
     });
 }
 getID('inputFile').addEventListener('change', handlePrepare, false);
+getID('inputSeparator').addEventListener('change', handlePrepare, false);
 // para el F5 post "npm run web"
 resetPage();
 inputFile.value = "";</script></html>

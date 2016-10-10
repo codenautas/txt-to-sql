@@ -4,10 +4,14 @@ doctype html
     es:{
         labelChoose:'Paso 1: ',
         buttonChoose:'Elegir',
+        labelSeparator:'Separador: ',
+        separatorTitle:'Definir separador, si vacío, auto-detecta'
     },
     en:{
         labelChoose:'Step 1: ',
+        labelSeparator:'Separator: ',
         buttonChoose:'select file ',
+        separatorTitle:'Define separator, if empty, auto-detects it'
     }
   }[lang||'es'];
 html(lang=lang)
@@ -28,7 +32,10 @@ html(lang=lang)
       img(style="position: absolute; top: 270px; right: 60px; border: 0;", src="new-issue-es.png", alt="New issue")
     h1 txt-to-sql
     div
-      label=messages.labelChoose
+      label=messages.labelChooselabel=messages.labelChoose
+      label=messages.labelSeparator
+      input(type='text', id='inputSeparator' size=1, title=messages.separatorTitle)
+      span &nbsp;
       input(value=messages.buttonChoose, type='file', id='inputFile')
     div#steps
     pre#log
@@ -122,6 +129,10 @@ html(lang=lang)
             verboseErrors:true,
             columnAlignedCommas:true
         };
+        defSeparator = getID('inputSeparator');
+        if(defSeparator && defSeparator.value !=='') {
+            userOptions.separator = defSeparator.value;
+        }
         while(steps.lastChild) { steps.removeChild(steps.lastChild); }
         log.textContent="";
         errMessage.textContent="";
@@ -238,9 +249,11 @@ html(lang=lang)
         });
     }
     function handlePrepare(event){
-        var files = event.target.files; // FileList object
+        var files = getID('inputFile').files;
+        //var files = event.target.files; // FileList object
         resetPage();
         Array.prototype.forEach.call(files, function(file){
+            console.log('file: '+file.name)
             processFile(file, messages.loading).then(function(param) {
                 return prepare(param);
             }).then(function(prepared) {
@@ -300,6 +313,7 @@ html(lang=lang)
         });
     }
     getID('inputFile').addEventListener('change', handlePrepare, false);
+    getID('inputSeparator').addEventListener('change', handlePrepare, false);
     // para el F5 post "npm run web"
     resetPage();
     inputFile.value = "";
