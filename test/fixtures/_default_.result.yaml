@@ -9,3 +9,4 @@ opts:
   inputEncoding: UTF8
   outputEncoding: UTF8
   addDropTable: false
+  ignoreNullLines: false
