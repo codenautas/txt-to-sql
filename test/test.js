@@ -105,6 +105,7 @@ describe("fixtures", function(){
         {path:'pk-explicit'},
         {path:'pk-custom'},
         {path:'pk-custom-names'},
+        {path:'with-null-lines', skip:true},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -136,6 +137,7 @@ describe("fixtures", function(){
                 }).then(function() {
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
+                    //console.log("fixture; "+fixture.path, param.opts)
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
                     prepared = preparedResult;

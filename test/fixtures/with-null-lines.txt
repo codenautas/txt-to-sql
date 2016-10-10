@@ -1,0 +1,7 @@
+c1;i1;i2
+hello;1;2
+;;
+bye;2;2
+hi;3;2
+;;
+greetings;4;2
