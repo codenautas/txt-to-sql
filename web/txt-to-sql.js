@@ -486,6 +486,15 @@ function createInsertValues(rows, columnsInfo) {
     });
 }
 
+function removeIgnoredLines(info) {
+    if(info.opts.ignoreNullLines) {
+        info.rows = info.rows.filter(function(row) {
+            return row.filter(function(column) { return column !==''; }).length!==0;
+        });
+    }
+    return info;
+}
+
 function generateInsertScript(info){
     var adaptedRows = info.rows.map(function(row, rowIndex) {
         return info.columnsInfo.map(function(column, columnIndex) {
@@ -562,6 +571,7 @@ function generateScripts(info){
     return setup(info)
     .then(generateDropTable)
     .then(generateCreateScript)
+    .then(removeIgnoredLines)
     .then(generateInsertScript)
     .then(processOutputBuffer)
     .catch(catchErrors.bind(null, info));
