@@ -395,7 +395,6 @@ function determinePrimaryKey(info) {
             throw new Error("includePrimaryKey is on but no columns were selected");
         }
         try{
-            //console.log("columnsInKey", columnsInKey); console.log("LEN", info.rows.length)
             var numRows = info.rows.length;
             var combinedKeys=new Array(info.rows.length);
             combinedKeys.fill('')
@@ -410,19 +409,13 @@ function determinePrimaryKey(info) {
                         //console.log("  HNC")
                         throw new Error("haveNullColumns");
                     }
-                    var prevRI = combinedKeys[rowIndex];
                     combinedKeys[rowIndex] = combinedKeys[rowIndex]+JSON.stringify(val);
                     if(combinedKeysHash[combinedKeys[rowIndex]]){
-                        //console.log("HASH", combinedKeysHash);
-                        //console.log("prevRI", prevRI);
                         //console.log("   IN HASH ["+combinedKeys[rowIndex]+"] is in ", combinedKeysHash)
                         return false;
                     }
                     //console.log("   PREV HASH", combinedKeysHash)
                     combinedKeysHash[combinedKeys[rowIndex]]=true;
-                    //console.log("   HASH", combinedKeys[rowIndex], " -> ", combinedKeysHash);
-                    //console.log("KEYS", combinedKeys[rowIndex]);
-                    //console.log("HASH", combinedKeysHash);
                     return true;
                 })){
                     return false;
