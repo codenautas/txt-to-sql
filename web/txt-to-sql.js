@@ -397,7 +397,7 @@ function determinePrimaryKey(info) {
         try{
             var combinedKeys=new Array(info.rows.length);
             columnsInKey.some(function(column, columnIndex) {
-                var combinedKeysHash = {};
+                var hashedKeyCombinations = {};
                 info.rows.forEach(function(row, index) {
                     var val = row[column];
                     if(val==='') {
@@ -406,10 +406,10 @@ function determinePrimaryKey(info) {
                     combinedKeys[index] = combinedKeys[index]+JSON.stringify(val);
                 });
                 if(!info.rows.every(function(row, rowIndex) {
-                    if(combinedKeysHash[combinedKeys[rowIndex]]){
+                    if(hashedKeyCombinations[combinedKeys[rowIndex]]){
                         return false;
                     }
-                    combinedKeysHash[combinedKeys[rowIndex]]=true;
+                    hashedKeyCombinations[combinedKeys[rowIndex]]=true;
                     return true;
                 })){
                     return false;
