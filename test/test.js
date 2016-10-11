@@ -137,7 +137,7 @@ describe("fixtures", function(){
                 }).then(function() {
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
-                    //console.log("fixture; "+fixture.path, param.opts)
+                    //console.log("fixture; "+fixture.path, param)
                     return txtToSql.prepare(param);
                 }).then(function(preparedResult){
                     prepared = preparedResult;

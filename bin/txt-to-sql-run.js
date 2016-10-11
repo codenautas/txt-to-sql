@@ -3,13 +3,13 @@
 "use strict";
 
 var program = require('commander');
-var multilang = require('../lib/txt-to-sql.js');
+var txtToSql = require('../lib/txt-to-sql.js');
 var Promises = require('best-promise');
 var fs = require('fs-promise');
-var path = require('path');
+var Path = require('path');
 var miniTools = require('mini-tools');
 
-function realPath(inFile) {
+function getOutputDir(inFile) {
     return Promises.start(function() {
         if(!inFile) { throw new Error("null file"); }
         return fs.exists(inFile);
@@ -17,7 +17,7 @@ function realPath(inFile) {
         if(! exists) { throw new Error("'"+inFile+"' does not exists"); }
         return inFile;
     }).then(function(inFile) {
-        return path.dirname(path.resolve(inFile));
+        return Path.dirname(Path.resolve(inFile));
     }).catch(function(err) {
         return Promise.reject(err);
     });
@@ -37,18 +37,25 @@ if( (""==program.args && !program.input) ){
     program.help();
 }
 
-var params = {};
-params.input = program.input ? program.input : program.args[0];
-params.prepare = program.prepare;
-params.fast = program.fast;
-params.exportDefaults = program.exportDefaults;
+var cmdParams = {};
+cmdParams.input = program.input ? program.input : program.args[0];
+cmdParams.prepare = program.prepare;
+cmdParams.fast = program.fast;
+cmdParams.exportDefaults = program.exportDefaults;
 
-console.log("args", params /*, program*/);
-/*
-realPath(params.input).then(function(dir) {
-    params.directory = dir;
-    multilang.main(params).then(function(){
-        if(! params.silent) { process.stderr.write(doneMsg); }
+console.log("args", cmdParams /*, program*/);
+
+var inputName = Path.basename(cmdParams.input, '.txt');
+var inputYaml;
+var params = {};
+getOutputDir(cmdParams.input).then(function(dir) {
+    inputYaml = Path.resolve(dir, inputName)+'.yaml';
+    console.log("inputYaml", inputYaml)
+    return fs.exists(inputYaml).then(function(exists) {
+        if(exists) { return miniTools.readConfig([inputYaml]); }
+        return {invalid:true};
+    }).then(function(yaml) {
+        console.log("yaml", yaml)
     }).catch(function(err){
         process.stderr.write("ERROR\n"+err.stack);
     });
@@ -56,4 +63,3 @@ realPath(params.input).then(function(dir) {
     process.stderr.write("ERROR: "+err.message);
     program.help();
 });
-*/
