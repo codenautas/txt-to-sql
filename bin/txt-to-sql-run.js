@@ -61,7 +61,6 @@ function doPrepare(params, inputYaml, create) {
     var res;
     return txtToSql.prepare(params).then(function(result) {
         res = changing(result, {tableName:params.tableName});
-        //console.log("res", res)
         if(create) {
             return fs.writeFile(inputYaml, jsYaml.safeDump(res), {encoding:'utf8'});
         }
@@ -80,7 +79,6 @@ function doGenerate(params, inputName) {
     var outSQL = inputName+'.sql';
     return txtToSql.generateScripts(params).then(function(result) {
         if(result.errors) { throw new Error(result.errors); }
-        //console.log("generated", result.scripts)
         return fs.writeFile(outSQL, result.rawSql);
     }).then(function() {
         process.stdout.write("Generated '"+outSQL+"'")
@@ -92,7 +90,6 @@ var params = {};
 getOutputDir(cmdParams.input).then(function(dir) {
     var inputBase = Path.resolve(dir, inputName);
     var inputYaml = inputBase+'.yaml';
-    console.log("inputYaml", inputYaml)
     var createInputYaml = false;
     return readConfigData(inputYaml).then(function(data) {
         if(data.invalid) {
@@ -101,7 +98,6 @@ getOutputDir(cmdParams.input).then(function(dir) {
         }
         return data;
     }).then(function(data) {
-        //console.log("data", data)
         if(! data.invalid) {
             params = data;
         } else {
@@ -110,7 +106,6 @@ getOutputDir(cmdParams.input).then(function(dir) {
         return fs.readFile(cmdParams.input);
     }).then(function(rawInput) {
         params.rawTable = rawInput;        
-        //console.log("params", params);
         return doPrepare(params, inputYaml, createInputYaml);
     }).then(function() {
         if(! cmdParams.prepare) {
