@@ -228,7 +228,7 @@ function handlePrepare(event){
                 var hnv = column.hasNullValues!==null && column.hasNullValues;
                 var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                 return html.tr([
-                            html.td([createInput('name', column.name.substr(1,column.name.length-2), 15, 'col_name_'+index)]),
+                            html.td([createInput('name', column.name, 15, 'col_name_'+index)]),
                             html.td([createInput('type', column.type, 10, 'col_type_'+index)]),
                             html.td([createInput('inPrimaryKey', ipk, 0, 'col_pk_'+index)]),
                             html.td([createInput('hasNullValues', hnv, 0, 'col_nulls_'+index)]),
