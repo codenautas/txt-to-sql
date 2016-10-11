@@ -58,12 +58,24 @@ function readConfigData(configFile) {
 };
 
 function doPrepare(params, inputYaml, create) {
+    // PARCHE hasta resolver #16
+    if(params.opts && params.opts.columns) {
+        params.opts.includePrimaryKey = params.opts.columns.filter(function(col) {
+            return col.inPrimaryKey === true;
+        }).length>0;
+    }
+    // fin PARCHE
     var res;
     return txtToSql.prepare(params).then(function(result) {
-        res = changing(result, {tableName:params.tableName});
-        //res = {tableName:params.tableName, opts:params.opts}
+        if(result.errors) { throw new Error(result.errors); }
+        res = {
+           tableName:params.tableName,
+           rawTable:params.rawTable,
+           opts: changing(params.opts, result.opts),
+        };
+        res.opts.columns = result.columns;
         if(create) {
-            console.log("res", res)
+            //console.log("res", res)
             return fs.writeFile(inputYaml, jsYaml.safeDump(res), {encoding:'utf8'});
         }
     }).then(function() {
@@ -78,6 +90,7 @@ function doPrepare(params, inputYaml, create) {
 }
 
 function doGenerate(params, inputName) {
+    //console.log("params on generate", params)
     var outSQL = inputName+'.sql';
     return txtToSql.generateScripts(params).then(function(result) {
         if(result.errors) { throw new Error(result.errors); }
@@ -109,9 +122,9 @@ getOutputDir(cmdParams.input).then(function(dir) {
     }).then(function(rawInput) {
         params.rawTable = rawInput;        
         return doPrepare(params, inputYaml, createInputYaml);
-    }).then(function() {
+    }).then(function(preparedParams) {
         if(! cmdParams.prepare) {
-            return doGenerate(params, inputBase);
+            return doGenerate(preparedParams, inputBase);
         }
     }).catch(function(err){
         process.stderr.write("ERROR\n"+err.stack);
