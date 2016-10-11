@@ -55,12 +55,40 @@ function readConfigData(configFile) {
     });
 };
 
+function doPrepare(params, inputYaml, create) {
+    var res;
+    return txtToSql.prepare(params).then(function(result) {
+        res = result;
+        if(create) {
+            return fs.writeFile(inputYaml, res, {encoding:'utf8'});
+        }
+    }).then(function() {
+        if(create) {
+            process.stdout.write("Generated '"+inputYaml+"' with deduced options\n");
+        } else {
+            process.stdout.write("Not overwriding existing '"+inputYaml+"'\n");
+            process.stdout.write("This are the deduced options:'\n"+JSON.stringify(res, null, ' '));
+        }
+    });
+}
+
+function doGenerate(params) {
+    return txtToSql.generateScripts(params).then(function(result) {
+        console.log("generated", result.scripts)
+    });
+}
+
 var inputName = Path.basename(cmdParams.input, '.txt');
 var params = {};
 getOutputDir(cmdParams.input).then(function(dir) {
     var inputBase = Path.resolve(dir, inputName);
-    return readConfigData(inputBase+'.yaml').then(function(data) {
-        if(data.invalid) { return readConfigData(inputBase+'.json');  }
+    var inputYaml = inputBase+'.yaml';
+    var createInputYaml = false;
+    return readConfigData(inputYaml).then(function(data) {
+        if(data.invalid) {
+            createInputYaml = true;
+            return readConfigData(inputBase+'.json'); 
+        }
         return data;
     }).then(function(data) {
         //console.log("data", data)
@@ -72,7 +100,12 @@ getOutputDir(cmdParams.input).then(function(dir) {
         return fs.readFile(cmdParams.input);
     }).then(function(rawInput) {
         params.rawTable = rawInput;        
-        console.log("params", params);
+        //console.log("params", params);
+        if(cmdParams.prepare) {
+            return doPrepare(params, inputYaml, createInputYaml);
+        } else {
+            doGenerate(params);
+        }
     }).catch(function(err){
         process.stderr.write("ERROR\n"+err.stack);
     });
