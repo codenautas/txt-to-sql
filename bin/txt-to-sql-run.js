@@ -75,7 +75,6 @@ function doPrepare(params, inputYaml, create) {
         };
         res.opts.columns = result.columns;
         if(create) {
-            //console.log("res", res)
             return fs.writeFile(inputYaml, jsYaml.safeDump(res), {encoding:'utf8'});
         }
     }).then(function() {
@@ -90,7 +89,6 @@ function doPrepare(params, inputYaml, create) {
 }
 
 function doGenerate(params, inputName) {
-    //console.log("params on generate", params)
     var outSQL = inputName+'.sql';
     return txtToSql.generateScripts(params).then(function(result) {
         if(result.errors) { throw new Error(result.errors); }
