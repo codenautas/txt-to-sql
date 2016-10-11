@@ -7,6 +7,7 @@ var multilang = require('../lib/txt-to-sql.js');
 var Promises = require('best-promise');
 var fs = require('fs-promise');
 var path = require('path');
+var miniTools = require('mini-tools');
 
 function realPath(inFile) {
     return Promises.start(function() {
@@ -22,32 +23,15 @@ function realPath(inFile) {
     });
 };
 
-function langs(val) {
-    return val.split(',')
-}
-
 program
     .version(require('../package').version)
-    .usage('[options] input.md')
+    .usage('[options] input.txt')
     .option('-i, --input [input.md]', 'Name of the input file')
-    .option('-l, --lang [lang1]', 'Language to generate', langs)
-    .option('-o, --output [name]', 'Name of the output file. Requires --langs!')
-    .option('-d, --directory [name]', 'Name of the output directory.')
-    .option('-c, --check', 'Run multilang generating no files')
-    .option('-s, --silent', 'Do not output anything')
-    .option('--strip-comments', 'Remove HTML comments from output')
-    .option('--no-strip-comments', 'Do not remove HTML comments from output')
-    .option('-v, --verbose', 'Output all progress informations')
+    .option('-p, --prepare', 'Analyzes input and generates input.yaml')
+    .option('-f, --fast', 'Uses streams to process input')
+    .option('-e, --export-defaults', 'Exports defaults to input-defaults.yaml')
     .parse(process.argv);
 
-
-function isLongOptionSet(ame) {
-    var a=program.rawArgs;
-    for(var e=0; e<a.length; ++e) {
-        if(a[e]===ame) { return true; }
-    }
-    return false;
-}
 
 if( (""==program.args && !program.input) ){
     program.help();
@@ -55,43 +39,21 @@ if( (""==program.args && !program.input) ){
 
 var params = {};
 params.input = program.input ? program.input : program.args[0];
-params.output = program.output;
-params.check = program.check;
-params.silent = program.silent;
-params.langs = program.lang;
-params.directory = program.directory;
-params.verbose = program.verbose;
+params.prepare = program.prepare;
+params.fast = program.fast;
+params.exportDefaults = program.exportDefaults;
 
-if(isLongOptionSet('--no-strip-comments')) {
-    params.stripComments = false;
-} else if(isLongOptionSet('--strip-comments')) {
-    params.stripComments = true;
-}
-
-var doneMsg = params.check ? 'Done checking!' : 'Done!';
-
-if(!params.directory) {
-    console.log("directory", params);
-    /*
-    realPath(params.input).then(function(dir) {
-        params.directory = dir;
-        multilang.main(params).then(function(){
-            if(! params.silent) { process.stderr.write(doneMsg); }
-        }).catch(function(err){
-            process.stderr.write("ERROR\n"+err.stack);
-        });
-    }).catch(function(err) {
-        process.stderr.write("ERROR: "+err.message);
-        program.help();
-    });
-    */
-} else {
-    console.log("file", params);
-    /*
+console.log("args", params /*, program*/);
+/*
+realPath(params.input).then(function(dir) {
+    params.directory = dir;
     multilang.main(params).then(function(){
         if(! params.silent) { process.stderr.write(doneMsg); }
     }).catch(function(err){
-        process.stderr.write("ERROR: "+err.message);
+        process.stderr.write("ERROR\n"+err.stack);
     });
-    */
-}
+}).catch(function(err) {
+    process.stderr.write("ERROR: "+err.message);
+    program.help();
+});
+*/
