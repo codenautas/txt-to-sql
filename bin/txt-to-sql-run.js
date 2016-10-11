@@ -28,8 +28,8 @@ program
     .usage('[options] input.txt')
     .option('-i, --input [input.md]', 'Name of the input file')
     .option('-p, --prepare', 'Analyzes input and generates input.yaml')
-    .option('-f, --fast', 'Uses streams to process input')
-    .option('-e, --export-defaults', 'Exports defaults to input-defaults.yaml')
+    //.option('-f, --fast', 'Uses streams to process input')
+    //.option('-e, --export-defaults', 'Exports defaults to input-defaults.yaml')
     .parse(process.argv);
 
 
@@ -42,20 +42,37 @@ cmdParams.input = program.input ? program.input : program.args[0];
 cmdParams.prepare = program.prepare;
 cmdParams.fast = program.fast;
 cmdParams.exportDefaults = program.exportDefaults;
+// console.log("args", cmdParams /*, program*/);
 
-console.log("args", cmdParams /*, program*/);
+function readConfigData(configFile) {
+    return Promises.start(function() {
+        return fs.exists(configFile);
+    }).then(function(exists) {
+        if(exists) {
+            return miniTools.readConfig([configFile]);
+        }
+        return {invalid:true};
+    });
+};
 
 var inputName = Path.basename(cmdParams.input, '.txt');
-var inputYaml;
 var params = {};
 getOutputDir(cmdParams.input).then(function(dir) {
-    inputYaml = Path.resolve(dir, inputName)+'.yaml';
-    console.log("inputYaml", inputYaml)
-    return fs.exists(inputYaml).then(function(exists) {
-        if(exists) { return miniTools.readConfig([inputYaml]); }
-        return {invalid:true};
-    }).then(function(yaml) {
-        console.log("yaml", yaml)
+    var inputBase = Path.resolve(dir, inputName);
+    return readConfigData(inputBase+'.yaml').then(function(data) {
+        if(data.invalid) { return readConfigData(inputBase+'.json');  }
+        return data;
+    }).then(function(data) {
+        //console.log("data", data)
+        if(! data.invalid) {
+            params = data;
+        } else {
+            params.tableName = inputName;
+        }
+        return fs.readFile(cmdParams.input);
+    }).then(function(rawInput) {
+        params.rawTable = rawInput;        
+        console.log("params", params);
     }).catch(function(err){
         process.stderr.write("ERROR\n"+err.stack);
     });
