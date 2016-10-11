@@ -9,6 +9,7 @@ var fs = require('fs-promise');
 var Path = require('path');
 var miniTools = require('mini-tools');
 var jsYaml = require('js-yaml');
+var changing = require('best-globals').changing;   
 
 function getOutputDir(inFile) {
     return Promises.start(function() {
@@ -59,7 +60,7 @@ function readConfigData(configFile) {
 function doPrepare(params, inputYaml, create) {
     var res;
     return txtToSql.prepare(params).then(function(result) {
-        res = result;
+        res = changing(result, {tableName:params.tableName});
         //console.log("res", res)
         if(create) {
             return fs.writeFile(inputYaml, jsYaml.safeDump(res), {encoding:'utf8'});
@@ -69,14 +70,20 @@ function doPrepare(params, inputYaml, create) {
             process.stdout.write("Generated '"+inputYaml+"' with deduced options\n");
         } else {
             process.stdout.write("Not overwriding existing '"+inputYaml+"'\n");
-            process.stdout.write("This are the deduced options:'\n"+JSON.stringify(res, null, ' '));
+            //process.stdout.write("This are the deduced options:'\n"+JSON.stringify(res, null, ' '));
         }
+        return res;
     });
 }
 
-function doGenerate(params) {
+function doGenerate(params, inputName) {
+    var outSQL = inputName+'.sql';
     return txtToSql.generateScripts(params).then(function(result) {
-        console.log("generated", result.scripts)
+        if(result.errors) { throw new Error(result.errors); }
+        //console.log("generated", result.scripts)
+        return fs.writeFile(outSQL, result.rawSql);
+    }).then(function() {
+        process.stdout.write("Generated '"+outSQL+"'")
     });
 }
 
@@ -104,10 +111,10 @@ getOutputDir(cmdParams.input).then(function(dir) {
     }).then(function(rawInput) {
         params.rawTable = rawInput;        
         //console.log("params", params);
-        if(cmdParams.prepare) {
-            return doPrepare(params, inputYaml, createInputYaml);
-        } else {
-            doGenerate(params);
+        return doPrepare(params, inputYaml, createInputYaml);
+    }).then(function() {
+        if(! cmdParams.prepare) {
+            return doGenerate(params, inputBase);
         }
     }).catch(function(err){
         process.stderr.write("ERROR\n"+err.stack);
