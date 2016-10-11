@@ -1,42 +1,42 @@
 opts:
   columnNamesFormat: lowercased_alpha
 columns:
-  - name: '"conene"'
+  - name: 'conene'
     type: character varying
     inPrimaryKey: false
     maxLength: 13
     maxScale: null
     hasNullValues: true
     hasCientificNotation: null
-  - name: '"esdrujulo"'
+  - name: 'esdrujulo'
     type: integer
     inPrimaryKey: false
     maxLength: 1
     maxScale: 0
     hasNullValues: true
     hasCientificNotation: null
-  - name: '"masdias"'
+  - name: 'masdias'
     type: numeric
     inPrimaryKey: false
     maxLength: 1
     maxScale: 6
     hasNullValues: true
     hasCientificNotation: null
-  - name: '"faltanaeeiiuoooo"'
+  - name: 'faltanaeeiiuoooo'
     type: bigint
     inPrimaryKey: false
     maxLength: 10
     maxScale: 0
     hasNullValues: false
     hasCientificNotation: null
-  - name: '"_1numeroyacento"'
+  - name: '_1numeroyacento'
     type: double precision
     inPrimaryKey: false
     maxLength: 1
     maxScale: 7
     hasNullValues: false
     hasCientificNotation: true
-  - name: '"maas"'
+  - name: 'maas'
     type: integer
     inPrimaryKey: false
     maxLength: 0

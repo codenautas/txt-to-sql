@@ -1,35 +1,35 @@
 opts:
   outputEngine: mssql
 columns:
-  - name: '[text col]'
+  - name: 'text col'
     type: varchar
     inPrimaryKey: false
     maxLength: 5
     maxScale: null
     hasNullValues: true
     hasCientificNotation: null
-  - name: '[int col]'
+  - name: 'int col'
     type: integer
     inPrimaryKey: false
     maxLength: 1
     maxScale: 0
     hasNullValues: true
     hasCientificNotation: null
-  - name: '[num col]'
+  - name: 'num col'
     type: numeric
     inPrimaryKey: false
     maxLength: 1
     maxScale: 6
     hasNullValues: true
     hasCientificNotation: null
-  - name: '[big col]'
+  - name: 'big col'
     type: bigint
     inPrimaryKey: false
     maxLength: 10
     maxScale: 0
     hasNullValues: false
     hasCientificNotation: null
-  - name: '[double col]'
+  - name: 'double col'
     type: real
     inPrimaryKey: false
     maxLength: 1

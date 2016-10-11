@@ -61,7 +61,9 @@ function doPrepare(params, inputYaml, create) {
     var res;
     return txtToSql.prepare(params).then(function(result) {
         res = changing(result, {tableName:params.tableName});
+        //res = {tableName:params.tableName, opts:params.opts}
         if(create) {
+            console.log("res", res)
             return fs.writeFile(inputYaml, jsYaml.safeDump(res), {encoding:'utf8'});
         }
     }).then(function() {

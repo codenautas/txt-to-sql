@@ -543,8 +543,7 @@ function setup(info) {
         .then(verifyColumnNames)
         .then(determineColumnTypes)
         .then(determineColumnValuesInfo)
-        .then(determinePrimaryKey)
-        .then(quoteNames);
+        .then(determinePrimaryKey);
 }
 
 function catchErrors(info, err) {
@@ -569,6 +568,7 @@ function prepare(info) {
 
 function generateScripts(info){
     return setup(info)
+    .then(quoteNames)
     .then(generateDropTable)
     .then(generateCreateScript)
     .then(removeIgnoredLines)
