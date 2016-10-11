@@ -563,7 +563,7 @@ function prepare(info) {
             delete col.columnLength;
             return col;
         });
-        return {opts:info.opts, columns:columns, inputEncodingDetected:info.inputEncoding};
+        return {opts:info.opts, columns:columns, inputEncodingDetected:info.inputEncoding||null};
     }).catch(catchErrors.bind(null, info));
 }
 

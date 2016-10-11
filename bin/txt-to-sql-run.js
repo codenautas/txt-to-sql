@@ -8,6 +8,7 @@ var Promises = require('best-promise');
 var fs = require('fs-promise');
 var Path = require('path');
 var miniTools = require('mini-tools');
+var jsYaml = require('js-yaml');
 
 function getOutputDir(inFile) {
     return Promises.start(function() {
@@ -59,8 +60,9 @@ function doPrepare(params, inputYaml, create) {
     var res;
     return txtToSql.prepare(params).then(function(result) {
         res = result;
+        //console.log("res", res)
         if(create) {
-            return fs.writeFile(inputYaml, res, {encoding:'utf8'});
+            return fs.writeFile(inputYaml, jsYaml.safeDump(res), {encoding:'utf8'});
         }
     }).then(function() {
         if(create) {
@@ -83,6 +85,7 @@ var params = {};
 getOutputDir(cmdParams.input).then(function(dir) {
     var inputBase = Path.resolve(dir, inputName);
     var inputYaml = inputBase+'.yaml';
+    console.log("inputYaml", inputYaml)
     var createInputYaml = false;
     return readConfigData(inputYaml).then(function(data) {
         if(data.invalid) {
