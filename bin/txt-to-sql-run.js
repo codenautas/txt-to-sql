@@ -28,7 +28,7 @@ function getOutputDir(inFile) {
 program
     .version(require('../package').version)
     .usage('[options] input.txt')
-    .option('-i, --input [input.md]', 'Name of the input file')
+    .option('-i, --input', 'Name of the input file')
     .option('-p, --prepare', 'Analyzes input and generates input.yaml')
     //.option('-f, --fast', 'Uses streams to process input')
     //.option('-e, --export-defaults', 'Exports defaults to input-defaults.yaml')
@@ -44,7 +44,6 @@ cmdParams.input = program.input ? program.input : program.args[0];
 cmdParams.prepare = program.prepare;
 cmdParams.fast = program.fast;
 cmdParams.exportDefaults = program.exportDefaults;
-// console.log("args", cmdParams /*, program*/);
 
 function readConfigData(configFile) {
     return Promises.start(function() {
@@ -82,7 +81,6 @@ function doPrepare(params, inputYaml, create) {
             process.stdout.write("Generated '"+inputYaml+"' with deduced options\n");
         } else {
             process.stdout.write("Not overwriding existing '"+inputYaml+"'\n");
-            //process.stdout.write("This are the deduced options:'\n"+JSON.stringify(res, null, ' '));
         }
         return res;
     });
