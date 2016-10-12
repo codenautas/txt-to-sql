@@ -1,7 +1,7 @@
 {
   "name": "txt-to-sql",
   "description": "Tools for convert text data to SQL sentences",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Codenautas <codenautas@googlegroups.com>",
   "repository": "codenautas/txt-to-sql",
   "license": "MIT",
