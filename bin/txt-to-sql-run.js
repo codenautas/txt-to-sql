@@ -58,6 +58,16 @@ function readConfigData(configFile) {
     });
 };
 
+function createParams(params, preparedParams) {
+    var res = {
+           tableName:params.tableName,
+           rawTable:params.rawTable,
+           opts: changing(params.opts, preparedParams.opts),
+    };
+    res.opts.columns = preparedParams.columns;
+    return res;
+}
+
 function doPrepare(params, inputYaml, create) {
     // PARCHE hasta resolver #16
     if(params.opts) {
@@ -73,12 +83,7 @@ function doPrepare(params, inputYaml, create) {
     var res;
     return txtToSql.prepare(params).then(function(result) {
         if(result.errors) { throw new Error(result.errors); }
-        res = {
-           tableName:params.tableName,
-           rawTable:params.rawTable,
-           opts: changing(params.opts, result.opts),
-        };
-        res.opts.columns = result.columns;
+        res = createParams(params, result);
         if(create) {
             return fs.writeFile(inputYaml, jsYaml.safeDump(res), {encoding:'utf8'});
         }
@@ -147,6 +152,7 @@ function fastAnalyzeLines(info) {
     txtToSql.quoteNames(info);
     txtToSql.generateDropTable(info);
     txtToSql.generateCreateScript(info);
+    return txtToSql.generatePrepareResult(info);
 }
 
 function fastInsert(info, row) {
@@ -188,6 +194,7 @@ function fastFinalize(info, outStream) {
 function doFast(params, inputBase) {
     var inStream, outStream;
     var rl;
+    var preparedResult;
     return Promise.resolve().then(function() {
         return txtToSql.verifyInputParams(params);
     }).then(fastProcessEncodingOptions)
@@ -212,8 +219,8 @@ function doFast(params, inputBase) {
                 fastProcessLine(info, line);
                 if(info.lines) {
                     if(info.lines.length===info.fastMaxLines) {
-                        fastAnalyzeLines(info);
-                        fastFinalize(info, outStream);
+                        preparedResult = fastAnalyzeLines(info);
+                        //fastFinalize(info, outStream);
                         delete info.lines;
                     }
                 } else { // more than info.fastMaxLines
@@ -224,9 +231,11 @@ function doFast(params, inputBase) {
         rl.on('close', function() {
             if(info.lines && info.lines.length<info.fastMaxLines) {
                 fastProcessLine(info);
-                fastAnalyzeLines(info);
+                preparedResult = fastAnalyzeLines(info);
                 fastFinalize(info, outStream);
             }
+            //console.log("preparedResult", preparedResult);
+            fsSync.writeFile(inputBase+'.yaml', jsYaml.safeDump(createParams(params, preparedResult)), {encoding:'utf8'});
             //console.log("info", info);
         });
     });
@@ -261,7 +270,7 @@ getOutputDir(cmdParams.input).then(function(dir) {
             return doGenerate(params, inputYaml, createInputYaml, inputBase);
         }
     }).catch(function(err){
-        process.stderr.write("ERROR\n"+err.stack);
+        process.stderr.write("ERROR\n"+err.message+"\n"+err.stack);
     });
 }).catch(function(err) {
     process.stderr.write("ERROR: "+err.message);
