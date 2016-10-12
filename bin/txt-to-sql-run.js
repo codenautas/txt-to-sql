@@ -30,7 +30,7 @@ program
     .usage('[options] input.txt')
     .option('-i, --input', 'Name of the input file')
     .option('-p, --prepare', 'Analyzes input and generates input.yaml')
-    //.option('-f, --fast', 'Uses streams to process input')
+    .option('-f, --fast', 'Uses streams to process input')
     //.option('-e, --export-defaults', 'Exports defaults to input-defaults.yaml')
     .parse(process.argv);
 
@@ -58,10 +58,14 @@ function readConfigData(configFile) {
 
 function doPrepare(params, inputYaml, create) {
     // PARCHE hasta resolver #16
-    if(params.opts && params.opts.columns) {
-        params.opts.includePrimaryKey = params.opts.columns.filter(function(col) {
-            return col.inPrimaryKey === true;
-        }).length>0;
+    if(params.opts) {
+        if(params.opts.columns) {
+            params.opts.includePrimaryKey = params.opts.columns.filter(function(col) {
+                return col.inPrimaryKey === true;
+            }).length>0;
+        }
+    } else {
+        params.opts = { disablePrimaryKeyBug: true };
     }
     // fin PARCHE
     var res;
@@ -86,13 +90,21 @@ function doPrepare(params, inputYaml, create) {
     });
 }
 
-function doGenerate(params, inputName) {
+function doGenerate(params, inputYaml, create, inputName) {
     var outSQL = inputName+'.sql';
-    return txtToSql.generateScripts(params).then(function(result) {
+    return doPrepare(params, inputYaml, create).then(function(preparedParams) {
+        return txtToSql.generateScripts(preparedParams);
+    }).then(function(result) {
         if(result.errors) { throw new Error(result.errors); }
         return fs.writeFile(outSQL, result.rawSql);
     }).then(function() {
         process.stdout.write("Generated '"+outSQL+"'")
+    });
+}
+
+function doFast(params, inputName) {
+    return Promise.resolve().then(function() {
+        return "not yet";
     });
 }
 
@@ -116,11 +128,13 @@ getOutputDir(cmdParams.input).then(function(dir) {
         }
         return fs.readFile(cmdParams.input);
     }).then(function(rawInput) {
-        params.rawTable = rawInput;        
-        return doPrepare(params, inputYaml, createInputYaml);
-    }).then(function(preparedParams) {
-        if(! cmdParams.prepare) {
-            return doGenerate(preparedParams, inputBase);
+        params.rawTable = rawInput;
+        if(cmdParams.fast) {
+            return doFast(params, inputName);
+        } else if (cmdParams.prepare) {
+            return doPrepare(params, inputYaml, createInputYaml);
+        } else {
+            return doGenerate(params, inputYaml, createInputYaml, inputBase);
         }
     }).catch(function(err){
         process.stderr.write("ERROR\n"+err.stack);

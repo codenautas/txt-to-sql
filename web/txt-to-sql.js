@@ -132,7 +132,7 @@ function getEncodingSinc(buf) {
 }
 
 function getEncoding(buf) {
-    return Promise.resolve(buf).then(function(buf) {
+    return Promise.resolve().then(function() {
         return getEncodingSinc(buf);
     });
 }
@@ -392,7 +392,7 @@ function determinePrimaryKey(info) {
             columnsInKey.push(colIndex);
             return false;
         });
-        if(haveCustomKeys.length && columnsInKey.length===0) {
+        if(! info.opts.disablePrimaryKeyBug && haveCustomKeys.length && columnsInKey.length===0) {
             throw new Error("includePrimaryKey is on but no columns were selected");
         }
         try{
@@ -422,7 +422,7 @@ function determinePrimaryKey(info) {
         }catch(err){
             if(err.message!=="haveNullColumns") { throw err; }
         }
-        if(haveCustomKeys.length && (! info.primaryKey || ! info.primaryKey.length)) {
+        if(! info.opts.disablePrimaryKeyBug && haveCustomKeys.length && (! info.primaryKey || ! info.primaryKey.length)) {
             var failingColumns = columnsInKey.map(function(col) {
                 return info.columnsInfo[col].name;
             }).join(',');
