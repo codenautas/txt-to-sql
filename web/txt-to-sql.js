@@ -42,7 +42,8 @@ function adaptPlain(x){
 
 function adaptText(x){
     if(x===''){ return 'null'; }
-    return "'"+x.replace(/'/g,"''").replace(/\r/g,"' || LQ(10) || '").replace(/\n/g,"' || LQ(13) || '")+"'"; 
+    return "'"+x.replace(/'/g,"''").replace(/\r/g,"\\r").replace(/\n/g,"\\n")+"'"; 
+    //return "'"+x.replace(/'/g,"''")+"'";
 }
 
 function filling(columnLength, val) { return val.length>=columnLength?'':new Array(columnLength - val.length + 1).join(' '); }
@@ -61,10 +62,10 @@ function mapTypes(typeNames) {
     return typeNames.map(function(type, index) { return Object.assign({typeName:type}, types[index]); });
 }
 
-var quoteBackTick = { LQ:'`', RQ:'`', fun:function(objectName) { return '`'+objectName.replace(/`/g,'``')+'`'; } };
+function quoteBackTick(objectName) { return '`'+objectName.replace(/`/g,'``')+'`'; };
 // Solo hay que escapar ']' de acuerdo con: https://technet.microsoft.com/en-us/library/ms176027(v=sql.105).aspx
-var quoteBracket = { LQ:'[', RQ:']', fun:function(objectName) { return '['+objectName.replace(/]/g,']]')+']'; } };
-var quoteDouble = { LQ:'"', RQ:'"', fun:function(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; } };
+function quoteBracket(objectName) { return '['+objectName.replace(/]/g,']]')+']'; };
+function quoteDouble(objectName) { return '"'+objectName.replace(/"/g,'""')+'"'; };
 
 function dropTableIfExists(tableName) { return "drop table if exists "+tableName; }
 function dropTable(tableName) { return "drop table "+tableName; }
@@ -164,7 +165,7 @@ function verifyInputParams(info){
     checkEncodingParam(info.opts.outputEncoding, 'output', errors);
     throwIfErrors(errors);
     info.outputEngine=engines[info.opts.outputEngine];
-    info.quote = function(objectName) { return info.outputEngine.quote.fun(objectName); };
+    info.quote = info.outputEngine.quote;
     info.transform = function(objectName) { return formatFunctions[info.opts.columnNamesFormat](objectName); };
     info.nameColumn = function(columnInfo) {
         var name = columnInfo.name+" "+columnInfo.typeInfo.typeName;
@@ -469,6 +470,35 @@ function generateCreateScript(info){
     return info;
 }
 
+function removeIgnoredLines(info) {
+    if(info.opts.ignoreNullLines) {
+        info.rows = info.rows.filter(function(row) {
+            return row.filter(function(column) { return column !==''; }).length!==0;
+        });
+    }
+    return info;
+}
+
+function createAdaptedRows(info, rows) {
+    return rows.map(function(row, rowIndex) {
+        return info.columnsInfo.map(function(column, columnIndex) {
+            var adaptedValue = column.typeInfo.adapt(row[columnIndex]);
+            if(info.opts.columnAlignedCommas) {
+                if(adaptedValue.length>column.columnLength) { 
+                    column.columnLength = adaptedValue.length; 
+                }
+            }
+            return adaptedValue;
+        });
+    });
+}
+
+function createInsertInto(info) {
+    return "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
+        return columnInfo.name;
+    }).join(', ')+") values";
+}
+
 function createInsertValues(rows, columnsInfo) {
     return rows.map(function(row){
         var owedLength = 0;
@@ -491,34 +521,13 @@ function createInsertValues(rows, columnsInfo) {
     });
 }
 
-function removeIgnoredLines(info) {
-    if(info.opts.ignoreNullLines) {
-        info.rows = info.rows.filter(function(row) {
-            return row.filter(function(column) { return column !==''; }).length!==0;
-        });
-    }
-    return info;
-}
-
 function generateInsertScript(info){
-    var adaptedRows = info.rows.map(function(row, rowIndex) {
-        return info.columnsInfo.map(function(column, columnIndex) {
-            var adaptedValue = column.typeInfo.adapt(row[columnIndex]);
-            if(info.opts.columnAlignedCommas) {
-                if(adaptedValue.length>column.columnLength) { 
-                    column.columnLength = adaptedValue.length; 
-                }
-            }
-            return adaptedValue;
-        });
-    });
+    var adaptedRows = createAdaptedRows(info, info.rows);
     info.columnsInfo.forEach(function(column){
         column.columnLength = info.opts.columnAlignedCommas?
             Math.min(column.columnLength, info.opts.columnAlignedMaxWidth):0;
     });
-    var insertInto = "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
-            return columnInfo.name;
-        }).join(', ')+") values";
+    var insertInto = createInsertInto(info);
     var insertValues = createInsertValues(adaptedRows, info.columnsInfo);
     info.scripts.push({
         type:'insert',
@@ -597,5 +606,19 @@ txtToSql.verifyInputParams = verifyInputParams;
 txtToSql.getEncoding = getEncoding;
 txtToSql.determineSeparator = determineSeparator;
 txtToSql.separateColumns = separateColumns;
+txtToSql.transformNames = transformNames;
+txtToSql.verifyColumnNames = verifyColumnNames;
+txtToSql.separateRows = separateRows;
+txtToSql.verifyColumnCount = verifyColumnCount;
+txtToSql.determineColumnTypes = determineColumnTypes;
+txtToSql.determineColumnValuesInfo = determineColumnValuesInfo;
+txtToSql.quoteNames = quoteNames;
+txtToSql.generateDropTable = generateDropTable;
+txtToSql.generateCreateScript = generateCreateScript;
+txtToSql.removeIgnoredLines = removeIgnoredLines;
+txtToSql.generateInsertScript = generateInsertScript;
+txtToSql.createAdaptedRows = createAdaptedRows;
+txtToSql.createInsertInto = createInsertInto;
+txtToSql.createInsertValues = createInsertValues;
 
 module.exports = txtToSql;

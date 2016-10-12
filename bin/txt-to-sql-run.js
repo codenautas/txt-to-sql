@@ -131,6 +131,60 @@ function fastProcessEncodingOptions(info) {
     });
 }
 
+function fastProcessLine(info, line) {
+    if(line && info.lines && info.lines.length<info.fastMaxLines) {
+        info.lines.push(line+'\n');
+    }
+}
+
+function fastAnalyzeLines(info) {
+    txtToSql.separateRows(info);
+    txtToSql.verifyColumnCount(info);
+    txtToSql.transformNames(info);
+    txtToSql.verifyColumnNames(info);
+    txtToSql.determineColumnTypes(info);
+    txtToSql.determineColumnValuesInfo(info);
+    txtToSql.quoteNames(info);
+    txtToSql.generateDropTable(info);
+    txtToSql.generateCreateScript(info);
+}
+
+function fastInsert(info, row) {
+    rows = txtToSql.createAdaptedRows(info, row);
+    var insertInto = txtToSql.createInsertInto(info);
+    txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n')    
+}
+
+function fastFinalize(info, outStream) {
+    //txtToSql.removeIgnoredLines(info);
+    txtToSql.generateInsertScript(info);
+    console.log("info", info.scripts)
+    info.scripts.forEach(function(script) {
+        outStream.write(script.sql+'\n');
+    });
+}
+
+/*
+    ++ .then(verifyInputParams)
+        -- .then(processEncodingOptions)
+        -- .then(separateLines)
+    ++ .then(determineSeparator)
+    ++ .then(separateColumns)
+    
+    ++.then(separateRows)
+    ++ .then(verifyColumnCount)
+    ++.then(transformNames)
+    ++.then(verifyColumnNames)
+    ++.then(determineColumnTypes)
+    ++.then(determineColumnValuesInfo)
+        -- .then(determinePrimaryKey);
+    ++.then(quoteNames)
+    ++.then(generateDropTable)
+    ++.then(generateCreateScript)
+    ++ -- .then(removeIgnoredLines)
+    ++.then(generateInsertScript)
+        -- .then(processOutputBuffer)
+*/
 function doFast(params, inputBase) {
     var inStream, outStream;
     var rl;
@@ -141,23 +195,39 @@ function doFast(params, inputBase) {
         //console.log("info", info);
         inStream = fsSync.createReadStream(inputBase+'.txt', {encoding:'utf8'});
         outStream = fsSync.createWriteStream(inputBase+'.sql', {encoding:'utf8'});
+        info.lines = [];
+        // maximo de lineas para procemiento viejo
+        info.fastMaxLines = 100;
         rl = readline.createInterface({
             input: inStream,
             terminal: false
         });
         rl.on('line', function(line) {
-            console.log("line", line);
+            //console.log("line", line);
             if(! info.headers) {
                 info.headers = line;
                 txtToSql.determineSeparator(info);
                 txtToSql.separateColumns(info);
             } else {
-                
+                fastProcessLine(info, line);
+                if(info.lines) {
+                    if(info.lines.length===info.fastMaxLines) {
+                        fastAnalyzeLines(info);
+                        fastFinalize(info, outStream);
+                        delete info.lines;
+                    }
+                } else { // more than info.fastMaxLines
+                }
             }
             //outStream.write(line+'\n')
         });
         rl.on('close', function() {
-          console.log("info", info);  
+            if(info.lines && info.lines.length<info.fastMaxLines) {
+                fastProcessLine(info);
+                fastAnalyzeLines(info);
+                fastFinalize(info, outStream);
+            }
+            //console.log("info", info);
         });
     });
 }
