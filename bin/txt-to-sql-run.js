@@ -47,6 +47,9 @@ cmdParams.prepare = program.prepare;
 cmdParams.fast = program.fast;
 cmdParams.exportDefaults = program.exportDefaults;
 
+// numero de lineas a leer para analizar entrada
+var bufferingThreeshold = 50;
+
 function readConfigData(configFile) {
     return Promises.start(function() {
         return fs.exists(configFile);
@@ -152,10 +155,12 @@ function fastAnalyzeLines(info) {
     return txtToSql.generatePrepareResult(info);
 }
 
-function fastInsert(info, row) {
-    rows = txtToSql.createAdaptedRows(info, row);
+function fastInsert(info, line) {
+    var row =  [line].filter(function(ln){ return ln.trim()!==""; })
+                     .map(function(ln){ return ln.split(info.opts.separator);});
+    var rows = txtToSql.createAdaptedRows(info, row);
     var insertInto = txtToSql.createInsertInto(info);
-    txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n')    
+    return txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n');
 }
 
 function fastCreateCreate(info) {
@@ -168,33 +173,12 @@ function fastFinalize(info, outStream) {
     fastCreateCreate(info);
     //txtToSql.removeIgnoredLines(info);
     txtToSql.generateInsertScript(info);
-    console.log("info", info.scripts)
+    //console.log("info", info.scripts)
     info.scripts.forEach(function(script) {
         outStream.write(script.sql);
     });
 }
 
-/*
-    ++ .then(verifyInputParams)
-        -- .then(processEncodingOptions)
-        -- .then(separateLines)
-    ++ .then(determineSeparator)
-    ++ .then(separateColumns)
-    
-    ++.then(separateRows)
-    ++ .then(verifyColumnCount)
-    ++.then(transformNames)
-    ++.then(verifyColumnNames)
-    ++.then(determineColumnTypes)
-    ++.then(determineColumnValuesInfo)
-        -- .then(determinePrimaryKey);
-    ++.then(quoteNames)
-    ++.then(generateDropTable)
-    ++.then(generateCreateScript)
-    ++ -- .then(removeIgnoredLines)
-    ++.then(generateInsertScript)
-        -- .then(processOutputBuffer)
-*/
 function doFast(params, inputBase) {
     var inStream, outStream;
     var rl;
@@ -207,8 +191,8 @@ function doFast(params, inputBase) {
         inStream = fsSync.createReadStream(inputBase+'.txt', {encoding:'utf8'});
         outStream = fsSync.createWriteStream(inputBase+'.sql', {encoding:'utf8'});
         info.lines = [];
-        // maximo de lineas para procemiento viejo
-        info.fastMaxLines = 100;
+        // maximo de lineas para utilizar procesamiento standard
+        info.fastMaxLines = bufferingThreeshold;
         rl = readline.createInterface({
             input: inStream,
             terminal: false
@@ -229,9 +213,13 @@ function doFast(params, inputBase) {
                         info.scripts.forEach(function(script) {
                             outStream.write(script.sql);
                         });
+                        info.lines.forEach(function(ln) {
+                            outStream.write(fastInsert(info, ln)+'\n');
+                        });
                         delete info.lines;
                     }
                 } else { // more than info.fastMaxLines
+                    outStream.write(fastInsert(info, line)+'\n');
                 }
             }
         });
