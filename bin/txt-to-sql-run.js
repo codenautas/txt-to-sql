@@ -133,7 +133,7 @@ function fastProcessEncodingOptions(info) {
 
 function fastProcessLine(info, line) {
     if(line && info.lines && info.lines.length<info.fastMaxLines) {
-        info.lines.push(line+'\n');
+        info.lines.push(line);
     }
 }
 
@@ -160,7 +160,7 @@ function fastFinalize(info, outStream) {
     txtToSql.generateInsertScript(info);
     console.log("info", info.scripts)
     info.scripts.forEach(function(script) {
-        outStream.write(script.sql+'\n');
+        outStream.write(script.sql);
     });
 }
 
