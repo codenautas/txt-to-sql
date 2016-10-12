@@ -117,24 +117,6 @@ function fastProcessEncodingOptions(info) {
         info.inputEncodingDetected = encoding;
         if(! info.opts.inputEncoding) { info.opts.inputEncoding = info.inputEncodingDetected; }
         if(! info.opts.outputEncoding) { info.opts.outputEncoding = info.inputEncodingDetected; }
-        //var inFromToString = info.rawTable.toString("utf8");
-        if(info.opts.inputEncoding==='ANSI') {
-            // if(inFromToString.substr(1).indexOf('\uFFFD')<0) {
-                // throw new Error('ansi -> utf8: replacement character not found');
-            // }
-            //info.decodedBuffer = iconv.decode(info.rawTable, "win1252");
-            // if(txtToSql.compareBuffers(info.decodedBuffer, info.rawTable) === -1) {
-                // throw new Error('ansi -> utf8: no conversion performed');
-            // }
-        } else if(info.opts.inputEncoding==='UTF8') {
-            //info.decodedBuffer = inFromToString;
-            // var result = txtToSql.compareBuffers(info.rawTable, new Buffer(info.decodedBuffer, 'utf8'));
-            // if(result !== -1) {
-                // throw new Error('utf8 check failed in position: '+result);
-            // }
-        } else {
-            //info.decodedBuffer = inFromToString;
-        }
         return info;
     });
 }
@@ -152,6 +134,7 @@ function fastAnalyzeLines(info) {
     txtToSql.verifyColumnNames(info);
     txtToSql.determineColumnTypes(info);
     txtToSql.determineColumnValuesInfo(info);
+    txtToSql.determinePrimaryKey(info);
     return txtToSql.generatePrepareResult(info);
 }
 
