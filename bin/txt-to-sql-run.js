@@ -149,9 +149,6 @@ function fastAnalyzeLines(info) {
     txtToSql.verifyColumnNames(info);
     txtToSql.determineColumnTypes(info);
     txtToSql.determineColumnValuesInfo(info);
-    txtToSql.quoteNames(info);
-    txtToSql.generateDropTable(info);
-    txtToSql.generateCreateScript(info);
     return txtToSql.generatePrepareResult(info);
 }
 
@@ -161,7 +158,14 @@ function fastInsert(info, row) {
     txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n')    
 }
 
+function fastCreateCreate(info) {
+    txtToSql.quoteNames(info);
+    txtToSql.generateDropTable(info);
+    txtToSql.generateCreateScript(info);
+}
+
 function fastFinalize(info, outStream) {
+    fastCreateCreate(info);
     //txtToSql.removeIgnoredLines(info);
     txtToSql.generateInsertScript(info);
     console.log("info", info.scripts)
@@ -220,13 +224,16 @@ function doFast(params, inputBase) {
                 if(info.lines) {
                     if(info.lines.length===info.fastMaxLines) {
                         preparedResult = fastAnalyzeLines(info);
-                        //fastFinalize(info, outStream);
+                        fastCreateCreate(info);
+                        // deben estar drop y create
+                        info.scripts.forEach(function(script) {
+                            outStream.write(script.sql);
+                        });
                         delete info.lines;
                     }
                 } else { // more than info.fastMaxLines
                 }
             }
-            //outStream.write(line+'\n')
         });
         rl.on('close', function() {
             if(info.lines && info.lines.length<info.fastMaxLines) {
@@ -235,7 +242,13 @@ function doFast(params, inputBase) {
                 fastFinalize(info, outStream);
             }
             //console.log("preparedResult", preparedResult);
-            fsSync.writeFile(inputBase+'.yaml', jsYaml.safeDump(createParams(params, preparedResult)), {encoding:'utf8'});
+            var inY = inputBase+'.yaml';
+            if(! fsSync.existsSync(inY)) {
+                fsSync.writeFile(inY, jsYaml.safeDump(createParams(params, preparedResult)), {encoding:'utf8'});
+                process.stdout.write("Generated '"+inY+"' with deduced options\n");
+            } else {
+                process.stdout.write("Not overwriding existing '"+inY+"'\n");
+            }
             //console.log("info", info);
         });
     });
