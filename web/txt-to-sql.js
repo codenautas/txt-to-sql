@@ -4,6 +4,9 @@ var txtToSql = {};
 
 var changing = require('best-globals').changing;    
 var iconv = require('iconv-lite');
+var miniTools = require('mini-tools');
+var Promises = require('best-promise');
+var fs = require('fs-promise');
 
 var margin = ' ';
 var separators=';,\t|';
@@ -34,6 +37,16 @@ if (typeof Object.assign != 'function') {
   })();
 }
 
+function readConfigData(configFile) {
+    return Promises.start(function() {
+        return fs.exists(configFile);
+    }).then(function(exists) {
+        if(exists) {
+            return miniTools.readConfig([configFile]);
+        }
+        return {invalid:true};
+    });
+};
 
 function adaptPlain(x){
     if(x===''){ return 'null'; }
@@ -108,6 +121,7 @@ function throwIfErrors(errors) {
     }
 }
 
+/*
 txtToSql.defaultOpts = {
     columnNamesFormat: 'lowercased_names',
     separator: false,
@@ -121,6 +135,7 @@ txtToSql.defaultOpts = {
     addDropTable: false,
     ignoreNullLines: false
 };
+*/
 
 var letterTranslator = {
     'à':'a', 'á':'a', 'â':'a', 'ã':'a', 'ä':'a', 'å':'a', 'À':'a', 'Á':'a', 'Â':'a', 'Ã':'a', 'Ä':'a', 'Å':'a',
@@ -148,6 +163,14 @@ function checkEncodingParam(encoding, inOrOut, errors) {
     if(encoding && ! encoding.match(/^(ASCII7|UTF8|ANSI)$/)) {
         errors.push("unsupported "+inOrOut+" encoding '"+encoding+"'");
     }
+}
+
+function readDefaults(info) {
+    return readConfigData('./lib/txt-to-sql-defaults.yaml').then(function(data) {
+        if(data.invalid) { throw new Error('default config file not found'); }
+        txtToSql.defaultOpts = data;
+        return info;
+    });
 }
 
 function verifyInputParams(info){
@@ -547,6 +570,7 @@ function processOutputBuffer(info) {
 
 function setup(info) {
     return Promise.resolve(info)
+        .then(readDefaults)
         .then(verifyInputParams)
         .then(processEncodingOptions)
         .then(separateLines)
@@ -625,5 +649,6 @@ txtToSql.createAdaptedRows = createAdaptedRows;
 txtToSql.createInsertInto = createInsertInto;
 txtToSql.createInsertValues = createInsertValues;
 txtToSql.generatePrepareResult = generatePrepareResult;
+txtToSql.readConfigData = readConfigData;
 
 module.exports = txtToSql;
