@@ -61,22 +61,11 @@ function collectExistentFiles(files) {
     });
 };
 
-function readConfigData(configFile) {
-    return Promises.start(function() {
-        return fs.exists(configFile);
-    }).then(function(exists) {
-        if(exists) {
-            return miniTools.readConfig([configFile]);
-        }
-        return {invalid:true};
-    });
-};
-
 function createParams(params, preparedParams) {
     var res = {
-           tableName:params.tableName,
-           rawTable:params.rawTable,
-           opts: changing(params.opts, preparedParams.opts),
+       tableName:params.tableName,
+       rawTable:params.rawTable,
+       opts: changing(params.opts, preparedParams.opts),
     };
     res.opts.columns = preparedParams.columns;
     return res;
