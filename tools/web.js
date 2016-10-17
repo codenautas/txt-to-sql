@@ -75,11 +75,11 @@ function generateWeb() {
     console.log("Generating web content...");
     var desDir = './web';
     return processDirectory('./src', desDir).then(function() {
-        return processDirectory('./lib', desDir);
+        return processDirectory('./lib', desDir, ['js']);
     }).then(function() {
         return fs.copy('./node_modules/best-globals/best-globals.js', desDir+'/best-globals.js');
-    // }).then(function() {
-        // return processDirectory('./node_modules/best-promise', desDir, ['js']);
+    //}).then(function() {
+    //    return processDirectory('./node_modules/best-promise', desDir, ['js']);
     }).then(function() {
         return processDirectory('./node_modules/require-bro/lib', desDir);
     }).then(function() {
@@ -98,6 +98,8 @@ function generateWeb() {
         return bundlePromise(b);
     }).then(function(bfbuf) {
         return fs.writeFile(desDir+'/buffer.js', bfbuf);
+    // }).then(function() {
+        // return fs.copy('./node_modules/mini-tools/lib/mini-tools.js', desDir+'/mini-tools.js');
     }).catch(function(err) {
         console.log("Error", err, err.stack);
         process.exit(1);

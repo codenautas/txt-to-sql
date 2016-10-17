@@ -8,6 +8,7 @@ var Promises = require('best-promise');
 var fs = require('fs-promise');
 var fsSync = require('fs');
 var Path = require('path');
+var miniTools = require('mini-tools');
 var jsYaml = require('js-yaml');
 var changing = require('best-globals').changing;
 var readline = require('readline');
@@ -48,6 +49,17 @@ cmdParams.exportDefaults = program.exportDefaults;
 
 // numero de lineas a leer para analizar entrada
 var bufferingThreeshold = 50;
+
+function readConfigData(configFile) {
+    return Promises.start(function() {
+        return fs.exists(configFile);
+    }).then(function(exists) {
+        if(exists) {
+            return miniTools.readConfig([configFile]);
+        }
+        return {invalid:true};
+    });
+};
 
 function createParams(params, preparedParams) {
     var res = {
@@ -219,10 +231,10 @@ getOutputDir(cmdParams.input).then(function(dir) {
     var inputBase = Path.resolve(dir, inputName);
     var inputYaml = inputBase+'.yaml';
     var createInputYaml = false;
-    return txtToSql.readConfigData(inputYaml).then(function(data) {
+    return readConfigData(inputYaml).then(function(data) {
         if(data.invalid) {
             createInputYaml = true;
-            return txtToSql.readConfigData(inputBase+'.json'); 
+            return readConfigData(inputBase+'.json'); 
         }
         return data;
     }).then(function(data) {
