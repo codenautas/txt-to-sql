@@ -82,7 +82,25 @@ function createParams(params, preparedParams) {
     return res;
 }
 
-function doPrepare(params, inputYaml, create) {
+function writeConfigYaml(params, inputYaml) {
+    var create = false;
+    return fs.exists(inputYaml).then(function(exists) {
+        create = ! exists;
+        if(create) {
+            var createdParams = Object.assign({}, params);
+            delete createdParams.rawTable;
+            return fs.writeFile(inputYaml, jsYaml.safeDump(createdParams), {encoding:'utf8'});
+        }
+    }).then(function() {
+        if(create) {
+            process.stdout.write("Generated '"+inputYaml+"' with deduced options\n");
+        } else {
+            process.stdout.write("Not overwriding existing '"+inputYaml+"'\n");
+        }
+    });
+}
+
+function doPrepare(params, inputYaml) {
     // PARCHE hasta resolver #16
     if(params.opts) {
         if(params.opts.columns) {
@@ -98,24 +116,15 @@ function doPrepare(params, inputYaml, create) {
     return txtToSql.prepare(params).then(function(result) {
         if(result.errors) { throw new Error(result.errors); }
         res = createParams(params, result);
-        if(create) {
-            var createdParams = Object.assign({}, res);
-            delete createdParams.rawTable;
-            return fs.writeFile(inputYaml, jsYaml.safeDump(createdParams), {encoding:'utf8'});
-        }
+        return writeConfigYaml(res, inputYaml);
     }).then(function() {
-        if(create) {
-            process.stdout.write("Generated '"+inputYaml+"' with deduced options\n");
-        } else {
-            process.stdout.write("Not overwriding existing '"+inputYaml+"'\n");
-        }
         return res;
     });
 }
 
-function doGenerate(params, inputYaml, create, inputName) {
+function doGenerate(params, inputYaml, inputName) {
     var outSQL = inputName+'.sql';
-    return doPrepare(params, inputYaml, create).then(function(preparedParams) {
+    return doPrepare(params, inputYaml).then(function(preparedParams) {
         return txtToSql.generateScripts(preparedParams);
     }).then(function(result) {
         if(result.errors) { throw new Error(result.errors); }
@@ -226,16 +235,7 @@ function doFast(params, inputBase) {
                 fastFinalize(info, outStream);
             }
             //console.log("preparedResult", preparedResult);
-            var inY = inputBase+'.yaml';
-            if(! fsSync.existsSync(inY)) {
-                var createdParams = createParams(params, preparedResult)
-                delete createdParams.rawTable;
-                fsSync.writeFile(inY, jsYaml.safeDump(createdParams), {encoding:'utf8'});
-                process.stdout.write("Generated '"+inY+"' with deduced options\n");
-            } else {
-                process.stdout.write("Not overwriding existing '"+inY+"'\n");
-            }
-            //console.log("info", info);
+            writeConfigYaml(createParams(params, preparedResult), inputBase+'.yaml');
         });
     });
 }
@@ -256,7 +256,6 @@ Promises.start(function() {
     } else {
         var inputBase;
         var inputYaml;
-        var createInputYaml = false;
         return getOutputDir(cmdParams.input).then(function(outputDir) {
             inputBase = Path.resolve(outputDir, inputName);
             inputYaml = inputBase+'.yaml';
@@ -267,7 +266,6 @@ Promises.start(function() {
             ];
             return collectExistentFiles(configFiles);
         }).then(function(existentFiles) {
-            createInputYaml = existentFiles.indexOf(inputYaml) === -1;
             return miniTools.readConfig(existentFiles);
         }).then(function(data) {
             params = data.opts;
@@ -280,15 +278,13 @@ Promises.start(function() {
             if(cmdParams.fast) {
                 return doFast(params, inputBase);
             } else if (cmdParams.prepare) {
-                return doPrepare(params, inputYaml, createInputYaml);
+                return doPrepare(params, inputYaml);
             } else {
-                return doGenerate(params, inputYaml, createInputYaml, inputBase);
+                return doGenerate(params, inputYaml, inputBase);
             }
-        }).catch(function(err){
-            process.stderr.write("ERROR\n"+err.message+"\n"+err.stack);
         });
    }
 }).catch(function(err) {
-    process.stderr.write("ERROR: "+err.message);
+    process.stderr.write("ERROR: "+err.message+"\n"+err.stack);
     program.help();
 });
