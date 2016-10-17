@@ -111,7 +111,7 @@ function throwIfErrors(errors) {
 txtToSql.defaultOpts = {
     columnNamesFormat: 'lowercased_names',
     separator: false,
-    includePrimaryKey: true,
+    includePrimaryKey: null,
     columnAlignedCommas: false,
     columnAlignedMaxWidth: 100,
     outputEngine: 'postgresql',
@@ -385,7 +385,8 @@ function determineColumnValuesInfo(info) {
 }
 
 function determinePrimaryKey(info) {
-    if(info.opts.includePrimaryKey) {
+    if(info.opts.includePrimaryKey !== false) {
+        var warnings = [];
         var columnsInKey = [];
         var haveCustomKeys = info.columnsInfo.filter(function(col,colIndex) {
             if(haveColumnInfo(info, 'inPrimaryKey', colIndex)) {
@@ -398,7 +399,7 @@ function determinePrimaryKey(info) {
             return false;
         });
         if(! info.opts.disablePrimaryKeyBug && haveCustomKeys.length && columnsInKey.length===0) {
-            throw new Error("includePrimaryKey is on but no columns were selected");
+            warnings.push("includePrimaryKey is on but no columns were selected");
         }
         try{
             var combinedKeys=new Array(info.rows.length);
@@ -431,7 +432,11 @@ function determinePrimaryKey(info) {
             var failingColumns = columnsInKey.map(function(col) {
                 return info.columnsInfo[col].name;
             }).join(',');
-            throw new Error('requested columns ('+failingColumns+') failed to be a PrimaryKey');
+            warnings.push('requested columns ('+failingColumns+') failed to be a PrimaryKey');
+        }
+        if(warnings.length) {
+            //console.log("warnings", warnings)
+            info['warnings'] = warnings;
         }
     }
     var primaryKey = info.primaryKey || [];
@@ -575,7 +580,12 @@ function generatePrepareResult(info) {
         delete col.columnLength;
         return col;
     });
-    return {opts:info.opts, columns:columns, inputEncodingDetected:info.inputEncoding||null};
+    return {
+        opts:info.opts,
+        columns:columns,
+        inputEncodingDetected:info.inputEncoding||null,
+        warnings:info.warnings||null
+    };
 }
 
 function prepare(info) {

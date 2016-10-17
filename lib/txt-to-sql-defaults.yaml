@@ -1,7 +1,7 @@
 opts:
   columnNamesFormat: lowercased_names
   separator: false
-  includePrimaryKey: true
+  includePrimaryKey: null
   columnAlignedCommas: false
   columnAlignedMaxWidth: 100
   outputEngine: postgresql

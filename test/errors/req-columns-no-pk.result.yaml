@@ -1,2 +1,2 @@
-errors:
+warnings:
   - "requested columns (v,x) failed to be a PrimaryKey"

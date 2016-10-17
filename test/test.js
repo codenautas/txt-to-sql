@@ -222,15 +222,17 @@ describe("input errors", function(){
                     return setIfFileExists(basePath+'.txt', param, 'rawTable', {});
                 }).then(function() {
                     if(check.change) { check.change(param); }
-                    return loadYaml(basePath+'.errors.yaml');
+                    return loadYaml(basePath+'.result.yaml');
                 }).then(function(yaml) {
                     expected = yaml;
                 }).then(function() {
                     //console.log(check.name, "param", param);
                     return txtToSql.prepare(param);
                 }).then(function(prepared){
+                    //console.log("prepared", prepared); console.log("expected", expected);
                     //console.log(check.name, "prep", prepared.errors, "expe", expected.errors)
                     expect(prepared.errors).to.eql(expected.errors);
+                    expect(prepared.warnings).to.eql(expected.warnings);
                 }).then(done,done);
             });
         }
