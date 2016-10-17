@@ -99,7 +99,9 @@ function doPrepare(params, inputYaml, create) {
         if(result.errors) { throw new Error(result.errors); }
         res = createParams(params, result);
         if(create) {
-            return fs.writeFile(inputYaml, jsYaml.safeDump(res), {encoding:'utf8'});
+            var createdParams = Object.assign({}, res);
+            delete createdParams.rawTable;
+            return fs.writeFile(inputYaml, jsYaml.safeDump(createdParams), {encoding:'utf8'});
         }
     }).then(function() {
         if(create) {
@@ -226,7 +228,9 @@ function doFast(params, inputBase) {
             //console.log("preparedResult", preparedResult);
             var inY = inputBase+'.yaml';
             if(! fsSync.existsSync(inY)) {
-                fsSync.writeFile(inY, jsYaml.safeDump(createParams(params, preparedResult)), {encoding:'utf8'});
+                var createdParams = createParams(params, preparedResult)
+                delete createdParams.rawTable;
+                fsSync.writeFile(inY, jsYaml.safeDump(createdParams), {encoding:'utf8'});
                 process.stdout.write("Generated '"+inY+"' with deduced options\n");
             } else {
                 process.stdout.write("Not overwriding existing '"+inY+"'\n");
