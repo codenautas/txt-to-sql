@@ -1,0 +1,2 @@
+warnings:
+  - 'requested columns (text-field, int-field) failed to be a PrimaryKey'

@@ -1,4 +1,5 @@
 opts:
+  includePrimaryKey: true
   columns:
   - name: x
     type: character varying
