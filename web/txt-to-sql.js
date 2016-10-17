@@ -395,11 +395,13 @@ function determinePrimaryKey(info) {
                 }
                 return true;
             }
-            columnsInKey.push(colIndex);
             return false;
         });
-        if(! info.opts.disablePrimaryKeyBug && haveCustomKeys.length && columnsInKey.length===0) {
+        if(haveCustomKeys.length && columnsInKey.length===0) {
             warnings.push("includePrimaryKey is on but no columns were selected");
+        }
+        if(columnsInKey.length===0) {
+            columnsInKey = info.columnsInfo.map(function(col, colIndex) { return colIndex; } );
         }
         try{
             var combinedKeys=new Array(info.rows.length);
@@ -428,11 +430,12 @@ function determinePrimaryKey(info) {
         }catch(err){
             if(err.message!=="haveNullColumns") { throw err; }
         }
-        if(! info.opts.disablePrimaryKeyBug && columnsInKey.length && (! info.primaryKey || ! info.primaryKey.length)) {
+        if(columnsInKey.length && (! info.primaryKey || ! info.primaryKey.length)) {
             var failingColumns = columnsInKey.map(function(col) {
                 return info.columnsInfo[col].name;
-            }).join(', ');
-            warnings.push('requested columns ('+failingColumns+') failed to be a PrimaryKey');
+            });
+            warnings.push('requested columns ('+failingColumns.join(', ')+') failed to be a PrimaryKey');
+            if(info.opts.includePrimaryKey) { info.primaryKey = failingColumns; }
         }
         if(warnings.length) { info.warnings = warnings; }
     }

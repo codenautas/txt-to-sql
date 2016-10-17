@@ -67,7 +67,7 @@ function createParams(params, preparedParams) {
        rawTable:params.rawTable,
        opts: changing(params.opts, preparedParams.opts),
     };
-    res.opts.columns = preparedParams.columns;
+    res.opts.columns = params.columns || preparedParams.columns;
     return res;
 }
 
@@ -77,6 +77,7 @@ function writeConfigYaml(params, inputYaml) {
         create = ! exists;
         if(create) {
             var createdParams = Object.assign({}, params);
+            if(! createdParams.opts.columns) { delete createdParams.opts.columns; }
             delete createdParams.rawTable;
             return fs.writeFile(inputYaml, jsYaml.safeDump(createdParams), {encoding:'utf8'});
         }
@@ -90,20 +91,12 @@ function writeConfigYaml(params, inputYaml) {
 }
 
 function doPrepare(params, inputYaml) {
-    // PARCHE hasta resolver #16
-    if(params.opts) {
-        if(params.opts.columns) {
-            params.opts.includePrimaryKey = params.opts.columns.filter(function(col) {
-                return col.inPrimaryKey === true;
-            }).length>0;
-        }
-    } else {
-        params.opts = { disablePrimaryKeyBug: true };
-    }
-    // fin PARCHE
     var res;
     return txtToSql.prepare(params).then(function(result) {
         if(result.errors) { throw new Error(result.errors); }
+        if(result.warnings) {
+            process.stdout.write("There are warnings: \n  "+result.warnings.join('\n  ')+"\n");
+        }
         res = createParams(params, result);
         return writeConfigYaml(res, inputYaml);
     }).then(function() {
@@ -257,10 +250,11 @@ Promises.start(function() {
         }).then(function(existentFiles) {
             return miniTools.readConfig(existentFiles);
         }).then(function(data) {
-            params = data.opts;
+            params.opts = data.opts;
             if(! params.tableName) {
                 params.tableName = inputName;
             }
+            //console.log("params", params)
             return fs.readFile(cmdParams.input);
         }).then(function(rawInput) {
             params.rawTable = rawInput;
