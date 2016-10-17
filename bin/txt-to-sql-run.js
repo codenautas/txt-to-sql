@@ -50,6 +50,17 @@ cmdParams.exportDefaults = program.exportDefaults;
 // numero de lineas a leer para analizar entrada
 var bufferingThreeshold = 50;
 
+function collectExistentFiles(files) {
+    var existentFiles = [];
+    return Promises.all(files.map(function(file) {
+        return fs.exists(file).then(function(exists) {
+            if(exists) { existentFiles.push(file); }
+        });
+    })).then(function() {
+        return existentFiles;
+    });
+};
+
 function readConfigData(configFile) {
     return Promises.start(function() {
         return fs.exists(configFile);
@@ -225,14 +236,15 @@ function doFast(params, inputBase) {
     });
 }
 
+var workingDir = Path.resolve('.');
+var defYamlName = 'txt-to-sql-defaults.yaml';
+var globalBaseDir = Path.dirname(Path.parse(__filename).dir);
+var defYaml = Path.resolve(globalBaseDir, 'lib', defYamlName);
 var inputName = Path.basename(cmdParams.input, '.txt');
 var params = {};
+
 Promises.start(function() {
     if(cmdParams.exportDefaults) {
-        var workingDir = Path.resolve('.');
-        var baseDir = Path.dirname(Path.parse(__filename).dir);
-        var defYamlName = 'txt-to-sql-defaults.yaml';
-        var defYaml = Path.resolve(baseDir, 'lib', defYamlName)
         var outputDefYaml = Path.resolve(workingDir, defYamlName);
         return fs.copy(defYaml, outputDefYaml).then(function() {
             process.stdout.write("Written '"+outputDefYaml+"'\n");
@@ -244,17 +256,18 @@ Promises.start(function() {
         return getOutputDir(cmdParams.input).then(function(outputDir) {
             inputBase = Path.resolve(outputDir, inputName);
             inputYaml = inputBase+'.yaml';
-            return readConfigData(inputYaml);
+            var configFiles = [
+                defYaml,
+                Path.resolve(workingDir, defYamlName),
+                inputYaml
+            ];
+            return collectExistentFiles(configFiles);
+        }).then(function(existentFiles) {
+            createInputYaml = existentFiles.indexOf(inputYaml) === -1;
+            return miniTools.readConfig(existentFiles);
         }).then(function(data) {
-            if(data.invalid) {
-                createInputYaml = true;
-                return readConfigData(inputBase+'.json'); 
-            }
-            return data;
-        }).then(function(data) {
-            if(! data.invalid) {
-                params = data;
-            } else {
+            params = data.opts;
+            if(! params.tableName) {
                 params.tableName = inputName;
             }
             return fs.readFile(cmdParams.input);
