@@ -113,23 +113,21 @@ function addStep(labelText, elements) {
     if(existe) { steps.removeChild(existe); }
     steps.appendChild(html.div({id:labelText}, [html.label(labelText)].concat(elements)).create());
 }
-function createInput(name, value, width, id) {
-    var attrs = {name:name};
+function createInput(name, type, value, width, id) {
+    var attrs = {name:name, type:type};
     if(id) { attrs.id = id; }
-    if(typeof(value)==='boolean') {
-        attrs.type = 'checkbox',
+    if(type === 'checkbox') {
         attrs.checked = value;
     } else {
-        attrs.type = 'text',
         attrs.value = value;
         attrs.size=width || 5;
     }
     return html.input(attrs);
 }
-function createOption(label, name, value, width, id) {
+function createOption(label, name, type, value, width, id) {
     return html.tr([
         html.td([html.label(label)]),
-        html.td([createInput(name, value, width, id || name)])            
+        html.td([createInput(name, type, value, width, id || name)])            
     ]).create();
 }
 function handleGenerate(event){
@@ -191,7 +189,11 @@ function handleGenerate(event){
         var url = URL.createObjectURL(blob); // "data:Application/octet-stream;base64," + blob.;
         var link = html.a({href:url}, messages.download).create();
         link.setAttribute("download", tableName+".sql");
-        addStep(messages.step3, [link]);
+        var elems = [link];
+        if(generated.warnings) {
+            elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
+        }
+        addStep(messages.step3, elems);
     }).catch(function(err){
         errMessage.textContent=err.message;
     });
@@ -212,29 +214,29 @@ function handlePrepare(event){
             butGenerate.addEventListener('click', handleGenerate, false);
             var tblOpts = html.table({class:'inner'},[
                 html.th({colspan:2},[html.td("Options")]).create(),
-                createOption(messages.opts.commas, 'columnAlignedCommas', prepared.opts.columnAlignedCommas, 1),
-                createOption(messages.opts.width, 'columnAlignedMaxWidth', prepared.opts.columnAlignedMaxWidth, 1),
-                createOption(messages.opts.format, 'columnNamesFormat', prepared.opts.columnNamesFormat, 15),
-                createOption(messages.opts.separator, 'separator', prepared.opts.separator, 1),
-                createOption(messages.opts.outformat, 'outputEngine', prepared.opts.outputEngine, 10),
-                createOption(messages.opts.pk, 'includePrimaryKey', prepared.opts.includePrimaryKey, 1),
-                createOption(messages.opts.verbose, 'verboseErrors', prepared.opts.verboseErrors, 1),
-                createOption(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, 7),
-                createOption(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, 7),
-                createOption(messages.opts.ignoreNullLines, 'ignoreNullLines', prepared.opts.ignoreNullLines, 1),
+                createOption(messages.opts.commas, 'columnAlignedCommas', 'text', prepared.opts.columnAlignedCommas, 1),
+                createOption(messages.opts.width, 'columnAlignedMaxWidth', 'text', prepared.opts.columnAlignedMaxWidth, 1),
+                createOption(messages.opts.format, 'columnNamesFormat', 'text', prepared.opts.columnNamesFormat, 15),
+                createOption(messages.opts.separator, 'separator', 'text', prepared.opts.separator, 1),
+                createOption(messages.opts.outformat, 'outputEngine', 'text', prepared.opts.outputEngine, 10),
+                createOption(messages.opts.pk, 'includePrimaryKey', 'checkbox', prepared.opts.includePrimaryKey || '', 1),
+                createOption(messages.opts.verbose, 'verboseErrors', 'checkbox', prepared.opts.verboseErrors, 1),
+                createOption(messages.opts.inputEncoding, 'inputEncoding', 'text', prepared.opts.inputEncoding, 7),
+                createOption(messages.opts.outputEncoding, 'outputEncoding', 'text', prepared.opts.outputEncoding, 7),
+                createOption(messages.opts.ignoreNullLines, 'ignoreNullLines', 'checkbox', prepared.opts.ignoreNullLines, 1),
             ]).create();
             var fields = prepared.columns.map(function(column, index) {
                 var ipk = column.inPrimaryKey!==null && column.inPrimaryKey;
                 var hnv = column.hasNullValues!==null && column.hasNullValues;
                 var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                 return html.tr([
-                            html.td([createInput('name', column.name, 15, 'col_name_'+index)]),
-                            html.td([createInput('type', column.type, 10, 'col_type_'+index)]),
-                            html.td([createInput('inPrimaryKey', ipk, 0, 'col_pk_'+index)]),
-                            html.td([createInput('hasNullValues', hnv, 0, 'col_nulls_'+index)]),
-                            html.td([createInput('maxLength', column.maxLength, 0, 'col_len_'+index)]),
-                            html.td([createInput('maxScale', column.maxScale || 0, 0, 'col_scale_'+index)]),
-                            html.td([createInput('hasCientificNotation', hcn, 0, 'col_cn_'+index)])
+                            html.td([createInput('name', 'text', column.name, 15, 'col_name_'+index)]),
+                            html.td([createInput('type', 'text', column.type, 10, 'col_type_'+index)]),
+                            html.td([createInput('inPrimaryKey', 'checkbox', ipk, 0, 'col_pk_'+index)]),
+                            html.td([createInput('hasNullValues', 'checkbox', hnv, 0, 'col_nulls_'+index)]),
+                            html.td([createInput('maxLength', 'text', column.maxLength, 0, 'col_len_'+index)]),
+                            html.td([createInput('maxScale', 'text', column.maxScale || 0, 0, 'col_scale_'+index)]),
+                            html.td([createInput('hasCientificNotation', 'checkbox', hcn, 0, 'col_cn_'+index)])
                        ]);
             });
             fields.unshift(html.tr([
@@ -257,7 +259,7 @@ function handlePrepare(event){
                                     ]).create()]);
            errMessage.textContent=""; // if all goes ok, clear' em
         }).catch(function(err){
-            errMessage.textContent=err.message;
+            errMessage.textContent=err.message+"\n"+err.stack;
         });
     });
 }
