@@ -37,7 +37,7 @@ program
     .parse(process.argv);
 
 
-if( (""==program.args && !program.input) ){
+if( ((""==program.args && !program.input) && !program.exportDefaults) ){
     program.help();
 }
 
@@ -227,35 +227,50 @@ function doFast(params, inputBase) {
 
 var inputName = Path.basename(cmdParams.input, '.txt');
 var params = {};
-getOutputDir(cmdParams.input).then(function(dir) {
-    var inputBase = Path.resolve(dir, inputName);
-    var inputYaml = inputBase+'.yaml';
-    var createInputYaml = false;
-    return readConfigData(inputYaml).then(function(data) {
-        if(data.invalid) {
-            createInputYaml = true;
-            return readConfigData(inputBase+'.json'); 
-        }
-        return data;
-    }).then(function(data) {
-        if(! data.invalid) {
-            params = data;
-        } else {
-            params.tableName = inputName;
-        }
-        return fs.readFile(cmdParams.input);
-    }).then(function(rawInput) {
-        params.rawTable = rawInput;
-        if(cmdParams.fast) {
-            return doFast(params, inputBase);
-        } else if (cmdParams.prepare) {
-            return doPrepare(params, inputYaml, createInputYaml);
-        } else {
-            return doGenerate(params, inputYaml, createInputYaml, inputBase);
-        }
-    }).catch(function(err){
-        process.stderr.write("ERROR\n"+err.message+"\n"+err.stack);
-    });
+Promises.start(function() {
+    if(cmdParams.exportDefaults) {
+        var workingDir = Path.resolve('.');
+        var baseDir = Path.dirname(Path.parse(__filename).dir);
+        var defYamlName = 'txt-to-sql-defaults.yaml';
+        var defYaml = Path.resolve(baseDir, 'lib', defYamlName)
+        var outputDefYaml = Path.resolve(workingDir, defYamlName);
+        return fs.copy(defYaml, outputDefYaml).then(function() {
+            process.stdout.write("Written '"+outputDefYaml+"'\n");
+        });
+    } else {
+        var inputBase;
+        var inputYaml;
+        var createInputYaml = false;
+        return getOutputDir(cmdParams.input).then(function(outputDir) {
+            inputBase = Path.resolve(outputDir, inputName);
+            inputYaml = inputBase+'.yaml';
+            return readConfigData(inputYaml);
+        }).then(function(data) {
+            if(data.invalid) {
+                createInputYaml = true;
+                return readConfigData(inputBase+'.json'); 
+            }
+            return data;
+        }).then(function(data) {
+            if(! data.invalid) {
+                params = data;
+            } else {
+                params.tableName = inputName;
+            }
+            return fs.readFile(cmdParams.input);
+        }).then(function(rawInput) {
+            params.rawTable = rawInput;
+            if(cmdParams.fast) {
+                return doFast(params, inputBase);
+            } else if (cmdParams.prepare) {
+                return doPrepare(params, inputYaml, createInputYaml);
+            } else {
+                return doGenerate(params, inputYaml, createInputYaml, inputBase);
+            }
+        }).catch(function(err){
+            process.stderr.write("ERROR\n"+err.message+"\n"+err.stack);
+        });
+   }
 }).catch(function(err) {
     process.stderr.write("ERROR: "+err.message);
     program.help();
