@@ -58,6 +58,19 @@ function fastFinalize(info, outStream) {
     });
 }
 
+function streamToPromise(stream) {
+    function resolveResult(func) {
+        return func(stream.preparedResult);
+    }
+    return new Promise(function(resolve, reject) {
+        var res = resolveResult.bind(undefined, resolve);
+        stream.on("close", res);
+        stream.on("end", res);
+        stream.on("finish", res);
+        stream.on("error", res);
+    });
+}
+
 function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
     var inStream, outStream;
     var rl;
@@ -109,8 +122,10 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                 preparedResult = fastAnalyzeLines(info);
                 fastFinalize(info, outStream);
             }
+            rl.preparedResult = preparedResult;
             outStream.end();
         });
+        return streamToPromise(rl);
     });
 }
 

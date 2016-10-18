@@ -7,7 +7,9 @@ var fast = require('./fast.js');
 var txtToSql = require('../lib/txt-to-sql.js');
 var Promises = require('best-promise');
 var fs = require('fs-promise');
-
+var changing = require('best-globals').changing;
+var fs = require('fs-promise');
+var jsYaml = require('js-yaml');
 var Path = require('path');
 var miniTools = require('mini-tools');
 
@@ -146,13 +148,14 @@ Promises.start(function() {
             if(! params.tableName) {
                 params.tableName = inputName;
             }
-            //console.log("params", params)
             return fs.readFile(cmdParams.input);
         }).then(function(rawInput) {
             params.rawTable = rawInput;
             if(cmdParams.fast) {
-                return fast.doFast(params, inputBase, fastBufferingThreshold).then(function() {
-                     return writeConfigYaml(createParams(params, preparedResult), inputBase+'.yaml');
+                return fast.doFast(params, inputBase, fastBufferingThreshold).then(function(preparedResult) {
+                    return writeConfigYaml(createParams(params, preparedResult), inputBase+'.yaml');
+                }).then(function() {
+                    process.stdout.write("Generated '"+inputBase+".sql'")
                 });
             } else if (cmdParams.prepare) {
                 return doPrepare(params, inputYaml);

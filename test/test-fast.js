@@ -3,7 +3,6 @@
 var fs = require('fs-promise');
 var txtToSql = require('../lib/txt-to-sql.js');
 var txtToSqlFast = require('../bin/fast.js');
-var common = require('../bin/common.js');
 var expect = require('expect.js');
 var selfExplain = require('self-explain');
 var differences = selfExplain.assert.allDifferences;
@@ -20,7 +19,6 @@ util.inherits(TestStream, stream.Writable);
 
 TestStream.prototype._write = function (chunk, encoding, done) {
   this.data.push(chunk.toString());
-  //console.log(chunk.toString());
   done();
 }
 
@@ -163,8 +161,7 @@ describe("fast-fixtures", function(){
                 }).then(function() {
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
-                    txtToSqlFast.doFast(param, basePath, fastBufferingThreshold, generated);
-                    return common.streamToPromise(generated);
+                    return txtToSqlFast.doFast(param, basePath, fastBufferingThreshold, generated);
                 }).then(function(){
                     console.log("generated", generated.getData());
                     /*
