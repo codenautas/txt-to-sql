@@ -2,35 +2,35 @@ opts:
   columnNamesFormat: lowercased_names
   outputEngine: mysql
 columns:
-  - name: 'text-field'
+  - name: text-field
     type: varchar
     inPrimaryKey: false
     maxLength: 5
     maxScale: null
     hasNullValues: true
     hasCientificNotation: null
-  - name: 'int-field'
+  - name: int-field
     type: integer
     inPrimaryKey: false
     maxLength: 1
     maxScale: 0
     hasNullValues: true
     hasCientificNotation: null
-  - name: 'num-field'
+  - name: num-field
     type: numeric
     inPrimaryKey: false
     maxLength: 1
     maxScale: 6
     hasNullValues: true
     hasCientificNotation: null
-  - name: 'big'
+  - name: big
     type: bigint
     inPrimaryKey: false
     maxLength: 10
     maxScale: 0
     hasNullValues: false
     hasCientificNotation: null
-  - name: 'double'
+  - name: double
     type: double precision
     inPrimaryKey: false
     maxLength: 1

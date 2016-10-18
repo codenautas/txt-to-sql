@@ -48,7 +48,7 @@ cmdParams.fast = program.fast;
 cmdParams.exportDefaults = program.exportDefaults;
 
 // numero de lineas a leer para analizar entrada
-var bufferingThreeshold = 50;
+var fastBufferingThreshold = 50;
 
 function collectExistentFiles(files) {
     var existentFiles = [];
@@ -179,7 +179,7 @@ function doFast(params, inputBase) {
         outStream = fsSync.createWriteStream(inputBase+'.sql', {encoding:'utf8'});
         info.lines = [];
         // maximo de lineas para utilizar procesamiento standard
-        info.fastMaxLines = bufferingThreeshold;
+        info.fastMaxLines = fastBufferingThreshold;
         rl = readline.createInterface({
             input: inStream,
             terminal: false

@@ -2,21 +2,21 @@ tableName: t1
 opts:
   includePrimaryKey: true
   columns:
-    - name: 'text-field'
+    - name: text-field
       type: character varying
       inPrimaryKey: true
       maxLength: 5
       maxScale: null
       hasNullValues: false
       hasCientificNotation: null
-    - name: 'int-field'
+    - name: int-field
       type: integer
       inPrimaryKey: true
       maxLength: 1
       maxScale: 0
       hasNullValues: false
       hasCientificNotation: null
-    - name: 'num""1""'
+    - name: num""1""
       type: numeric
       inPrimaryKey: false
       maxLength: 1
