@@ -608,7 +608,6 @@ function processOutputBuffer(info) {
     return info;
 }
 
-
 function setup(info) {
     return Promise.resolve(info)
         .then(verifyInputParams)

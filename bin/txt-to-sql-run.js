@@ -3,29 +3,14 @@
 "use strict";
 
 var program = require('commander');
+var common = require('./common.js');
+var fast = require('./fast.js');
 var txtToSql = require('../lib/txt-to-sql.js');
 var Promises = require('best-promise');
 var fs = require('fs-promise');
-var fsSync = require('fs');
+
 var Path = require('path');
 var miniTools = require('mini-tools');
-var jsYaml = require('js-yaml');
-var changing = require('best-globals').changing;
-var readline = require('readline');
-
-function getOutputDir(inFile) {
-    return Promises.start(function() {
-        if(!inFile) { throw new Error("null file"); }
-        return fs.exists(inFile);
-    }).then(function(exists) {
-        if(! exists) { throw new Error("'"+inFile+"' does not exists"); }
-        return inFile;
-    }).then(function(inFile) {
-        return Path.dirname(Path.resolve(inFile));
-    }).catch(function(err) {
-        return Promise.reject(err);
-    });
-};
 
 program
     .version(require('../package').version)
@@ -50,6 +35,20 @@ cmdParams.exportDefaults = program.exportDefaults;
 // numero de lineas a leer para analizar entrada
 var fastBufferingThreshold = 50;
 
+function getOutputDir(inFile) {
+    return Promises.start(function() {
+        if(!inFile) { throw new Error("null file"); }
+        return fs.exists(inFile);
+    }).then(function(exists) {
+        if(! exists) { throw new Error("'"+inFile+"' does not exists"); }
+        return inFile;
+    }).then(function(inFile) {
+        return Path.dirname(Path.resolve(inFile));
+    }).catch(function(err) {
+        return Promise.reject(err);
+    });
+};
+
 function collectExistentFiles(files) {
     var existentFiles = [];
     return Promises.all(files.map(function(file) {
@@ -61,34 +60,6 @@ function collectExistentFiles(files) {
     });
 };
 
-function createParams(params, preparedParams) {
-    var res = {
-       tableName:params.tableName,
-       rawTable:params.rawTable,
-       opts: changing(params.opts, preparedParams.opts),
-    };
-    res.opts.columns = params.columns || preparedParams.columns;
-    return res;
-}
-
-function writeConfigYaml(params, inputYaml) {
-    var create = false;
-    return fs.exists(inputYaml).then(function(exists) {
-        create = ! exists;
-        if(create) {
-            var createdParams = Object.assign({}, params);
-            if(! createdParams.opts.columns) { delete createdParams.opts.columns; }
-            delete createdParams.rawTable;
-            return fs.writeFile(inputYaml, jsYaml.safeDump(createdParams), {encoding:'utf8'});
-        }
-    }).then(function() {
-        if(create) {
-            process.stdout.write("Generated '"+inputYaml+"' with deduced options\n");
-        } else {
-            process.stdout.write("Not overwriding existing '"+inputYaml+"'\n");
-        }
-    });
-}
 
 function doPrepare(params, inputYaml) {
     var res;
@@ -97,8 +68,8 @@ function doPrepare(params, inputYaml) {
         if(result.warnings) {
             process.stdout.write("There are warnings: \n  "+result.warnings.join('\n  ')+"\n");
         }
-        res = createParams(params, result);
-        return writeConfigYaml(res, inputYaml);
+        res = common.createParams(params, result);
+        return common.writeConfigYaml(res, inputYaml);
     }).then(function() {
         return res;
     });
@@ -113,115 +84,6 @@ function doGenerate(params, inputYaml, inputName) {
         return fs.writeFile(outSQL, result.rawSql);
     }).then(function() {
         process.stdout.write("Generated '"+outSQL+"'")
-    });
-}
-
-function fastProcessEncodingOptions(info) {
-    return txtToSql.getEncoding(info.rawTable).then(function(encoding) {
-        info.inputEncodingDetected = encoding;
-        if(! info.opts.inputEncoding) { info.opts.inputEncoding = info.inputEncodingDetected; }
-        if(! info.opts.outputEncoding) { info.opts.outputEncoding = info.inputEncodingDetected; }
-        return info;
-    });
-}
-
-function fastProcessLine(info, line) {
-    if(line && info.lines && info.lines.length<info.fastMaxLines) {
-        info.lines.push(line);
-    }
-}
-
-function fastAnalyzeLines(info) {
-    txtToSql.separateRows(info);
-    txtToSql.verifyColumnCount(info);
-    txtToSql.transformNames(info);
-    txtToSql.verifyColumnNames(info);
-    txtToSql.determineColumnTypes(info);
-    txtToSql.determineColumnValuesInfo(info);
-    txtToSql.determinePrimaryKey(info);
-    return txtToSql.generatePrepareResult(info);
-}
-
-function fastInsert(outStream, info, line) {
-    if(line.trim() !=='') {
-        var row = [txtToSql.separateOneRow(info, line)];
-        var rows = txtToSql.createAdaptedRows(info, row);
-        var insertInto = txtToSql.createInsertInto(info);
-        var insertValues = txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n');
-        outStream.write(insertValues+'\n');
-    }
-}
-
-function fastCreateCreate(info) {
-    txtToSql.quoteNames(info);
-    txtToSql.generateDropTable(info);
-    txtToSql.generateCreateScript(info);
-}
-
-function fastFinalize(info, outStream) {
-    fastCreateCreate(info);
-    //txtToSql.removeIgnoredLines(info);
-    txtToSql.generateInsertScript(info);
-    //console.log("info", info.scripts)
-    info.scripts.forEach(function(script) {
-        outStream.write(script.sql);
-    });
-}
-
-function doFast(params, inputBase) {
-    var inStream, outStream;
-    var rl;
-    var preparedResult;
-    return Promise.resolve().then(function() {
-        return txtToSql.verifyInputParams(params);
-    }).then(fastProcessEncodingOptions)
-      .then(function(info) {
-        //console.log("info", info);
-        inStream = fsSync.createReadStream(inputBase+'.txt', {encoding:'utf8'});
-        outStream = fsSync.createWriteStream(inputBase+'.sql', {encoding:'utf8'});
-        info.lines = [];
-        // maximo de lineas para utilizar procesamiento standard
-        info.fastMaxLines = fastBufferingThreshold;
-        rl = readline.createInterface({
-            input: inStream,
-            terminal: false
-        });
-        rl.on('line', function(line) {
-            //console.log("line", line);
-            if(! info.headers) {
-                info.headers = line;
-                txtToSql.determineSeparator(info);
-                txtToSql.determineDelimiter(info);
-                txtToSql.separateColumns(info);
-            } else {
-                fastProcessLine(info, line);
-                if(info.lines) {
-                    if(info.lines.length===info.fastMaxLines) {
-                        preparedResult = fastAnalyzeLines(info);
-                        fastCreateCreate(info);
-                        // deben estar drop y create
-                        info.scripts.forEach(function(script) {
-                            outStream.write(script.sql);
-                        });
-                        info.lines.forEach(function(ln) {
-                            fastInsert(outStream, info, ln);
-                        });
-                        delete info.lines;
-                    }
-                } else { // more than info.fastMaxLines
-                    fastInsert(outStream, info, line);
-                }
-            }
-        });
-        rl.on('close', function() {
-            if(info.lines && info.lines.length<info.fastMaxLines) {
-                fastProcessLine(info);
-                preparedResult = fastAnalyzeLines(info);
-                fastFinalize(info, outStream);
-            }
-            //console.log("preparedResult", preparedResult);
-            writeConfigYaml(createParams(params, preparedResult), inputBase+'.yaml');
-        });
     });
 }
 
@@ -262,7 +124,7 @@ Promises.start(function() {
         }).then(function(rawInput) {
             params.rawTable = rawInput;
             if(cmdParams.fast) {
-                return doFast(params, inputBase);
+                return fast.doFast(params, inputBase, fastBufferingThreshold);
             } else if (cmdParams.prepare) {
                 return doPrepare(params, inputYaml);
             } else {
