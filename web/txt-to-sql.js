@@ -278,11 +278,22 @@ function determineDelimiter(info) {
     return info;
 }
 
+function getDelimitedField(info, field) {
+    var last = field.length-1;
+    var start=field[0]===info.delimiter?1:0,
+        end=(last>start && field[last]===info.delimiter) ? last:last+1;
+    return field.substring(start, end).replace(new RegExp(info.delimiter+info.delimiter,"g"),info.delimiter);
+}
+
+function delimiterSplit(info, line) {
+    var parts = line.split(info.opts.separator);
+    return parts.map(function(name, index){ return getDelimitedField(info, name); });
+}
+
 function separateWithDelimiter(info) {
-    var headers = info.headers.split(info.delimiter+info.opts.separator+info.delimiter);
-    return info.columnsInfo = headers.map(function(name, index){
+    return info.headers.split(info.opts.separator).map(function(name, index){
         return {
-            name:index===0 ? name.substring(1) : index===headers.length-1 ? name.substring(0, name.length-1) : name,
+            name:getDelimitedField(info, name),
             columnLength:0,
         };
     });
@@ -311,7 +322,11 @@ function separateColumns(info){
 }
 
 function separateOneRow(info, line) {
-    return line.split(info.opts.separator);
+    if(info.delimiter) {
+        return delimiterSplit(info, line);
+    } else {
+        return line.split(info.opts.separator);
+    }
 }
 
 function separateRows(info) {

@@ -144,9 +144,7 @@ function fastAnalyzeLines(info) {
 
 function fastInsert(outStream, info, line) {
     if(line.trim() !=='') {
-        var row = txtToSql.separateOneRow(info, line);
-        var row =  [line].filter(function(ln){ return ln.trim()!==""; })
-                     .map(function(ln){ return ln.split(info.opts.separator);});
+        var row = [txtToSql.separateOneRow(info, line)];
         var rows = txtToSql.createAdaptedRows(info, row);
         var insertInto = txtToSql.createInsertInto(info);
         var insertValues = txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n');

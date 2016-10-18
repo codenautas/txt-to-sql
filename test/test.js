@@ -106,7 +106,7 @@ describe("fixtures", function(){
         {path:'pk-custom'},
         {path:'pk-custom-names'},
         {path:'with-null-lines'},
-        {path:'csv-simple', skip:true},
+        {path:'csv-simple'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
@@ -155,7 +155,7 @@ describe("fixtures", function(){
                     if(comp !==-1) {
                         console.log("GEN", generated.rawSql.toString());
                         console.log("EXP", expected.rawSql.toString());
-                        console.log("diff in ", comp, expected.rawSql.toString().substring(comp))
+                        console.log("diff in ", comp, "\n"+expected.rawSql.toString().substring(comp))
                     }
                     expect(generated.rawSql).to.eql(expected.rawSql);
                     expect(differences(generated.rawSql,expected.rawSql)).to.eql(null);
