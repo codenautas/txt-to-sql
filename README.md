@@ -23,6 +23,40 @@ $ npm install -g txt-to-sql
 ```
 
 
+## Usage (command-line)
+
+
+
+```sh
+# Generate file.yaml with detected options
+$ txt-to-sql --prepare file.txt
+
+# Process file.txt
+$ txt-to-sql file.txt
+
+# Process file.txt using streams
+$ txt-to-sql --fast file.txt
+
+# Exportr defaults to working directory
+$ txt-to-sql --export-default
+```
+
+
+## Usage (code)
+
+
+```js
+var txtToSql = require('txt-to-sql');
+var fs = require('fs-promise');
+
+txtToSql.generateScripts('./path/to/file.txt').then(function(generated){
+    return fs.writeFile("file.sql", generated.rawSql);
+}).then(function() {
+    console.log("Done!");
+});
+
+```
+
 ## License
 
 [MIT](LICENSE)

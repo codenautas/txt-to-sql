@@ -1,9 +1,14 @@
 {
   "name": "txt-to-sql",
   "description": "Tools for convert text data to SQL sentences",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "author": "Codenautas <codenautas@googlegroups.com>",
   "repository": "codenautas/txt-to-sql",
+  "contributors": [{
+    "name": "Emilio Platzer", "email": "emilioplatzer@gmail.com"
+  },{
+    "name": "Diego Florio", "email": "diegoefe@gmail.com"
+  }],
   "license": "MIT",
   "main": "lib/txt-to-sql.js",
   "bin": {
