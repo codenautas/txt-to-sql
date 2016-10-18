@@ -142,12 +142,16 @@ function fastAnalyzeLines(info) {
     return txtToSql.generatePrepareResult(info);
 }
 
-function fastInsert(info, line) {
-    var row =  [line].filter(function(ln){ return ln.trim()!==""; })
+function fastInsert(outStream, info, line) {
+    if(line.trim() !=='') {
+        var row = txtToSql.separateOneRow(info, line);
+        var row =  [line].filter(function(ln){ return ln.trim()!==""; })
                      .map(function(ln){ return ln.split(info.opts.separator);});
-    var rows = txtToSql.createAdaptedRows(info, row);
-    var insertInto = txtToSql.createInsertInto(info);
-    return txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n');
+        var rows = txtToSql.createAdaptedRows(info, row);
+        var insertInto = txtToSql.createInsertInto(info);
+        var insertValues = txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n');
+        outStream.write(insertValues+'\n');
+    }
 }
 
 function fastCreateCreate(info) {
@@ -202,12 +206,12 @@ function doFast(params, inputBase) {
                             outStream.write(script.sql);
                         });
                         info.lines.forEach(function(ln) {
-                            outStream.write(fastInsert(info, ln)+'\n');
+                            fastInsert(outStream, info, ln);
                         });
                         delete info.lines;
                     }
                 } else { // more than info.fastMaxLines
-                    outStream.write(fastInsert(info, line)+'\n');
+                    fastInsert(outStream, info, line);
                 }
             }
         });
