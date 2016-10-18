@@ -59,7 +59,7 @@ function fastFinalize(info, outStream) {
     });
 }
 
-function doFast(params, inputBase, fastBufferingThreshold) {
+function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
     var inStream, outStream;
     var rl;
     var preparedResult;
@@ -69,7 +69,7 @@ function doFast(params, inputBase, fastBufferingThreshold) {
       .then(function(info) {
         //console.log("info", info);
         inStream = fsSync.createReadStream(inputBase+'.txt', {encoding:'utf8'});
-        outStream = fsSync.createWriteStream(inputBase+'.sql', {encoding:'utf8'});
+        outStream = outputStream || fsSync.createWriteStream(inputBase+'.sql', {encoding:'utf8'});
         info.lines = [];
         // maximo de lineas para utilizar procesamiento standard
         info.fastMaxLines = fastBufferingThreshold;
