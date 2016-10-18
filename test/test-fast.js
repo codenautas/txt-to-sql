@@ -3,6 +3,7 @@
 var fs = require('fs-promise');
 var txtToSql = require('../lib/txt-to-sql.js');
 var txtToSqlFast = require('../bin/fast.js');
+var common = require('../bin/common.js');
 var expect = require('expect.js');
 var selfExplain = require('self-explain');
 var differences = selfExplain.assert.allDifferences;
@@ -10,14 +11,6 @@ var changing = require('best-globals').changing;
 var yaml = require('js-yaml');
 var stream = require('stream');
 var util = require('util');
-
-function streamToPromise(stream) {
-    return new Promise(function(resolve, reject) {
-        stream.on("end", function() { console.log("end"); resolve() });
-        stream.on("finish", function() { console.log("finish"); resolve() });
-        stream.on("error", function(e) { console.log("error", e); reject(e); });
-    });
-}
 
 function TestStream () {
   stream.Writable.call(this);
@@ -171,7 +164,7 @@ describe("fast-fixtures", function(){
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
                     txtToSqlFast.doFast(param, basePath, fastBufferingThreshold, generated);
-                    return streamToPromise(generated);
+                    return common.streamToPromise(generated);
                 }).then(function(){
                     console.log("generated", generated.getData());
                     /*

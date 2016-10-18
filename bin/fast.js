@@ -3,7 +3,6 @@
 var fast = {};
 
 var txtToSql = require('../lib/txt-to-sql.js');
-var common = require('./common.js');
 var fsSync = require('fs');
 var readline = require('readline');
 
@@ -111,8 +110,6 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                 fastFinalize(info, outStream);
             }
             outStream.end();
-            //console.log("preparedResult", preparedResult);
-            common.writeConfigYaml(common.createParams(params, preparedResult), inputBase+'.yaml');
         });
     });
 }

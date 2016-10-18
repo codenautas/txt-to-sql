@@ -3,7 +3,6 @@
 "use strict";
 
 var program = require('commander');
-var common = require('./common.js');
 var fast = require('./fast.js');
 var txtToSql = require('../lib/txt-to-sql.js');
 var Promises = require('best-promise');
@@ -35,6 +34,25 @@ cmdParams.exportDefaults = program.exportDefaults;
 // numero de lineas a leer para analizar entrada
 var fastBufferingThreshold = 50;
 
+function writeConfigYaml(params, inputYaml) {
+    var create = false;
+    return fs.exists(inputYaml).then(function(exists) {
+        create = ! exists;
+        if(create) {
+            var createdParams = Object.assign({}, params);
+            if(! createdParams.opts.columns) { delete createdParams.opts.columns; }
+            delete createdParams.rawTable;
+            return fs.writeFile(inputYaml, jsYaml.safeDump(createdParams), {encoding:'utf8'});
+        }
+    }).then(function() {
+        if(create) {
+            process.stdout.write("Generated '"+inputYaml+"' with deduced options\n");
+        } else {
+            process.stdout.write("Not overwriding existing '"+inputYaml+"'\n");
+        }
+    });
+}
+
 function getOutputDir(inFile) {
     return Promises.start(function() {
         if(!inFile) { throw new Error("null file"); }
@@ -60,6 +78,15 @@ function collectExistentFiles(files) {
     });
 };
 
+function createParams(params, preparedParams) {
+    var res = {
+       tableName:params.tableName,
+       rawTable:params.rawTable,
+       opts: changing(params.opts, preparedParams.opts),
+    };
+    res.opts.columns = params.columns || preparedParams.columns;
+    return res;
+}
 
 function doPrepare(params, inputYaml) {
     var res;
@@ -68,8 +95,8 @@ function doPrepare(params, inputYaml) {
         if(result.warnings) {
             process.stdout.write("There are warnings: \n  "+result.warnings.join('\n  ')+"\n");
         }
-        res = common.createParams(params, result);
-        return common.writeConfigYaml(res, inputYaml);
+        res = createParams(params, result);
+        return writeConfigYaml(res, inputYaml);
     }).then(function() {
         return res;
     });
@@ -124,7 +151,9 @@ Promises.start(function() {
         }).then(function(rawInput) {
             params.rawTable = rawInput;
             if(cmdParams.fast) {
-                return fast.doFast(params, inputBase, fastBufferingThreshold);
+                return fast.doFast(params, inputBase, fastBufferingThreshold).then(function() {
+                     return writeConfigYaml(createParams(params, preparedResult), inputBase+'.yaml');
+                });
             } else if (cmdParams.prepare) {
                 return doPrepare(params, inputYaml);
             } else {
