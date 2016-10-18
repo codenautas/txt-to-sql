@@ -110,6 +110,7 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                 preparedResult = fastAnalyzeLines(info);
                 fastFinalize(info, outStream);
             }
+            outStream.end();
             //console.log("preparedResult", preparedResult);
             common.writeConfigYaml(common.createParams(params, preparedResult), inputBase+'.yaml');
         });

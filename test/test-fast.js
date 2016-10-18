@@ -11,6 +11,14 @@ var yaml = require('js-yaml');
 var stream = require('stream');
 var util = require('util');
 
+function streamToPromise(stream) {
+    return new Promise(function(resolve, reject) {
+        stream.on("end", function() { console.log("end"); resolve() });
+        stream.on("finish", function() { console.log("finish"); resolve() });
+        stream.on("error", function(e) { console.log("error", e); reject(e); });
+    });
+}
+
 function TestStream () {
   stream.Writable.call(this);
   this.data = [];
@@ -84,7 +92,7 @@ function makeSqlArray(sqlsBuf) {
 
 describe("fast-fixtures", function(){
     [
-        {path:'example-one', skip:true},
+        {path:'example-one'/*, skip:true*/},
         // {path:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
         // {path:'pk-complex', changeExpected:function(exp) { exp.opts.separator = '|'; }},
         // {path:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|';}},
@@ -134,12 +142,12 @@ describe("fast-fixtures", function(){
             it.skip("fixture: "+fixture.path);
         } else {
             it("fixture: "+fixture.path, function(done){
+                this.timeout(20000);
                 var defaultOpts = {inputEncoding:'UTF8', outputEncoding:'UTF8'};
                 var param={tableName:fixture.path};
                 var expected={};
                 var basePath='./test/fixtures/'+fixture.path;
                 var prepared;
-                //var generated = new stream.Writable();
                 var generated = new TestStream();
                 setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
                     if(param.opts) {
@@ -162,10 +170,10 @@ describe("fast-fixtures", function(){
                 }).then(function() {
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
-                    return txtToSqlFast.doFast(param, basePath, fastBufferingThreshold, generated);
+                    txtToSqlFast.doFast(param, basePath, fastBufferingThreshold, generated);
+                    return streamToPromise(generated);
                 }).then(function(){
-                    //process.stdout.pipe(generated)
-                    //console.log("generated", generated.getData());
+                    console.log("generated", generated.getData());
                     /*
                     expect(prepared.opts).to.eql(expected.opts);
                     if(expected.columns) {
