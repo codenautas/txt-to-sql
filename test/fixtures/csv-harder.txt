@@ -1,0 +1,6 @@
+"rnum";"txt"
+1;"txt 1"
+2;"incluye separator(;)"
+3;"txt con "" doble"
+4;"txt con ' simple"
+5;"incluye delimiter("")"
