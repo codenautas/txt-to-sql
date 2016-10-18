@@ -13,20 +13,17 @@ var util = require('util');
 
 function TestStream () {
   stream.Writable.call(this);
-  this.data = [];
+  this.lines = [];
 };
 util.inherits(TestStream, stream.Writable);
 
 TestStream.prototype._write = function (chunk, encoding, done) {
-  this.data.push(chunk.toString());
+  this.lines.push(chunk.toString());
   done();
 }
 
-TestStream.prototype.getData = function() {
-   return this.data; 
-};
 
-var fastBufferingThreshold = 4;
+var fastBufferingThreshold = 2;
 
 function setIfFileExists(fileName, outObject, outProperty, options) {
     return fs.exists(fileName).then(function(exists) {
@@ -81,65 +78,37 @@ function makeSqlArray(sqlsBuf) {
     return sqlsArr;
 }
 
+var originalEngines = {};
+
 describe("fast-fixtures", function(){
+    before(function() {
+       originalEngines = JSON.parse(JSON.stringify(txtToSql.engines));
+       for(var name in txtToSql.engines) {
+           var engine = txtToSql.engines[name];
+           if(!engine.noCompactInsert) {
+               engine.noCompactInsert = true;
+           }
+       }
+    });
     [
-        {path:'example-one'/*, skip:true*/},
-        // {path:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
-        // {path:'pk-complex', changeExpected:function(exp) { exp.opts.separator = '|'; }},
-        // {path:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|';}},
-        // {path:'pk-very-simple', changeExpected:function(exp) { exp.opts.separator = ',';}},
-        // {path:'pk-very-simple2', changeExpected:function(exp) { exp.opts.separator = ',';}},
-        // {path:'pk-simple-nn', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
-        // {path:'pk-complex-nn'},
-        // {path:'pk-complex-nn2'},
-        // {path:'pk-space-simple', changeExpected:function(exp) { exp.opts.separator = /\s+/; } },
-        // {path:'pk-enabled'},
-        // {path:'pk-disabled'},
-        // {path:'without-pk-2'},
-        // {path:'fields-unmod'},
-        // {path:'fields-lcnames'},
-        // {path:'fields-lcalpha'},
-        // {path:'separator', changeExpected:function(exp) { exp.opts.separator = '/'; }},
-        // {path:'comma-align'},
-        // {path:'comma-align-nulls'},
-        // {path:'comma-align-one-column'},
-        // {path:'comma-align-with-max'},
-        // {path:'adapt'},
-        // {path:'column-names'},
-        // {path:'columns-with-spaces'},
-        // {path:'mysql-example-one'},
-        // {path:'mysql-pk-complex-all'},
-        // {path:'mysql-adapt'},
-        // {path:'sqlite-example-one'},
-        // {path:'sqlite-pk-complex-all'},
-        // {path:'sqlite-adapt'},
-        // {path:'mssql-example-one'},
-        // {path:'oracle-example-one'},
-        // {path:'with-drop-table'},
-        // {path:'mysql-with-drop-table'},
-        // {path:'sqlite-with-drop-table'},
-        // {path:'fields-ansi-lcalpha'}, // ansi
-        // {path:'mssql-comma-align'},
-        // {path:'mssql-with-drop-table'},
-        // {path:'oracle-with-drop-table'},
-        // {path:'pk-explicit'},
-        // {path:'pk-custom'},
-        // {path:'pk-custom-names'},
-        // {path:'with-null-lines'},
-        // {path:'csv-simple'},
-        // {path:'csv-harder'},
+        {path:'mssql-example-one'},
+        {path:'oracle-example-one'},
+        {path:'mssql-comma-align', skip:true},
+        {path:'mssql-with-drop-table', skip:true},
+        {path:'oracle-with-drop-table', skip:true},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
         } else {
             it("fixture: "+fixture.path, function(done){
-                this.timeout(20000);
+                this.timeout(5000);
                 var defaultOpts = {inputEncoding:'UTF8', outputEncoding:'UTF8'};
                 var param={tableName:fixture.path};
                 var expected={};
                 var basePath='./test/fixtures/'+fixture.path;
                 var prepared;
                 var generated = new TestStream();
+                txtToSql.noCompactInsert = true;
                 setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
                     if(param.opts) {
                         param.opts = changing(defaultOpts, yaml.safeLoad(param.opts));
@@ -163,29 +132,24 @@ describe("fast-fixtures", function(){
                 }).then(function() {
                     return txtToSqlFast.doFast(param, basePath, fastBufferingThreshold, generated);
                 }).then(function(){
-                    console.log("generated", generated.getData());
-                    /*
-                    expect(prepared.opts).to.eql(expected.opts);
-                    if(expected.columns) {
-                        //console.log("PC", prepared.columns);
-                        //console.log("EC", expected.columns);
-                        expect(prepared.columns).to.eql(expected.columns);
-                    }
-                    // generated
-                    expect(generated.errors).to.eql(expected.errors);
-                    var comp = txtToSql.compareBuffers(generated.rawSql, expected.rawSql);
-                    if(comp !==-1) {
-                        console.log("GEN", generated.rawSql.toString());
-                        console.log("EXP", expected.rawSql.toString());
-                        console.log("diff in ", comp, "\n"+expected.rawSql.toString().substring(comp))
-                    }
-                    expect(generated.rawSql).to.eql(expected.rawSql);
-                    expect(differences(generated.rawSql,expected.rawSql)).to.eql(null);
-                    // coherencia entre prepared y generated
-                    expect(generated.errors).to.eql(prepared.errors);
-                    */
+                    var gen = generated.lines.join('');
+                    var exp = expected.rawSql.toString();
+                    //console.log("GEN '"+gen+"'"); console.log("EXP '"+exp+"'")
+                    expect(gen).to.eql(exp);
                }).then(done,done);
-            });   
+            });
         }
+    });
+    after(function() {
+       for(var name in txtToSql.engines) {
+            var engine = txtToSql.engines[name];
+            var ori = originalEngines[name].noCompactInsert;
+            var mod = engine.noCompactInsert;
+            if(ori && !mod) {
+                engine.noCompactInsert = true;
+            } else if(!ori && mod) {
+                delete engine.noCompactInsert;
+            }
+       }
     });
 });

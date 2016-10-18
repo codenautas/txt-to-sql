@@ -38,7 +38,8 @@ function fastInsert(outStream, info, line) {
         var rows = txtToSql.createAdaptedRows(info, row);
         var insertInto = txtToSql.createInsertInto(info);
         var insertValues = txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n');
-        outStream.write(insertValues+'\n');
+        //console.log("IV("+insertValues+")");
+        outStream.write('\n'+insertValues);
     }
 }
 
@@ -106,6 +107,7 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                         info.scripts.forEach(function(script) {
                             outStream.write(script.sql);
                         });
+                        //outStream.write('\n');
                         info.lines.forEach(function(ln) {
                             fastInsert(outStream, info, ln);
                         });
