@@ -7,58 +7,16 @@ var selfExplain = require('self-explain');
 var differences = selfExplain.assert.allDifferences;
 var changing = require('best-globals').changing;
 var yaml = require('js-yaml');
-
-function setIfFileExists(fileName, outObject, outProperty, options) {
-    return fs.exists(fileName).then(function(exists) {
-        if(exists) { return fs.readFile(fileName, (options || {encoding:'utf8'})); }
-        return { notExists: true };
-    }).then(function(content) {
-        if(! content.notExists) {
-            outObject[outProperty] = content;
-        }
-    });
-}
-
-function loadYamlIfFileExists(fileName) {
-    var res = {};
-    return setIfFileExists(fileName, res, 'all').then(function() {
-        return yaml.safeLoad(res.all || {});
-    });
-}
+var common = require('./test-common');
 
 function loadYaml(fileName) {
     var res = {};
-    return setIfFileExists(fileName, res, 'all').then(function() {
+    return common.setIfFileExists(fileName, res, 'all').then(function() {
         if(!res.all) {
             throw new Error('"'+fileName+'" debe existir');
         }
         return yaml.safeLoad(res.all);
     });
-}
-
-
-var defaultExpectedResult;
-function loadDefaultExpectedResult() {
-    if(defaultExpectedResult) { return Promise.resolve(defaultExpectedResult); }
-    return loadYamlIfFileExists('./test/fixtures/_default_.result.yaml').then(function(yml) {
-       defaultExpectedResult = yml;
-    });
-}
-
-function makeSqlArray(sqlsBuf) {
-    var iNL=0;
-    var sqlsArr=[];
-    while((iNL=sqlsBuf.indexOf(10,iNL))>=0){
-        if(sqlsBuf[iNL+1]===10 || sqlsBuf[iNL+1]===13 && sqlsBuf[iNL+2]===10){
-            sqlsArr.push(sqlsBuf.slice(0,iNL-(sqlsBuf[iNL-1]===13?1:0)));
-            sqlsBuf = sqlsBuf.slice(iNL+(sqlsBuf[iNL+1]===13?3:2));
-            iNL=0;
-        }else{
-            iNL++;
-        }
-    }
-    sqlsArr.push(sqlsBuf);
-    return sqlsArr;
 }
 
 describe("fixtures", function(){
@@ -118,24 +76,24 @@ describe("fixtures", function(){
                 var expected={};
                 var basePath='./test/fixtures/'+fixture.path;
                 var prepared;
-                setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
+                common.setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
                     if(param.opts) {
                         param.opts = changing(defaultOpts, yaml.safeLoad(param.opts));
                     } else {
                         param.opts = defaultOpts;
                     }
-                    return setIfFileExists(basePath+'.txt', param, 'rawTable', {});
+                    return common.setIfFileExists(basePath+'.txt', param, 'rawTable', {});
                 }).then(function() {
-                    return loadDefaultExpectedResult();
+                    return common.loadDefaultExpectedResult();
                 }).then(function() {
-                    return loadYamlIfFileExists(basePath+'.result.yaml');
+                    return common.loadYamlIfFileExists(basePath+'.result.yaml');
                 }).then(function(yml) {
-                    expected = changing(JSON.parse(JSON.stringify(defaultExpectedResult)), yml);
+                    expected = changing(JSON.parse(JSON.stringify(common.defaultExpectedResult)), yml);
                     if(param.opts.outputEncoding !== null && param.opts.outputEncoding !== 'UTF8') {
                         console.log("OE", param.opts.outputEncoding)
-                        throw new Error('Unhandled output test! Re-think next setIfFileExists() line!!');
+                        throw new Error('Unhandled output test! Re-think next common.setIfFileExists() line!!');
                     }
-                    return setIfFileExists(basePath+'.sql', expected, 'rawSql', {});
+                    return common.setIfFileExists(basePath+'.sql', expected, 'rawSql', {});
                 }).then(function() {
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
@@ -219,10 +177,10 @@ describe("input errors", function(){
                 var loaded={};
                 var param={};
                 var expected={};
-                setIfFileExists(basePath+'.param.yaml', loaded, 'param').then(function() {
+                common.setIfFileExists(basePath+'.param.yaml', loaded, 'param').then(function() {
                     if(loaded.param) { param = yaml.safeLoad(loaded.param); }
                     if(! param.opts) { param.opts={}; }
-                    return setIfFileExists(basePath+'.txt', param, 'rawTable', {});
+                    return common.setIfFileExists(basePath+'.txt', param, 'rawTable', {});
                 }).then(function() {
                     if(check.change) { check.change(param); }
                     return loadYaml(basePath+'.result.yaml');
