@@ -189,6 +189,7 @@ function doFast(params, inputBase) {
             if(! info.headers) {
                 info.headers = line;
                 txtToSql.determineSeparator(info);
+                txtToSql.determineDelimiter(info);
                 txtToSql.separateColumns(info);
             } else {
                 fastProcessLine(info, line);

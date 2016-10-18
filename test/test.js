@@ -106,6 +106,7 @@ describe("fixtures", function(){
         {path:'pk-custom'},
         {path:'pk-custom-names'},
         {path:'with-null-lines'},
+        {path:'csv-simple', skip:true},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.path);
