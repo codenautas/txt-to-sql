@@ -40,8 +40,8 @@ describe("fast-fixtures", function(){
     [
         {name:'mssql-example-one'},
         {name:'oracle-example-one'},
-        {name:'mssql-comma-align', skip:true},
-        {name:'mssql-with-drop-table', skip:true},
+        {name:'mssql-comma-align', skip:true, customThreshold:true},
+        {name:'mssql-with-drop-table', customThreshold:true},
         {name:'oracle-with-drop-table', skip:true},
     ].forEach(function(fixture){
         if(fixture.skip) {
@@ -77,11 +77,14 @@ describe("fast-fixtures", function(){
                 }).then(function() {
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
-                    return txtToSqlFast.doFast(param, basePath, fastBufferingThreshold, generated);
+                    var threshold = fixture.customThreshold ?
+                        param.rawTable.toString().split(/\r?\n/).length :
+                        fastBufferingThreshold;
+                    return txtToSqlFast.doFast(param, basePath, threshold, generated);
                 }).then(function(){
                     var gen = generated.lines.join('');
                     var exp = expected.rawSql.toString();
-                    //console.log("GEN '"+gen+"'"); console.log("EXP '"+exp+"'")
+                    // console.log("GEN '"+gen+"'"); console.log("EXP '"+exp+"'")
                     expect(gen).to.eql(exp);
                }).then(done,done);
             });

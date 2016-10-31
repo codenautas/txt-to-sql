@@ -54,8 +54,11 @@ function fastFinalize(info, outStream) {
     //txtToSql.removeIgnoredLines(info);
     txtToSql.generateInsertScript(info);
     //console.log("info", info.scripts)
-    info.scripts.forEach(function(script) {
+    info.scripts.forEach(function(script, index) {
         outStream.write(script.sql);
+        if((index+1)<info.scripts.length) {
+            outStream.write('\n');
+        }
     });
 }
 
@@ -101,6 +104,7 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                 fastProcessLine(info, line);
                 if(info.lines) {
                     if(info.lines.length===info.fastMaxLines) {
+                        // console.log("  fast-create");
                         preparedResult = fastAnalyzeLines(info);
                         fastCreateCreate(info);
                         // deben estar drop y create
@@ -120,6 +124,7 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
         });
         rl.on('close', function() {
             if(info.lines && info.lines.length<info.fastMaxLines) {
+                // console.log("  fast-finalize");
                 fastProcessLine(info);
                 preparedResult = fastAnalyzeLines(info);
                 fastFinalize(info, outStream);
