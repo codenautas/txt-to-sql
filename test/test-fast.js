@@ -40,9 +40,9 @@ describe("fast-fixtures", function(){
     [
         {name:'mssql-example-one'},
         {name:'oracle-example-one'},
-        {name:'mssql-comma-align', skip:true, customThreshold:true},
+        {name:'mssql-comma-align', customThreshold:true},
         {name:'mssql-with-drop-table', customThreshold:true},
-        {name:'oracle-with-drop-table', skip:true},
+        {name:'oracle-with-drop-table'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
