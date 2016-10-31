@@ -38,7 +38,6 @@ function fastInsert(outStream, info, line) {
         var rows = txtToSql.createAdaptedRows(info, row);
         var insertInto = txtToSql.createInsertInto(info);
         var insertValues = txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n');
-        //console.log("IV("+insertValues+")");
         outStream.write('\n'+insertValues);
     }
 }
@@ -51,8 +50,7 @@ function fastCreateCreate(info) {
 
 function writeScriptsToStream(scripts, outStream) {
     scripts.forEach(function(script, index) {
-        // console.log("scripts.length", script.type, scripts.length, index)
-        outStream.write(script.sql/*+'\n'*/);
+        outStream.write(script.sql);
         if((index+1)<scripts.length) {
             outStream.write('\n');
         }
@@ -63,15 +61,7 @@ function fastFinalize(info, outStream) {
     fastCreateCreate(info);
     //txtToSql.removeIgnoredLines(info);
     txtToSql.generateInsertScript(info);
-    //console.log("info", info.scripts)
     writeScriptsToStream(info.scripts, outStream);
-    // info.scripts.forEach(function(script, index) {
-        // console.log("info.scripts.length", script.type, info.scripts.length, index)
-        // outStream.write(script.sql/*+'\n'*/);
-        // if((index+1)<info.scripts.length) {
-            // outStream.write('\n');
-        // }
-    // });
 }
 
 function streamToPromise(stream) {
@@ -95,8 +85,6 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
         return txtToSql.verifyInputParams(params);
     }).then(fastProcessEncodingOptions)
       .then(function(info) {
-        // console.log("fastBufferingThreshold", fastBufferingThreshold)
-        //console.log("info", info);
         inStream = fsSync.createReadStream(inputBase+'.txt', {encoding:'utf8'});
         outStream = outputStream || fsSync.createWriteStream(inputBase+'.sql', {encoding:'utf8'});
         info.lines = [];
@@ -107,7 +95,6 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
             terminal: false
         });
         rl.on('line', function(line) {
-            //console.log("line", line);
             if(! info.headers) {
                 info.headers = line;
                 txtToSql.determineSeparator(info);
@@ -117,15 +104,10 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                 fastProcessLine(info, line);
                 if(info.lines) {
                     if(info.lines.length===info.fastMaxLines) {
-                        // console.log("  fast-create");
                         preparedResult = fastAnalyzeLines(info);
                         fastCreateCreate(info);
                         // deben estar drop y create
                         writeScriptsToStream(info.scripts, outStream);
-                        // info.scripts.forEach(function(script) {
-                            // outStream.write(script.sql);
-                        // });
-                        //outStream.write('\n');
                         info.lines.forEach(function(ln) {
                             fastInsert(outStream, info, ln);
                         });
@@ -138,7 +120,6 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
         });
         rl.on('close', function() {
             if(info.lines && info.lines.length<info.fastMaxLines) {
-                // console.log("  fast-finalize");
                 fastProcessLine(info);
                 preparedResult = fastAnalyzeLines(info);
                 fastFinalize(info, outStream);
