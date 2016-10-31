@@ -38,21 +38,21 @@ describe("fast-fixtures", function(){
        }
     });
     [
-        {path:'mssql-example-one'},
-        {path:'oracle-example-one'},
-        {path:'mssql-comma-align', skip:true},
-        {path:'mssql-with-drop-table', skip:true},
-        {path:'oracle-with-drop-table', skip:true},
+        {name:'mssql-example-one'},
+        {name:'oracle-example-one'},
+        {name:'mssql-comma-align', skip:true},
+        {name:'mssql-with-drop-table', skip:true},
+        {name:'oracle-with-drop-table', skip:true},
     ].forEach(function(fixture){
         if(fixture.skip) {
-            it.skip("fixture: "+fixture.path);
+            it.skip("fixture: "+fixture.name);
         } else {
-            it("fixture: "+fixture.path, function(done){
+            it("fixture: "+fixture.name, function(done){
                 this.timeout(5000);
                 var defaultOpts = {inputEncoding:'UTF8', outputEncoding:'UTF8'};
-                var param={tableName:fixture.path};
+                var param={tableName:fixture.name};
                 var expected={};
-                var basePath='./test/fixtures/'+fixture.path;
+                var basePath='./test/fixtures/'+fixture.name;
                 var prepared;
                 var generated = new TestStream();
                 txtToSql.noCompactInsert = true;

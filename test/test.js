@@ -21,60 +21,60 @@ function loadYaml(fileName) {
 
 describe("fixtures", function(){
     [
-        {path:'example-one'},
-        {path:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
-        {path:'pk-complex', changeExpected:function(exp) { exp.opts.separator = '|'; }},
-        {path:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|';}},
-        {path:'pk-very-simple', changeExpected:function(exp) { exp.opts.separator = ',';}},
-        {path:'pk-very-simple2', changeExpected:function(exp) { exp.opts.separator = ',';}},
-        {path:'pk-simple-nn', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
-        {path:'pk-complex-nn'},
-        {path:'pk-complex-nn2'},
-        {path:'pk-space-simple', changeExpected:function(exp) { exp.opts.separator = /\s+/; } },
-        {path:'pk-enabled'},
-        {path:'pk-disabled'},
-        {path:'without-pk-2'},
-        {path:'fields-unmod'},
-        {path:'fields-lcnames'},
-        {path:'fields-lcalpha'},
-        {path:'separator', changeExpected:function(exp) { exp.opts.separator = '/'; }},
-        {path:'comma-align'},
-        {path:'comma-align-nulls'},
-        {path:'comma-align-one-column'},
-        {path:'comma-align-with-max'},
-        {path:'adapt'},
-        {path:'column-names'},
-        {path:'columns-with-spaces'},
-        {path:'mysql-example-one'},
-        {path:'mysql-pk-complex-all'},
-        {path:'mysql-adapt'},
-        {path:'sqlite-example-one'},
-        {path:'sqlite-pk-complex-all'},
-        {path:'sqlite-adapt'},
-        {path:'mssql-example-one'},
-        {path:'oracle-example-one'},
-        {path:'with-drop-table'},
-        {path:'mysql-with-drop-table'},
-        {path:'sqlite-with-drop-table'},
-        {path:'fields-ansi-lcalpha'}, // ansi
-        {path:'mssql-comma-align'},
-        {path:'mssql-with-drop-table'},
-        {path:'oracle-with-drop-table'},
-        {path:'pk-explicit'},
-        {path:'pk-custom'},
-        {path:'pk-custom-names'},
-        {path:'with-null-lines'},
-        {path:'csv-simple'},
-        {path:'csv-harder'},
+        {name:'example-one'},
+        {name:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
+        {name:'pk-complex', changeExpected:function(exp) { exp.opts.separator = '|'; }},
+        {name:'pk-complex-all', changeExpected:function(exp) { exp.opts.separator = '|';}},
+        {name:'pk-very-simple', changeExpected:function(exp) { exp.opts.separator = ',';}},
+        {name:'pk-very-simple2', changeExpected:function(exp) { exp.opts.separator = ',';}},
+        {name:'pk-simple-nn', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
+        {name:'pk-complex-nn'},
+        {name:'pk-complex-nn2'},
+        {name:'pk-space-simple', changeExpected:function(exp) { exp.opts.separator = /\s+/; } },
+        {name:'pk-enabled'},
+        {name:'pk-disabled'},
+        {name:'without-pk-2'},
+        {name:'fields-unmod'},
+        {name:'fields-lcnames'},
+        {name:'fields-lcalpha'},
+        {name:'separator', changeExpected:function(exp) { exp.opts.separator = '/'; }},
+        {name:'comma-align'},
+        {name:'comma-align-nulls'},
+        {name:'comma-align-one-column'},
+        {name:'comma-align-with-max'},
+        {name:'adapt'},
+        {name:'column-names'},
+        {name:'columns-with-spaces'},
+        {name:'mysql-example-one'},
+        {name:'mysql-pk-complex-all'},
+        {name:'mysql-adapt'},
+        {name:'sqlite-example-one'},
+        {name:'sqlite-pk-complex-all'},
+        {name:'sqlite-adapt'},
+        {name:'mssql-example-one'},
+        {name:'oracle-example-one'},
+        {name:'with-drop-table'},
+        {name:'mysql-with-drop-table'},
+        {name:'sqlite-with-drop-table'},
+        {name:'fields-ansi-lcalpha'}, // ansi
+        {name:'mssql-comma-align'},
+        {name:'mssql-with-drop-table'},
+        {name:'oracle-with-drop-table'},
+        {name:'pk-explicit'},
+        {name:'pk-custom'},
+        {name:'pk-custom-names'},
+        {name:'with-null-lines'},
+        {name:'csv-simple'},
+        {name:'csv-harder'},
     ].forEach(function(fixture){
         if(fixture.skip) {
-            it.skip("fixture: "+fixture.path);
+            it.skip("fixture: "+fixture.name);
         } else {
-            it("fixture: "+fixture.path, function(done){
+            it("fixture: "+fixture.name, function(done){
                 var defaultOpts = {inputEncoding:'UTF8', outputEncoding:'UTF8'};
-                var param={tableName:fixture.path};
+                var param={tableName:fixture.name};
                 var expected={};
-                var basePath='./test/fixtures/'+fixture.path;
+                var basePath='./test/fixtures/'+fixture.name;
                 var prepared;
                 common.setIfFileExists(basePath+'.in-opts.yaml', param, 'opts').then(function() {
                     if(param.opts) {
