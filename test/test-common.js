@@ -2,7 +2,8 @@
 
 var fs = require('fs-promise');
 var yaml = require('js-yaml');
-
+var txtToSql = require('../lib/txt-to-sql.js');
+var changing = require('best-globals').changing;
 var me = {};
 
 me.setIfFileExists = function setIfFileExists(fileName, outObject, outProperty, options) {
@@ -25,11 +26,17 @@ me.loadYamlIfFileExists = function loadYamlIfFileExists(fileName) {
 
 me.defaultExpectedResult;
 
+var testDefaultResult = {
+    separator:';',
+    inputEncoding: 'UTF8',
+    outputEncoding: 'UTF8'
+};
+
 me.loadDefaultExpectedResult = function loadDefaultExpectedResult() {
-    if(me.defaultExpectedResult) { return Promise.resolve(me.defaultExpectedResult); }
-    return me.loadYamlIfFileExists('./test/fixtures/_default_.result.yaml').then(function(yml) {
-       me.defaultExpectedResult = yml;
-    });
+    if(! me.defaultExpectedResult) {
+        me.defaultExpectedResult = { opts: changing(txtToSql.defaultOpts, testDefaultResult) };
+    }
+    return Promise.resolve(me.defaultExpectedResult);
 }
 
 module.exports = me;
