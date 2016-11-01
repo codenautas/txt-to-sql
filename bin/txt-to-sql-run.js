@@ -138,6 +138,7 @@ Promises.start(function() {
             ];
             return collectExistentFiles(configFiles);
         }).then(function(existentFiles) {
+            // insert default options at front for mini-tools
             existentFiles.unshift(txtToSql.defaultOpts);
             return miniTools.readConfig(existentFiles);
         }).then(function(data) {
