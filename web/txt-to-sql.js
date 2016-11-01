@@ -96,7 +96,9 @@ var engines = {
     'sqlite': {
         types:mapTypes(['integer','integer','numeric','real','text']),
         quote:quoteDouble,
-        dropTable:dropTableIfExists
+        dropTable:dropTableIfExists,
+        // http://www.sqlite.org/limits.html#max_compound_select
+        compactInsertLimit:500
     }
 };
 
@@ -696,7 +698,8 @@ txtToSql.defaultOpts = {
     inputEncoding: false,
     outputEncoding: false,
     addDropTable: false,
-    ignoreNullLines: false
+    ignoreNullLines: false,
+    compactInsertLimit:0
 };
 
 module.exports = txtToSql;
