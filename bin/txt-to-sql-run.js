@@ -116,18 +116,15 @@ function doGenerate(params, inputYaml, inputName) {
     });
 }
 
-var workingDir = Path.resolve('.');
-var defYamlName = 'txt-to-sql-defaults.yaml';
-var globalBaseDir = Path.dirname(Path.parse(__filename).dir);
-var defYaml = Path.resolve(globalBaseDir, 'lib', defYamlName);
+var localDefaultYaml = Path.resolve(Path.resolve('.'),'txt-to-sql-defaults.yaml');
 var inputName = Path.basename(cmdParams.input, '.txt');
 var params = {};
 
 Promises.start(function() {
     if(cmdParams.exportDefaults) {
-        var outputDefYaml = Path.resolve(workingDir, defYamlName);
-        return fs.copy(defYaml, outputDefYaml).then(function() {
-            process.stdout.write("Written '"+outputDefYaml+"'\n");
+        process.stdout.write("Generating '"+localDefaultYaml+"'...");
+        return fs.writeFile(localDefaultYaml, jsYaml.safeDump({opts:txtToSql.defaultOpts}), {encoding:'utf8'}).then(function() {
+            process.stdout.write(" listo.\nWritten '"+localDefaultYaml+"'\n");
         });
     } else {
         var inputBase;
@@ -136,12 +133,12 @@ Promises.start(function() {
             inputBase = Path.resolve(outputDir, inputName);
             inputYaml = inputBase+'.yaml';
             var configFiles = [
-                defYaml,
-                Path.resolve(workingDir, defYamlName),
+                localDefaultYaml,
                 inputYaml
             ];
             return collectExistentFiles(configFiles);
         }).then(function(existentFiles) {
+            existentFiles.unshift(txtToSql.defaultOpts);
             return miniTools.readConfig(existentFiles);
         }).then(function(data) {
             params.opts = data.opts;
