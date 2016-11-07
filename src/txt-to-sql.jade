@@ -83,6 +83,7 @@ html(lang=lang)
             inputEncoding:'Formato de entrada',
             outputEncoding:'Formato de salida',
             ignoreNullLines:'Ignorar líneas nulas',
+            addDropTable:'Agregar DROP TABLE',
           },
           cols:{
             name:'Nombre',
@@ -112,6 +113,7 @@ html(lang=lang)
             inputEncoding:'Input encoding',
             outputEncoding:'Output encoding',
             ignoreNullLines:'Ignore NULL lines',
+            ignoreNullLines:'Add DROP TABLE',
           },
           cols:{
             name:'Name',
@@ -202,6 +204,7 @@ html(lang=lang)
         userOptions.inputEncoding         = getID('inputEncoding').value;
         userOptions.outputEncoding        = getID('outputEncoding').value;
         userOptions.ignoreNullLines       = getID('ignoreNullLines').checked;
+        userOptions.addDropTable          = getID('addDropTable').checked;
         
         preparedColumns.forEach(function(column, index) {
             var colName = getID('col_name_'+index);
@@ -282,6 +285,7 @@ html(lang=lang)
                     createOption(messages.opts.inputEncoding, 'inputEncoding', 'text', prepared.opts.inputEncoding, 7),
                     createOption(messages.opts.outputEncoding, 'outputEncoding', 'text', prepared.opts.outputEncoding, 7),
                     createOption(messages.opts.ignoreNullLines, 'ignoreNullLines', 'checkbox', prepared.opts.ignoreNullLines, 1),
+                    createOption(messages.opts.addDropTable, 'addDropTable', 'checkbox', prepared.opts.addDropTable, 1),
                 ]).create();
                 var fields = prepared.columns.map(function(column, index) {
                     var ipk = column.inPrimaryKey!==null && column.inPrimaryKey;
