@@ -122,6 +122,7 @@ describe("fixtures", function(){
                     expect(differences(generated.rawSql,expected.rawSql)).to.eql(null);
                     // coherencia entre prepared y generated
                     expect(generated.errors).to.eql(prepared.errors);
+                    if(expected.stats) { expect(generated.stats).to.eql(expected.stats); }
                }).then(done,done);
             });   
         }

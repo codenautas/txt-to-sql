@@ -28,3 +28,8 @@ opts:
     maxScale: null
     hasNullValues: false
     hasCientificNotation: null
+stats:
+  rows: 3
+  columns: 4
+  #numericColumns: 0
+  #nullColumns: 0
