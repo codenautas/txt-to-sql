@@ -31,5 +31,5 @@ opts:
 stats:
   rows: 3
   columns: 4
-  #numericColumns: 0
-  #nullColumns: 0
+  textColumns: 4
+  nullColumns: 0

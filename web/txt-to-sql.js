@@ -55,7 +55,7 @@ var types = [
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+$/},                                          // bigint
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*$/,                 useLength:true}, // numeric
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/},                  // double precision
-    {adapt:adaptText , pad:padLeft , dataPattern:/.?/,                                  useLength:true}  // character varying
+    {adapt:adaptText , pad:padLeft , dataPattern:/.?/,                                  useLength:true, isTextColumn:true}  // character varying
 ];
 
 function mapTypes(typeNames) {
@@ -665,6 +665,13 @@ function initializeStats(info) {
 function finalizeStats(info) {
     info.stats.rows = info.rows.length;
     info.stats.columns = info.columnsInfo.length;
+    info.stats.textColumns = 0;
+    info.stats.nullColumns = 0;
+    info.columnsInfo.forEach(function(column) {
+        //console.log("column", column)
+        if(column.typeInfo.isTextColumn) { ++info.stats.textColumns; }
+        if(column.hasNullValues) { ++info.stats.nullColumns; }
+    });
     return info;
 }
 
