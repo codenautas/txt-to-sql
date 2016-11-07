@@ -667,10 +667,12 @@ function finalizeStats(info) {
     info.stats.columns = info.columnsInfo.length;
     info.stats.textColumns = 0;
     info.stats.nullColumns = 0;
-    info.columnsInfo.forEach(function(column) {
-        //console.log("column", column)
+    info.stats.primaryKey = [];
+    var names = info.headers.split(info.opts.separator);
+    info.columnsInfo.forEach(function(column, index) {
         if(column.typeInfo.isTextColumn) { ++info.stats.textColumns; }
         if(column.hasNullValues) { ++info.stats.nullColumns; }
+        if(column.inPrimaryKey) { info.stats.primaryKey.push(names[index]); }
     });
     return info;
 }
