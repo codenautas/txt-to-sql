@@ -110,6 +110,7 @@ function doGenerate(params, inputYaml, inputName) {
         return txtToSql.generateScripts(preparedParams);
     }).then(function(result) {
         if(result.errors) { throw new Error(result.errors); }
+        params.stats = result.stats;
         return fs.writeFile(outSQL, result.rawSql);
     }).then(function() {
         process.stdout.write("Generated '"+outSQL+"'")
@@ -150,19 +151,20 @@ Promises.start(function() {
         }).then(function(rawInput) {
             params.rawTable = rawInput;
             if(cmdParams.fast) {
-                var result;
                 return fast.doFast(params, inputBase, fastBufferingThreshold).then(function(res) {
-                    result = res;
-                    return writeConfigYaml(createParams(params, result.preparedResult), inputBase+'.yaml');
+                    return writeConfigYaml(createParams(params, res.preparedResult), inputBase+'.yaml');
                 }).then(function() {
                     process.stdout.write("Generated '"+inputBase+".sql'");
-                    process.stdout.write("\n"+txtToSql.stringizeStats(result.stats));
                 });
             } else if (cmdParams.prepare) {
                 return doPrepare(params, inputYaml);
             } else {
                 return doGenerate(params, inputYaml, inputBase);
             }
+        }).then(function() {
+            if(params.stats) {
+                process.stdout.write("\n"+txtToSql.stringizeStats(params.stats));
+            }         
         });
    }
 }).catch(function(err) {
