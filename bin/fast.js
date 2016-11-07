@@ -129,7 +129,7 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                 fastFinalize(info, outStream);
             }
             rl.preparedResult = preparedResult;
-            rl.stats = txtToSql.generateStats(info).stats;
+            rl.stats = txtToSql.finalizeStats(info).stats;
             outStream.end();
         });
         return streamToPromise(rl);

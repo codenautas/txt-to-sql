@@ -96,6 +96,7 @@ html(lang=lang)
             cn:'NotaciónCientífica'
           },
           step3:'Paso 3: ',
+          step4:'Estadísticas: ',
           download:'descargar',
       },
       en:{
@@ -127,6 +128,7 @@ html(lang=lang)
             cn:'CientificNotation'
           },
           step3:'Step 3: ',
+          step4:'Statistics: ',
           download:'download',
       }
     }[window.lang||'es'];
@@ -255,13 +257,13 @@ html(lang=lang)
                 elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
             }
             addStep(messages.step3, elems);
+            addStep(messages.step4, stringizeStats(generated.stats));
         }).catch(function(err){
             errMessage.textContent=err.message;
         });
     }
     function handlePrepare(event){
         var files = getID('inputFile').files;
-        //var files = event.target.files; // FileList object
         resetPage();
         Array.prototype.forEach.call(files, function(file){
             console.log('file: '+file.name)
@@ -324,6 +326,7 @@ html(lang=lang)
                                             butGenerate
                                         ]).create()]);
                errMessage.textContent=""; // if all goes ok, clear' em
+               delete getID('inputFile').files;
             }).catch(function(err){
                 errMessage.textContent=err.message+"\n"+err.stack;
             });

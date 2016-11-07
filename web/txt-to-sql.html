@@ -41,6 +41,7 @@ var messages={
         cn:'NotaciónCientífica'
       },
       step3:'Paso 3: ',
+      step4:'Estadísticas: ',
       download:'descargar',
   },
   en:{
@@ -72,6 +73,7 @@ var messages={
         cn:'CientificNotation'
       },
       step3:'Step 3: ',
+      step4:'Statistics: ',
       download:'download',
   }
 }[window.lang||'es'];
@@ -200,13 +202,13 @@ function handleGenerate(event){
             elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
         }
         addStep(messages.step3, elems);
+        addStep(messages.step4, stringizeStats(generated.stats));
     }).catch(function(err){
         errMessage.textContent=err.message;
     });
 }
 function handlePrepare(event){
     var files = getID('inputFile').files;
-    //var files = event.target.files; // FileList object
     resetPage();
     Array.prototype.forEach.call(files, function(file){
         console.log('file: '+file.name)
@@ -269,6 +271,7 @@ function handlePrepare(event){
                                         butGenerate
                                     ]).create()]);
            errMessage.textContent=""; // if all goes ok, clear' em
+           delete getID('inputFile').files;
         }).catch(function(err){
             errMessage.textContent=err.message+"\n"+err.stack;
         });

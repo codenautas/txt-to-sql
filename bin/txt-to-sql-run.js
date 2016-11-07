@@ -156,8 +156,7 @@ Promises.start(function() {
                     return writeConfigYaml(createParams(params, result.preparedResult), inputBase+'.yaml');
                 }).then(function() {
                     process.stdout.write("Generated '"+inputBase+".sql'");
-                    // WARN: implicit string conversion of result.stats!
-                    process.stdout.write("\n"+result.stats);
+                    process.stdout.write("\n"+txtToSql.stringizeStats(result.stats));
                 });
             } else if (cmdParams.prepare) {
                 return doPrepare(params, inputYaml);
