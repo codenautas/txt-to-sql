@@ -74,7 +74,7 @@ html(lang=lang)
           generating:'generando',
           opts:{
             commas:'Alinear commas',
-            width:'Ancho máximo',
+            columnAlignedMaxWidth:'Ancho máximo',
             format:'Formato campos',
             separator:'Separador',
             outformat:'Formato salida',
@@ -104,7 +104,7 @@ html(lang=lang)
           generating:'generating',
           opts:{
             commas:'Align commas',
-            width:'Max width',
+            columnAlignedMaxWidth:'Max width',
             format:'Field format',
             separator:'Field separator',
             outformat:'Output format',
@@ -113,7 +113,7 @@ html(lang=lang)
             inputEncoding:'Input encoding',
             outputEncoding:'Output encoding',
             ignoreNullLines:'Ignore NULL lines',
-            ignoreNullLines:'Add DROP TABLE',
+            addDropTable:'Add DROP TABLE',
           },
           cols:{
             name:'Name',
@@ -275,8 +275,8 @@ html(lang=lang)
                                                 prepared.columns.filter(function(c) {return c.inPrimaryKey; }).length>0;
                 var tblOpts = html.table({class:'inner'},[
                     html.th({colspan:2},[html.td("Options")]).create(),
-                    createOption(messages.opts.commas, 'columnAlignedCommas', 'text', prepared.opts.columnAlignedCommas, 1),
-                    createOption(messages.opts.width, 'columnAlignedMaxWidth', 'text', prepared.opts.columnAlignedMaxWidth, 1),
+                    createOption(messages.opts.commas, 'columnAlignedCommas', 'checkbox', prepared.opts.columnAlignedCommas, 1),
+                    createOption(messages.opts.columnAlignedMaxWidth, 'columnAlignedMaxWidth', 'text', prepared.opts.columnAlignedMaxWidth, 1),
                     createOption(messages.opts.format, 'columnNamesFormat', 'text', prepared.opts.columnNamesFormat, 15),
                     createOption(messages.opts.separator, 'separator', 'text', prepared.opts.separator, 1),
                     createOption(messages.opts.outformat, 'outputEngine', 'text', prepared.opts.outputEngine, 10),

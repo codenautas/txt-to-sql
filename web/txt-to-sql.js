@@ -713,9 +713,9 @@ txtToSql.defaultOpts = {
     verboseErrors: false,
     inputEncoding: false,
     outputEncoding: false,
-    addDropTable: false, // agregar a .jade
+    addDropTable: false,
     ignoreNullLines: false,
-    compactInsertLimit:0 // agregar a .jade
+    compactInsertLimit:0
 };
 
 module.exports = txtToSql;
