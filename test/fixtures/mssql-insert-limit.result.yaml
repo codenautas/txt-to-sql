@@ -1,0 +1,18 @@
+columns:
+  - name: texto
+    type: varchar
+    inPrimaryKey: true
+    maxLength: 10
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: numero
+    type: integer
+    inPrimaryKey: false
+    maxLength: 2
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+opts:
+  outputEngine: mssql
+  compactInsertLimit: 7

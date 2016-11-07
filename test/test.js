@@ -66,7 +66,8 @@ describe("fixtures", function(){
         {name:'with-null-lines'},
         {name:'csv-simple'},
         {name:'csv-harder'},
-        {name:'insert-limit'/*, skip:true*/},
+        {name:'insert-limit'},
+        {name:'mssql-insert-limit'}, // compactInsertLimit should be ignored (#24)
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
