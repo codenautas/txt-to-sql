@@ -35,10 +35,13 @@ function fastAnalyzeLines(info) {
 function fastInsert(outStream, info, line) {
     if(line.trim() !=='') {
         var row = [txtToSql.separateOneRow(info, line)];
-        var rows = txtToSql.createAdaptedRows(info, row);
+        var adaptedRows = txtToSql.createAdaptedRows(info, row);
         var insertInto = txtToSql.createInsertInto(info);
-        var insertValues = txtToSql.createInsertValues(rows, info.columnsInfo).map(function(c) { return insertInto + c + ";"; }).join('\n');
-        outStream.write('\n'+insertValues);
+        var insertValues = txtToSql.createInsertValues(info,adaptedRows);
+        var insertLines = insertValues.map(function(iv) {
+            return iv.map(function(c) { return insertInto + c + ";"; }).join('\n');
+        }).join('\n');
+        outStream.write('\n'+insertLines);
     }
 }
 

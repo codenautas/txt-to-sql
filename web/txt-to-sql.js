@@ -142,7 +142,11 @@ function verifyInputParams(info){
     info.opts = changing(txtToSql.defaultOpts, info.opts || {});
     var errors=[];
     if(! info.tableName) { errors.push('undefined table name'); }
-    if(! info.rawTable) { errors.push('no rawTable in input'); } else if(!(info.rawTable instanceof Buffer)){ errors.push('info.rawTable must be an Buffer');}
+    if(! info.rawTable) {
+        errors.push('no rawTable in input');
+    } else if(!(info.rawTable instanceof Buffer)) {
+        errors.push('info.rawTable must be an Buffer');
+    }
     if(! (info.opts.columnNamesFormat in formatFunctions)) {
         errors.push("inexistent column names format '"+info.opts.columnNamesFormat+"'");
     }
@@ -162,7 +166,7 @@ function verifyInputParams(info){
         var precision = parseInt(columnInfo.maxLength)+scale+(scale>0?1:0);
         return name + (columnInfo.maxLength<1 ?'':('('+precision+(scale>0 ? ','+scale:'')+')'));
     };
-    
+    info.compactInsertLimit = info.opts.compactInsertLimit || info.outputEngine.compactInsertLimit || txtToSql.defaultOpts.compactInsertLimit;
     return info;
 }
 
@@ -531,6 +535,12 @@ function removeIgnoredLines(info) {
     return info;
 }
 
+function createInsertInto(info) {
+    return "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
+        return columnInfo.name;
+    }).join(', ')+") values";
+}
+
 function createAdaptedRows(info, rows) {
     return rows.map(function(row, rowIndex) {
         return info.columnsInfo.map(function(column, columnIndex) {
@@ -545,17 +555,17 @@ function createAdaptedRows(info, rows) {
     });
 }
 
-function createInsertInto(info) {
-    return "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
-        return columnInfo.name;
-    }).join(', ')+") values";
-}
-
-function createInsertValues(rows, columnsInfo) {
-    return rows.map(function(row){
+function createInsertValues(info, rows) {
+    var inserts = [];
+    var group = [];
+    rows.forEach(function(row, index){
         var owedLength = 0;
-        return margin+"("+row.map(function(adaptedValue,columnIndex){
-            var column = columnsInfo[columnIndex];
+        if(info.compactInsertLimit>0 && ! info.outputEngine.noCompactInsert && index === info.compactInsertLimit) {
+            inserts.push(group);
+            group = [];
+        }
+        group.push(margin+"("+row.map(function(adaptedValue,columnIndex){
+            var column = info.columnsInfo[columnIndex];
             var recoveredLength = 0;
             if(adaptedValue.length>column.columnLength-owedLength){
                 owedLength=adaptedValue.length-(column.columnLength-owedLength);
@@ -569,23 +579,29 @@ function createInsertValues(rows, columnsInfo) {
                 }
             }
             return column.typeInfo.pad(column.columnLength-recoveredLength, adaptedValue);
-        }).join(', ')+')';
+        }).join(', ')+')');
     });
+    inserts.push(group);
+    return inserts;
 }
 
 function generateInsertScript(info){
+    var insertInto = createInsertInto(info);
     var adaptedRows = createAdaptedRows(info, info.rows);
     info.columnsInfo.forEach(function(column){
         column.columnLength = info.opts.columnAlignedCommas?
             Math.min(column.columnLength, info.opts.columnAlignedMaxWidth):0;
     });
-    var insertInto = createInsertInto(info);
-    var insertValues = createInsertValues(adaptedRows, info.columnsInfo);
+    var insertValues = createInsertValues(info, adaptedRows);
     info.scripts.push({
         type:'insert',
         sql:info.outputEngine.noCompactInsert ?
-            insertValues.map(function(c) { return insertInto + c + ";"; }).join('\n') :
-            insertInto + '\n' +insertValues.join(',\n')+';'
+            insertValues.map(function(iv) {
+                return iv.map(function(c) {return insertInto + c + ";"; }).join('\n');
+            }).join('\n') :
+            insertValues.map(function(insertValue) {
+                return insertInto + '\n' +insertValue.join(',\n')+';';
+            }).join('\n\n')
     });
     return info;
 }

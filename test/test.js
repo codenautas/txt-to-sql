@@ -66,7 +66,7 @@ describe("fixtures", function(){
         {name:'with-null-lines'},
         {name:'csv-simple'},
         {name:'csv-harder'},
-        {name:'insert-limit', skip:true},
+        {name:'insert-limit'/*, skip:true*/},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
