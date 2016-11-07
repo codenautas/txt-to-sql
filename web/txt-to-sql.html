@@ -41,7 +41,6 @@ var messages={
         cn:'NotaciónCientífica'
       },
       step3:'Paso 3: ',
-      step4:'Estadísticas: ',
       download:'descargar',
   },
   en:{
@@ -73,7 +72,6 @@ var messages={
         cn:'CientificNotation'
       },
       step3:'Step 3: ',
-      step4:'Statistics: ',
       download:'download',
   }
 }[window.lang||'es'];
@@ -201,8 +199,9 @@ function handleGenerate(event){
         if(generated.warnings) {
             elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
         }
+        elems.push(html.label(' ('+stringizeStats(generated.stats)+')').create());
         addStep(messages.step3, elems);
-        addStep(messages.step4, stringizeStats(generated.stats));
+        
     }).catch(function(err){
         errMessage.textContent=err.message;
     });

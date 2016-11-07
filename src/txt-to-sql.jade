@@ -96,7 +96,6 @@ html(lang=lang)
             cn:'NotaciónCientífica'
           },
           step3:'Paso 3: ',
-          step4:'Estadísticas: ',
           download:'descargar',
       },
       en:{
@@ -128,7 +127,6 @@ html(lang=lang)
             cn:'CientificNotation'
           },
           step3:'Step 3: ',
-          step4:'Statistics: ',
           download:'download',
       }
     }[window.lang||'es'];
@@ -256,8 +254,9 @@ html(lang=lang)
             if(generated.warnings) {
                 elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
             }
+            elems.push(html.label(' ('+stringizeStats(generated.stats)+')').create());
             addStep(messages.step3, elems);
-            addStep(messages.step4, stringizeStats(generated.stats));
+            
         }).catch(function(err){
             errMessage.textContent=err.message;
         });
