@@ -160,7 +160,7 @@ function verifyInputParams(info){
     info.quote = info.outputEngine.quote;
     info.transform = function(objectName) { return formatFunctions[info.opts.columnNamesFormat](objectName); };
     info.nameColumn = function(columnInfo) {
-        var name = columnInfo.name+" "+columnInfo.typeInfo.typeName;
+        var name = info.quote(columnInfo.name)+" "+columnInfo.typeInfo.typeName;
         if(! columnInfo.typeInfo.useLength) { return name; }
         var scale = parseInt(columnInfo.maxScale!==null?columnInfo.maxScale:0);
         var precision = parseInt(columnInfo.maxLength)+scale+(scale>0?1:0);
@@ -348,7 +348,7 @@ function verifyColumnCount(info) {
 }
 
 function transformNames(info) {
-    info.formatedTableName = info.transform(info.tableName);
+    info.quotedTableName = info.transform(info.tableName);
     info.columnsInfo.forEach(function(column){ column.name=info.transform(column.name); });
     return info;
 }
@@ -498,8 +498,7 @@ function determinePrimaryKey(info) {
 }
 
 function quoteNames(info) {
-    info.formatedTableName = info.quote(info.formatedTableName);
-    info.columnsInfo.forEach(function(column){ column.name=info.quote(column.name); });
+    info.quotedTableName = info.quote(info.quotedTableName);
     if(info.primaryKey) { info.primaryKey = info.primaryKey.map(function(pk) { return info.quote(pk); }); }
     return info;
 }
@@ -507,14 +506,14 @@ function quoteNames(info) {
 function generateDropTable(info) {
     info.scripts=[];
     if(info.opts.addDropTable) {
-        info.scripts.push({type:'drop table', sql: info.outputEngine.dropTable(info.formatedTableName)+';\n'});
+        info.scripts.push({type:'drop table', sql: info.outputEngine.dropTable(info.quotedTableName)+';\n'});
     }
     return info;
 }
 
 function generateCreateScript(info){
     var scriptLines = [];
-    scriptLines.push("create table "+info.formatedTableName+" (");
+    scriptLines.push("create table "+info.quotedTableName+" (");
     var scriptLinesForTableColumns = [];
     info.columnsInfo.forEach(function(columnInfo){
         scriptLinesForTableColumns.push(margin+info.nameColumn(columnInfo));
@@ -536,8 +535,8 @@ function removeIgnoredLines(info) {
 }
 
 function createInsertInto(info) {
-    return "insert into "+info.formatedTableName+" ("+info.columnsInfo.map(function(columnInfo){
-        return columnInfo.name;
+    return "insert into "+info.quotedTableName+" ("+info.columnsInfo.map(function(columnInfo){
+        return info.quote(columnInfo.name);
     }).join(', ')+") values";
 }
 
@@ -668,11 +667,10 @@ function finalizeStats(info) {
     info.stats.textColumns = 0;
     info.stats.nullColumns = 0;
     info.stats.primaryKey = [];
-    var names = info.headers.split(info.opts.separator);
     info.columnsInfo.forEach(function(column, index) {
         if(column.typeInfo.isTextColumn) { ++info.stats.textColumns; }
         if(column.hasNullValues) { ++info.stats.nullColumns; }
-        if(column.inPrimaryKey) { info.stats.primaryKey.push(names[index]); }
+        if(column.inPrimaryKey) { info.stats.primaryKey.push(column.name); }
     });
     return info;
 }

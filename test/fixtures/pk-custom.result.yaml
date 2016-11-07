@@ -33,4 +33,4 @@ stats:
   columns: 4
   textColumns: 4
   nullColumns: 0
-  primaryKey: [X,Y]
+  primaryKey: [x,y]
