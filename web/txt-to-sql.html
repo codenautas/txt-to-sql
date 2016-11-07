@@ -29,11 +29,12 @@ var messages={
         outputEncoding:'Formato de salida',
         ignoreNullLines:'Ignorar líneas nulas',
         addDropTable:'Agregar DROP TABLE',
+        compactInsertLimit:'Límite INSERT compacto',
       },
       cols:{
         name:'Nombre',
         type:'Tipo',
-        pk:'En PK',
+        pk:'PK',
         nuls:'NULLs',
         len:'Longitud',
         scale:'Escala',
@@ -59,11 +60,12 @@ var messages={
         outputEncoding:'Output encoding',
         ignoreNullLines:'Ignore NULL lines',
         addDropTable:'Add DROP TABLE',
+        compactInsertLimit:'Compact INSERT limit',
       },
       cols:{
         name:'Name',
         type:'Type',
-        pk:'In PK',
+        pk:'PK',
         nuls:'NULLs',
         len:'Length',
         scale:'Scale',
@@ -150,6 +152,7 @@ function handleGenerate(event){
     userOptions.outputEncoding        = getID('outputEncoding').value;
     userOptions.ignoreNullLines       = getID('ignoreNullLines').checked;
     userOptions.addDropTable          = getID('addDropTable').checked;
+    userOptions.compactInsertLimit    = parseInt(getID('compactInsertLimit').value);
     
     preparedColumns.forEach(function(column, index) {
         var colName = getID('col_name_'+index);
@@ -231,6 +234,7 @@ function handlePrepare(event){
                 createOption(messages.opts.outputEncoding, 'outputEncoding', 'text', prepared.opts.outputEncoding, 7),
                 createOption(messages.opts.ignoreNullLines, 'ignoreNullLines', 'checkbox', prepared.opts.ignoreNullLines, 1),
                 createOption(messages.opts.addDropTable, 'addDropTable', 'checkbox', prepared.opts.addDropTable, 1),
+                createOption(messages.opts.compactInsertLimit, 'compactInsertLimit', 'text', prepared.opts.compactInsertLimit, 1),
             ]).create();
             var fields = prepared.columns.map(function(column, index) {
                 var ipk = column.inPrimaryKey!==null && column.inPrimaryKey;
