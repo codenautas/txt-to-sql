@@ -657,14 +657,27 @@ function prepare(info) {
     .catch(catchErrors.bind(null, info));
 }
 
+function initializeStats(info) {
+    info.stats = {};
+    return info;
+}
+
+function generateStats(info) {
+    info.stats = JSON.stringify(info.stats);
+    return info;
+}
+
 function generateScripts(info){
-    return setup(info)
+    return Promise.resolve(info)
+    .then(initializeStats)
+    .then(setup)
     .then(quoteNames)
     .then(generateDropTable)
     .then(generateCreateScript)
     .then(removeIgnoredLines)
     .then(generateInsertScript)
     .then(processOutputBuffer)
+    .then(generateStats)
     .catch(catchErrors.bind(null, info));
 }
 
@@ -700,6 +713,8 @@ txtToSql.createAdaptedRows = createAdaptedRows;
 txtToSql.createInsertInto = createInsertInto;
 txtToSql.createInsertValues = createInsertValues;
 txtToSql.generatePrepareResult = generatePrepareResult;
+txtToSql.initializeStats = initializeStats;
+txtToSql.generateStats = generateStats;
 
 txtToSql.engines = engines;
 

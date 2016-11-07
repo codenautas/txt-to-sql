@@ -150,10 +150,14 @@ Promises.start(function() {
         }).then(function(rawInput) {
             params.rawTable = rawInput;
             if(cmdParams.fast) {
-                return fast.doFast(params, inputBase, fastBufferingThreshold).then(function(preparedResult) {
-                    return writeConfigYaml(createParams(params, preparedResult), inputBase+'.yaml');
+                var result;
+                return fast.doFast(params, inputBase, fastBufferingThreshold).then(function(res) {
+                    result = res;
+                    return writeConfigYaml(createParams(params, result.preparedResult), inputBase+'.yaml');
                 }).then(function() {
-                    process.stdout.write("Generated '"+inputBase+".sql'")
+                    process.stdout.write("Generated '"+inputBase+".sql'");
+                    // WARN: implicit string conversion of result.stats!
+                    process.stdout.write("\n"+result.stats);
                 });
             } else if (cmdParams.prepare) {
                 return doPrepare(params, inputYaml);

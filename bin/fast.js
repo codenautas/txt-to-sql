@@ -69,7 +69,7 @@ function fastFinalize(info, outStream) {
 
 function streamToPromise(stream) {
     function resolveResult(func) {
-        return func(stream.preparedResult);
+        return func({preparedResult:stream.preparedResult, stats:stream.stats});
     }
     return new Promise(function(resolve, reject) {
         var res = resolveResult.bind(undefined, resolve);
@@ -85,8 +85,9 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
     var rl;
     var preparedResult;
     return Promise.resolve().then(function() {
-        return txtToSql.verifyInputParams(params);
-    }).then(fastProcessEncodingOptions)
+        return txtToSql.initializeStats(params);
+    }).then(txtToSql.verifyInputParams)
+      .then(fastProcessEncodingOptions)
       .then(function(info) {
         inStream = fsSync.createReadStream(inputBase+'.txt', {encoding:'utf8'});
         outStream = outputStream || fsSync.createWriteStream(inputBase+'.sql', {encoding:'utf8'});
@@ -128,6 +129,7 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                 fastFinalize(info, outStream);
             }
             rl.preparedResult = preparedResult;
+            rl.stats = txtToSql.generateStats(info).stats;
             outStream.end();
         });
         return streamToPromise(rl);
