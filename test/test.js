@@ -238,11 +238,16 @@ describe("stringizeStats", function(){
            out:'rows:3, columns:3 (text:1, null:2), time:1s' },
         {stats:{rows:0,columns:1,textColumns:0, nullColumns:1, primaryKey:[], startTime:1000, endTime:8010},
            out:'rows:0, columns:1 (text:0, null:1), time:7s, 10ms' },
+        {stats:{rows:20,columns:12,textColumns:7, nullColumns:5, primaryKey:['c1','c2'], startTime:0, endTime:1000*60*60*60},
+           out:'rows:20, columns:12 (text:7, null:5), primary key[c1,c2], time:1h',
+           skip:true
+        },
     ].forEach(function(check, index) {
+        var name=(index+1)+': '+JSON.stringify(check.stats).substr(0,40)+'...';
         if(check.skip) {
-            it.skip(check.name);
+            it.skip(name);
         } else {
-            it((index+1)+': '+JSON.stringify(check.stats).substr(0,40)+'...', function(){
+            it(name, function(){
                 expect(txtToSql.stringizeStats(check.stats)).to.eql(check.out);
             });
         }
