@@ -631,21 +631,25 @@ function prepare(info) {
 }
 
 function initializeStats(info) {
-    info.stats = {};
+    info.stats = {
+        startTime:new Date().getTime()
+    };
     return info;
 }
 
 function finalizeStats(info) {
-    info.stats.rows = info.rows.length;
-    info.stats.columns = info.columnsInfo.length;
-    info.stats.textColumns = 0;
-    info.stats.nullColumns = 0;
-    info.stats.primaryKey = [];
+    var s = info.stats; // para no usar with
+    s.rows = info.rows.length;
+    s.columns = info.columnsInfo.length;
+    s.textColumns = 0;
+    s.nullColumns = 0;
+    s.primaryKey = [];
     info.columnsInfo.forEach(function(column, index) {
-        if(column.typeInfo.isTextColumn) { ++info.stats.textColumns; }
-        if(column.hasNullValues) { ++info.stats.nullColumns; }
-        if(column.inPrimaryKey) { info.stats.primaryKey.push(column.name); }
+        if(column.typeInfo.isTextColumn) { ++s.textColumns; }
+        if(column.hasNullValues) { ++s.nullColumns; }
+        if(column.inPrimaryKey) { s.primaryKey.push(column.name); }
     });
+    s.endTime = new Date().getTime();
     return info;
 }
 

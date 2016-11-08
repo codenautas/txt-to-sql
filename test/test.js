@@ -122,7 +122,15 @@ describe("fixtures", function(){
                     expect(differences(generated.rawSql,expected.rawSql)).to.eql(null);
                     // coherencia entre prepared y generated
                     expect(generated.errors).to.eql(prepared.errors);
-                    if(expected.stats) { expect(generated.stats).to.eql(expected.stats); }
+                    if(expected.stats) {
+                        var stats = changing({},generated.stats);
+                        delete stats.startTime;
+                        delete stats.endTime;
+                        expect(stats).to.eql(expected.stats);
+                        expect(generated.stats.startTime).to.be.a('number');
+                        expect(generated.stats.endTime).to.be.a('number');
+                        //expect(generated.stats.endTime).to.be.greaterThan(generated.stats.startTime);
+                    }
                }).then(done,done);
             });   
         }
