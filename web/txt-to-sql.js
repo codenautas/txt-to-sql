@@ -661,20 +661,16 @@ function stringizeStats(stats) {
         r.push('primary key['+stats.primaryKey.join(',')+']');
     }
     var time = stats.endTime - stats.startTime;
-    // var ms = parseInt((time%1000)),
-        // secs = parseInt((time/1000)%60),
-        // mins = parseInt((time/(1000*60))%60),
-        // hs = parseInt((time/(1000*60*60))%24);
-    var ms = parseInt(time%1000),
-        secs = parseInt(time/1000),
-        mins = parseInt(time/(1000*60)/60),
-        hs = parseInt(time/(1000*60*60)/24);
-    // console.log("time", time, "ms", ms, "secs", secs, "mins", mins, "hs", hs)
+    var ms = parseInt((time%1000));
+    var secs = (((time/1000)%60)).toFixed();
+    var mins = (((time/(1000*60))%60)).toFixed();
+    var hs = (time/(1000*60*60)).toFixed();
+    //console.log("time", time, "ms", ms, "secs", secs, "mins", mins, "hs", hs)
     var t=[];
-    if(hs) { t.push(hs+'h'); }
-    if(mins) { t.push(mins+'m'); }
-    if(secs) { t.push(secs+'s'); }
-    if(ms) { t.push(ms+'ms'); }
+    if(hs>0) { t.push(hs+'h'); }
+    if(mins>0) { t.push(mins+'m'); }
+    if(secs>0) { t.push(secs+'s'); }
+    if(ms>0) { t.push(ms+'ms'); }
     if(! t.length) { t.push('0ms'); }
     r.push('time:'+t.join(', '));
     return r.join(', ');
