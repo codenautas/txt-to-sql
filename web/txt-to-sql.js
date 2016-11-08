@@ -654,7 +654,13 @@ function finalizeStats(info) {
 }
 
 function stringizeStats(stats) {
-    return JSON.stringify(stats);
+    var s=[];
+    s.push('rows:'+stats.rows);
+    s.push('columns:'+stats.columns+' (text:'+stats.textColumns+', null:'+stats.nullColumns+')');
+    if(stats.primaryKey.length) {
+        s.push('primary key:'+stats.primaryKey.join(','));
+    }
+    return s.join(', ');
 }
 
 function generateScripts(info){

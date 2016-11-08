@@ -232,3 +232,18 @@ describe("file encoding", function(){
     });
 });
 
+describe("stringizeStats", function(){
+    [
+        {stats:{rows:3,columns:3,textColumns:1, nullColumns:2, primaryKey:[]},
+           out:'rows:3, columns:3 (text:1, null:2)' },
+    ].forEach(function(check, index) {
+        if(check.skip) {
+            it.skip(check.name);
+        } else {
+            it(JSON.stringify(index), function(){
+                expect(txtToSql.stringizeStats(check.stats)).to.eql(check.out);
+            });
+        }
+    });
+});
+
