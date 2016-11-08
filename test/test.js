@@ -234,13 +234,15 @@ describe("file encoding", function(){
 
 describe("stringizeStats", function(){
     [
-        {stats:{rows:3,columns:3,textColumns:1, nullColumns:2, primaryKey:[]},
-           out:'rows:3, columns:3 (text:1, null:2)' },
+        {stats:{rows:3,columns:3,textColumns:1, nullColumns:2, primaryKey:[], startTime:0, endTime:1000},
+           out:'rows:3, columns:3 (text:1, null:2), time:1s' },
+        {stats:{rows:0,columns:1,textColumns:0, nullColumns:1, primaryKey:[], startTime:1000, endTime:8010},
+           out:'rows:0, columns:1 (text:0, null:1), time:7s, 10ms' },
     ].forEach(function(check, index) {
         if(check.skip) {
             it.skip(check.name);
         } else {
-            it(JSON.stringify(index), function(){
+            it((index+1)+': '+JSON.stringify(check.stats).substr(0,40)+'...', function(){
                 expect(txtToSql.stringizeStats(check.stats)).to.eql(check.out);
             });
         }
