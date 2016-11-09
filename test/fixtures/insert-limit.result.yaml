@@ -14,4 +14,4 @@ columns:
     hasNullValues: false
     hasCientificNotation: null
 opts:
-  compactInsertLimit: 10
+  compactInsertLimit: 4
