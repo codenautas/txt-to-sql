@@ -1,6 +1,5 @@
 "use strict";
 
-var Promises = require('best-promise');
 require('fs-extra');
 var fs = require('fs-promise');
 var Path = require('path');
@@ -8,7 +7,7 @@ var pug = require('pug');
 var stylus = require('stylus');
 
 function doStylus(str) {
-    return Promises.make(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
         stylus(str).render(function(err, css) {
            if(err) { return reject(err); }
            return resolve(css);
@@ -17,12 +16,12 @@ function doStylus(str) {
 }
 
 function processDirectory(srcDir, destDir, only) {
-    return Promises.start(function() {
+    return Promise.resolve().then(function() {
         return fs.readdir(srcDir)
     }).then(function(files) {
-        return Promises.all(files.map(function(file) {
+        return Promise.all(files.map(function(file) {
             var fullName = Path.join(srcDir, file);
-            return Promises.start(function() {
+            return Promise.resolve().then(function() {
                 return fs.readFile(fullName,  {encoding:'utf8'});
             }).then(function(content) {
                 var ext = Path.extname(file).substring(1);
@@ -35,8 +34,8 @@ function processDirectory(srcDir, destDir, only) {
                 //console.log("error", err)
             });
         })).then(function(files) {
-            return Promises.all(files.map(function (file) {
-                return Promises.start(function() {
+            return Promise.all(files.map(function (file) {
+                return Promise.resolve().then(function() {
                     //console.log("file", file.ext)
                     if(!file || (only && only.indexOf(file.ext)==-1)) { return {skip:true}; }
                     switch(file.ext) {
@@ -63,7 +62,7 @@ function processDirectory(srcDir, destDir, only) {
 }
 
 function bundlePromise(browserifyObject) {
-    return Promises.make(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
         browserifyObject.bundle(function(err, buf) {
            if(err) { return reject(err); }
            return resolve(buf);
@@ -78,8 +77,6 @@ function generateWeb() {
         return processDirectory('./lib', desDir, ['js']);
     }).then(function() {
         return fs.copy('./node_modules/best-globals/best-globals.js', desDir+'/best-globals.js');
-    //}).then(function() {
-    //    return processDirectory('./node_modules/best-promise', desDir, ['js']);
     }).then(function() {
         return processDirectory('./node_modules/require-bro/lib', desDir);
     }).then(function() {

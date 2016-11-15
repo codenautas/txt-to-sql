@@ -5,7 +5,6 @@
 var program = require('commander');
 var fast = require('./fast.js');
 var txtToSql = require('../lib/txt-to-sql.js');
-var Promises = require('best-promise');
 var fs = require('fs-promise');
 var changing = require('best-globals').changing;
 var fs = require('fs-promise');
@@ -56,7 +55,7 @@ function writeConfigYaml(params, inputYaml) {
 }
 
 function getOutputDir(inFile) {
-    return Promises.start(function() {
+    return Promise.resolve().then(function() {
         if(!inFile) { throw new Error("null file"); }
         return fs.exists(inFile);
     }).then(function(exists) {
@@ -71,7 +70,7 @@ function getOutputDir(inFile) {
 
 function collectExistentFiles(files) {
     var existentFiles = [];
-    return Promises.all(files.map(function(file) {
+    return Promise.all(files.map(function(file) {
         return fs.exists(file).then(function(exists) {
             if(exists) { existentFiles.push(file); }
         });
@@ -121,7 +120,7 @@ var localDefaultYaml = Path.resolve(Path.resolve('.'),'txt-to-sql-defaults.yaml'
 var inputName = Path.basename(cmdParams.input, '.txt');
 var params = {};
 
-Promises.start(function() {
+Promise.resolve().then(function() {
     if(cmdParams.exportDefaults) {
         process.stdout.write("Generating '"+localDefaultYaml+"'...");
         return fs.writeFile(localDefaultYaml, jsYaml.safeDump({opts:txtToSql.defaultOpts}), {encoding:'utf8'}).then(function() {
