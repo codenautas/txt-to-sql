@@ -1,8 +1,11 @@
+table.outer {
+  margin: 24px;
+}
 table.outer td {
   vertical-align: top;
 }
-table.inner td {
-  border: 1px solid #000;
+table.inner th {
+  border-bottom: 1px solid #444;
 }
 table.inner tr td th:last-child {
   width: 1%;
@@ -10,4 +13,7 @@ table.inner tr td th:last-child {
 }
 input {
   width: auto;
+}
+input[type="file"] {
+  width: 400px;
 }

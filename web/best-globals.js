@@ -302,19 +302,13 @@ bestGlobals.setGlobals = function setGlobals(theGlobalObj){
     /*jshint forin:true */
 };
 
-bestGlobals.functionName = function functionName(fun) {
-    if(typeof fun !== "function"){
-        throw new Error("non function in functionName");
-    }
-    return fun.name||fun.toString().replace(/^\s*function\s*([^(]*)\((.|\s)*$/i,'$1')||'anonymous';
-};
-
 bestGlobals.constructorName = function constructorName(obj) {
     if(obj){
-        return bestGlobals.functionName(obj.constructor);
-    }else{
-        console.log('deprecate use of constructorName with non-object for',obj);
-        console.log('it will throw Error in future releases');
+        var cn = obj.constructor.name;
+        if(!cn){
+            return obj.constructor.toString().replace(/^\s*function\s*([^(]*)\((.|\s)*$/i,'$1');
+        }
+        return cn;
     }
 };
 
@@ -365,47 +359,6 @@ bestGlobals.forOrder = function forOrder(text){
         }
     );
     return main.join('')+signs.join('')+'   '+text;
-};
-
-bestGlobals.forOrder.Native = function forOrderNative(a){
-    return a;
-};
-
-bestGlobals.nullsOrder = 1; // 1=last -1=first;
-
-bestGlobals.compareForOrder = function compareForOrder(sortColumns){
-    var thisModule = this;
-    return function forOrderComparator(row1,row2){
-        var column;
-        var i=0;
-        do{
-            var order = bestGlobals.coalesce(sortColumns[i].order, 1);
-            column=sortColumns[i].column;
-            if(row1[column]==null){
-                if(row2[column]!=null){
-                    return thisModule.nullsOrder;
-                }
-            }else if(row2[column]==null){
-                return -thisModule.nullsOrder;
-            }else{
-                var a=(sortColumns[i].func||thisModule.forOrder)(row1[column]);
-                var b=(sortColumns[i].func||thisModule.forOrder)(row2[column]);
-                if(a>b){
-                    return 1*order;
-                }else if(a<b){
-                    return -1*order;
-                }
-            }
-            i++;
-        }while(i<sortColumns.length);
-        return 0;
-    };
-};
-
-bestGlobals.sleep = function sleep(milliseconds){
-    return new Promise(function(resolve){
-        setTimeout(resolve,milliseconds);
-    });
 };
 
 return bestGlobals;

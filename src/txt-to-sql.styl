@@ -1,10 +1,12 @@
 table.outer
+    margin 24px
+
+table.outer
     td
         vertical-align top
-        //border 1px solid #000;
 table.inner
-    td
-        border 1px solid #000;
+    th
+        border-bottom 1px solid #444
     tr td th:last-child{
         width:1%;
         white-space:nowrap;
@@ -12,3 +14,6 @@ table.inner
     
 input
     width auto
+    
+input[type="file"]
+    width 400px    
