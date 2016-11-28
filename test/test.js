@@ -233,8 +233,21 @@ describe("file encoding", function(){
     });
 });
 
+function add_stringize_tests(fixtures, lang) {
+   fixtures.forEach(function(check, index) {
+        var name=lang+' '+(index+1)+': '+JSON.stringify(check.stats).substr(0,40)+'...';
+        if(check.skip) {
+            it.skip(name);
+        } else {
+            it(name, function(){
+                expect(txtToSql.stringizeStats(check.stats,lang)).to.eql(check.out);
+            });
+        }
+    });
+}
+
 describe("stringizeStats", function(){
-    [
+    var fixtures_en=[
         {stats:{rows:3,columns:3,textColumns:1, nullColumns:2, primaryKey:[], startTime:0, endTime:1000},
            out:'rows:3, columns:3 (text:1, null:2), time:1s' },
         {stats:{rows:0,columns:1,textColumns:0, nullColumns:1, primaryKey:[], startTime:1000, endTime:8010},
@@ -245,15 +258,19 @@ describe("stringizeStats", function(){
            out:'rows:2, columns:1 (text:0, null:1), primary key[c1], time:1h, 1m, 1ms'},
         {stats:{rows:1,columns:2,textColumns:1, nullColumns:0, primaryKey:[], startTime:0, endTime:0},
            out:'rows:1, columns:2 (text:1, null:0), time:0ms' },
-    ].forEach(function(check, index) {
-        var name=(index+1)+': '+JSON.stringify(check.stats).substr(0,40)+'...';
-        if(check.skip) {
-            it.skip(name);
-        } else {
-            it(name, function(){
-                expect(txtToSql.stringizeStats(check.stats)).to.eql(check.out);
-            });
-        }
+    ];
+    var fixtures_es=[];
+    fixtures_en.forEach(function(fixture) {
+        var fix = JSON.parse(JSON.stringify(fixture));
+        fix.out = fixture.out.replace('rows','filas')
+                             .replace('columns','columnas')
+                             .replace('text','texto')
+                             .replace('null','nulas')
+                             .replace('primary key','clave primaria')
+                             .replace('time','tiempo')
+        fixtures_es.push(fix);
     });
+    add_stringize_tests(fixtures_en, 'en');
+    add_stringize_tests(fixtures_es, 'es');
 });
 
