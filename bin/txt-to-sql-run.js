@@ -19,6 +19,7 @@ program
     .option('-p, --prepare', 'Analyzes input and generates input.yaml')
     .option('-f, --fast', 'Uses streams to process input')
     .option('-e, --export-defaults', 'Exports defaults to txt-to-sql-defaults.yaml')
+    .option('-l, --lang [es]', 'Language of statistics','es')
     .parse(process.argv);
 
 
@@ -31,6 +32,7 @@ cmdParams.input = program.input ? program.input : program.args[0];
 cmdParams.prepare = program.prepare;
 cmdParams.fast = program.fast;
 cmdParams.exportDefaults = program.exportDefaults;
+cmdParams.lang = program.lang;
 
 // numero de lineas a leer para analizar entrada
 var fastBufferingThreshold = 50;
@@ -162,7 +164,7 @@ Promise.resolve().then(function() {
             }
         }).then(function() {
             if(params.stats) {
-                process.stdout.write("\n"+txtToSql.stringizeStats(params.stats));
+                process.stdout.write("\n"+txtToSql.stringizeStats(params.stats, cmdParams.lang));
             }         
         });
    }
