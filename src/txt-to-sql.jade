@@ -182,10 +182,12 @@ html(lang=lang)
         });
     }
     var html = jsToHtml.html;
-    function addStep(labelText, elements) {
+    function addStep(labelText, onTop, actionElement, elements) {
         var existe = getID(labelText);
         if(existe) { steps.removeChild(existe); }
-        steps.appendChild(html.div({id:labelText}, [html.label(labelText)].concat(elements)).create());
+        var header = [html.label(labelText), actionElement];
+        var toAdd = onTop ? header.concat(elements) : elements.concat(header);
+        steps.appendChild(html.div({id:labelText}, toAdd).create());
     }
     function createInput(name, type, value, width, id) {
         var attrs = {name:name, type:type};
@@ -270,8 +272,7 @@ html(lang=lang)
                 elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
             }
             elems.push(html.label(' ('+stringizeStats(generated.stats, currentLanguage)+')').create());
-            addStep(messages.step3, elems);
-            
+            addStep(messages.step3, true, link, elems);            
         }).catch(function(err){
             errMessage.textContent=err.message;
         });
@@ -331,13 +332,12 @@ html(lang=lang)
                                         html.td(messages.cols.cn)
                                ]));                fields.unshift(html.th({colspan:7}, [html.td(messages.headerFields)]));
                 var tblFields = html.table({class:'inner'}, fields).create();
-                addStep("", [html.table({class:'outer'}, [
-                                            html.tr([
-                                                html.td([tblOpts]),
-                                                html.td([tblFields])
-                                            ]),
-                                            butGenerate
-                                        ]).create()]);
+                addStep(messages.step2, false, butGenerate, [html.table({class:'outer'}, [
+                                                    html.tr([
+                                                    html.td([tblOpts]),
+                                                    html.td([tblFields])
+                                                ]),
+                                              ]).create()]);
                errMessage.textContent=""; // if all goes ok, clear' em
                delete getID('inputFile').files;
             }).catch(function(err){
