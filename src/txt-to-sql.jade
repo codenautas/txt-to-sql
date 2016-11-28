@@ -1,21 +1,4 @@
 doctype html
--
-  var messages={
-    es:{
-        labelChoose:'Paso 1: ',
-        buttonChoose:'Elegir',
-        labelSeparator:'Separador: ',
-        separatorTitle:'Definir separador, si vacío, auto-detecta',
-        separatorHint:'auto detectar',
-    },
-    en:{
-        labelChoose:'Step 1: ',
-        labelSeparator:'Separator: ',
-        buttonChoose:'select file ',
-        separatorTitle:'Define separator, if empty, auto-detects it',
-        separatorHint:'auto detect',
-    }
-  }[lang||'es'];
 html(lang=lang)
   // UTF-8: Sí
   head
@@ -26,60 +9,19 @@ html(lang=lang)
     link(rel="apple-touch-icon", href="txt-to-sql.png")
     link(href='txt-to-sql.css', rel='stylesheet')
   body
-    a(href="https://github.com/codenautas/txt-to-sql")
-      img(style="position: absolute; top: 0; right: 0; border: 0;", src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67", alt="Fork me on GitHub", data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png")
-    div(style="position: absolute; top: 40px; right: 140px; border: 0;")
-      input(type="radio", name="lang", value="es" checked)
-      img(src="lang-es.png", alt="Choose spanish")
-      br
-      input(type="radio", name="lang", value="en")
-      img(src="lang-en.png", alt="Choose english")
-      a(href="https://github.com/codenautas/txt-to-sql/issues")
-        img(style="position: absolute; top: 80px; left: 20px; border: 0;", src="new-issue-es.png", alt="New issue")
-    div(style={float:'left', height:'180px', margin:'0px 30px'})
-      img(src="txt-to-sql.png")
-    h1 txt-to-sql
-    div
-      label=messages.labelChooselabel=messages.labelChoose
-      input(value=messages.buttonChoose, type='file', id='inputFile')
-      span &nbsp;
-      label=messages.labelSeparator
-      input(type='text', id='inputSeparator' size=8, title=messages.separatorTitle, placeholder=messages.separatorHint)
-    div#steps
-    pre#log
-    pre#errMessage(style={color:'red'})
-  script.
-    /* space */
-    var module = {};
-    /* space */
-    function getID(id) { return document.getElementById(id); }
-  script(src='buffer.js')
-  script(src='iconv-lite.js')
-  script.
-    /* space */
-    var Buffer = require('buffer').Buffer;
-    var iconv = require('iconv-lite');
-    /* space */
-    delete window.require;
-    /* space */
-  script(src='require-bro.js')
-  script.
-    /* space */
-    window.require.definedModules['iconv-lite'] = iconv;
-    /* space */
-  script(src='best-globals.js')
-  script(src='txt-to-sql.js')
-  script(src='js-to-html.js')
-  script.
-    /* space */
-    var userOptions = {};
-    var preparedColumns = {};
-    var messages={
-      es:{
-          loading:'cargando',
-          step2:'Paso 2: ',
-          generate:'generar',
-          generating:'generando',
+    script.
+        var dictionary={
+          es:{
+            labelChoose:'Paso 1: ',
+            buttonChoose:'Elegir',
+            labelSeparator:'Separador: ',
+            separatorTitle:'Definir separador, si vacío, auto-detecta',
+            separatorHint:'auto detectar',
+        
+            loading:'cargando',
+            step2:'Paso 2: ',
+            generate:'generar',
+            generating:'generando',
           opts:{
             commas:'Alinear commas',
             columnAlignedMaxWidth:'Ancho máximo',
@@ -107,8 +49,14 @@ html(lang=lang)
           download:'descargar',
           headerOptions:'Opciones',
           headerFields:'Campos',
-      },
-      en:{
+        },
+        en:{
+          labelChoose:'Step 1: ',
+          labelSeparator:'Separator: ',
+          buttonChoose:'select file ',
+          separatorTitle:'Define separator, if empty, auto-detects it',
+          separatorHint:'auto detect',
+          
           loading:'loading',
           step2:'Step 2: ',
           generate:'generate',
@@ -140,8 +88,59 @@ html(lang=lang)
           download:'download',
           headerOptions:'Options',
           headerFields:'Fields',
-      }
-    }[window.lang||'es'];
+        }
+      };
+      var messages=dictionary['es'];
+    a(href="https://github.com/codenautas/txt-to-sql")
+      img(style="position: absolute; top: 0; right: 0; border: 0;", src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67", alt="Fork me on GitHub", data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png")
+    div(style="position: absolute; top: 40px; right: 140px; border: 0;")
+      form
+          input(type="radio", id="lang_es", name="lang", value="es" checked)
+          img(src="lang-es.png", alt="Choose spanish")
+          br
+          input(type="radio", id="lang_en", name="lang", value="en")
+          img(src="lang-en.png", alt="Choose english")
+      a(href="https://github.com/codenautas/txt-to-sql/issues")
+        img(style="position: absolute; top: 80px; left: 20px; border: 0;", src="new-issue-es.png", alt="New issue")
+    div(style={float:'left', height:'180px', margin:'0px 30px'})
+      img(src="txt-to-sql.png")
+    h1 txt-to-sql
+    div
+      label(id="labelInputFile")
+      input(type='file', id='inputFile')
+      span &nbsp;
+      label(id="labelInputSeparator")
+      input(type='text', id='inputSeparator' size=8)
+    div#steps
+    pre#log
+    pre#errMessage(style={color:'red'})
+  script.
+    /* space */
+    var module = {};
+    /* space */
+    function getID(id) { return document.getElementById(id); }
+  script(src='buffer.js')
+  script(src='iconv-lite.js')
+  script.
+    /* space */
+    var Buffer = require('buffer').Buffer;
+    var iconv = require('iconv-lite');
+    /* space */
+    delete window.require;
+    /* space */
+  script(src='require-bro.js')
+  script.
+    /* space */
+    window.require.definedModules['iconv-lite'] = iconv;
+    /* space */
+  script(src='best-globals.js')
+  script(src='txt-to-sql.js')
+  script(src='js-to-html.js')
+  script.
+    /* space */
+    var userOptions = {};
+    var preparedColumns = {};
+    // }[window.lang||'es'];
     function resetPage() {
         userOptions = {
             verboseErrors:true,
@@ -342,8 +341,24 @@ html(lang=lang)
             });
         });
     }
+    function changeLanguage(event){
+        if(this.value) {
+            messages=dictionary[this.value];
+            document.getElementsByTagName("html")[0] = this.value;
+        } else {
+            getID('lang_es').checked = true;
+        }
+        getID('labelInputFile').innerHTML=messages.labelChooselabel=messages.labelChoose
+        getID('inputFile').title=messages.buttonChoose
+        getID('labelInputSeparator').innerHTML=messages.labelSeparator
+        var inputSeparator = getID('inputSeparator');
+        inputSeparator.title=messages.separatorTitle
+        inputSeparator.placeholder=messages.separatorHint
+        resetPage();
+        inputFile.value = "";
+    }
     getID('inputFile').addEventListener('change', handlePrepare, false);
     getID('inputSeparator').addEventListener('change', handlePrepare, false);
-    // para el F5 post "npm run web"
-    resetPage();
-    inputFile.value = "";
+    getID('lang_es').addEventListener('change', changeLanguage, false);
+    getID('lang_en').addEventListener('change', changeLanguage, false);
+    window.onload=changeLanguage;
