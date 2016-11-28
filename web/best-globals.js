@@ -84,6 +84,7 @@ bestGlobals.createOptionsToFunction = function createOptionsToFunction(fun, mand
     };
     fun.options = function options(opts){
         var result = Object.create(fun.options.prototype);
+        /* eslint guard-for-in: 0 */
         /*jshint forin:false */
         for(var attr in opts){
             result[attr] = opts[attr];
@@ -176,7 +177,7 @@ function addDateMethods(dt) {
 ////////// date
 bestGlobals.date = function date(dt) {
     if(! bestGlobals.date.isOK(dt)) { throw new Error('invalid date'); }
-    var d = addDateMethods(dt);
+    var d = addDateMethods(new Date(dt.getTime()));
     if(d.getHours() || d.getMinutes() || d.getSeconds() || d.getMilliseconds()) {
         throw new Error('invalid date "'+d.toDateString()+'"because it has time');
     }
@@ -231,7 +232,7 @@ bestGlobals.date.array = function array(arr) {
 /////// datetime
 bestGlobals.datetime=function datetime(dt) {
     if(! bestGlobals.date.isOK(dt)) { throw new Error('invalid date'); }
-    var d = addDateMethods(dt);
+    var d = addDateMethods(new Date(dt.getTime()));
     d.isRealDateTime = true;
     return d;
 };
@@ -291,15 +292,6 @@ bestGlobals.timeInterval = function timeInterval(time) {
         return tdiff.join(':');
     };
     return d;
-};
-
-bestGlobals.setGlobals = function setGlobals(theGlobalObj){
-    /*jshint forin:false */
-    /* eslint guard-for-in: 0 */
-    for(var name in bestGlobals){
-        theGlobalObj[name] = bestGlobals[name];
-    }
-    /*jshint forin:true */
 };
 
 bestGlobals.functionName = function functionName(fun) {
@@ -405,6 +397,34 @@ bestGlobals.compareForOrder = function compareForOrder(sortColumns){
 bestGlobals.sleep = function sleep(milliseconds){
     return new Promise(function(resolve){
         setTimeout(resolve,milliseconds);
+    });
+};
+
+/* istanbul ignore next */
+bestGlobals.registerJson4All = function registerJson4All(JSON4all){
+    JSON4all.addType(Date, {
+        specialTag: function specialTag(value){
+            if(value.isRealDate){
+                return 'date';
+            }else{
+                return 'Date';
+            }
+        },
+        construct:function construct(value){
+            return new Date(value);
+        },
+        deconstruct:function deconstruct(date){
+            if(date.isRealDate){
+                return date.toYmd();
+            }else{
+                return date.getTime();
+            }
+        }
+    });
+    JSON4all.addType('date', {
+        construct: function construct(value){
+            return bestGlobals.date.iso(value);
+        },
     });
 };
 
