@@ -271,7 +271,7 @@ html(lang=lang)
             if(generated.warnings) {
                 elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
             }
-            elems.push(html.label(' ('+stringizeStats(generated.stats, currentLanguage)+')').create());
+            elems.push(html.label(stringizeStats(generated.stats, currentLanguage)).create());
             addStep(messages.step3, true, link, elems);            
         }).catch(function(err){
             errMessage.textContent=err.message;

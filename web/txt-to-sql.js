@@ -653,31 +653,31 @@ function finalizeStats(info) {
     return info;
 }
 
-function stringizeStats(stats, lang) {
-    var messages={
+function capitalize(str) {  return str.charAt(0).toUpperCase()+str.slice(1); }
+
+txtToSql.dictionary={
     es:{
-        rows:'filas',
+        rows:'registros',
         columns:'columnas',
-        text:'texto',
-        nulls:'nulas',
+        text:'textos',
+        nulls:'nulos',
         pk:'clave primaria',
-        time:'tiempo',
+        time:'tiempo de generación',
     },
     en:{
         rows:'rows',
         columns:'columns',
-        text:'text',
-        nulls:'null',
+        text:'texts',
+        nulls:'nulls',
         pk:'primary key',
-        time:'time',
+        time:'elapsed time',
     }
-    }[lang||'es'];
+};
+
+function stringizeStats(stats, lang) {
+    var messages=txtToSql.dictionary[lang||'es'];
+    
     var r=[];
-    r.push(messages.rows+':'+stats.rows);
-    r.push(messages.columns+':'+stats.columns+' ('+messages.text+':'+stats.textColumns+', '+messages.nulls+':'+stats.nullColumns+')');
-    if(stats.primaryKey.length) {
-        r.push(messages.pk+'['+stats.primaryKey.join(',')+']');
-    }
     var time = stats.endTime - stats.startTime;
     var ms = parseInt((time%1000));
     var secs = (((time/1000)%60)).toFixed();
@@ -690,7 +690,13 @@ function stringizeStats(stats, lang) {
     if(secs>0) { t.push(secs+'s'); }
     if(ms>0) { t.push(ms+'ms'); }
     if(! t.length) { t.push('0ms'); }
-    r.push(messages.time+':'+t.join(', '));
+    r.push(capitalize(messages.time)+' '+t.join('. '));
+    
+    r.push(capitalize(messages.rows)+' '+stats.rows);
+    r.push(messages.columns+' '+stats.columns+' ('+messages.text+':'+stats.textColumns+', '+messages.nulls+':'+stats.nullColumns+')');
+    if(stats.primaryKey.length) {
+        r.push(messages.pk+' :'+stats.primaryKey.join(', '));
+    }
     return r.join(', ');
 }
 
