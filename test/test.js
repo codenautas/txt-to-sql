@@ -233,7 +233,7 @@ describe("file encoding", function(){
     });
 });
 
-function add_stringize_tests(fixtures, lang) {
+function addStringizeTests(fixtures, lang) {
    fixtures.forEach(function(check, index) {
         var name=lang+' '+(index+1)+': '+JSON.stringify(check.stats).substr(0,40)+'...';
         if(check.skip) {
@@ -270,7 +270,7 @@ describe("stringizeStats", function(){
                              .replace('time','tiempo')
         fixtures_es.push(fix);
     });
-    add_stringize_tests(fixtures_en, 'en');
-    add_stringize_tests(fixtures_es, 'es');
+    addStringizeTests(fixtures_en, 'en');
+    addStringizeTests(fixtures_es, 'es');
 });
 
