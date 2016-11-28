@@ -1,15 +1,14 @@
-<!DOCTYPE html><html><!-- UTF-8: Sí--><head><title>txt-to-sql</title><meta charset="UTF-8"><link rel="icon" href="txt-to-sql.png" type="image/png"><link rel="shortcut icon" href="txt-to-sql.png" type="image/png"><link rel="apple-touch-icon" href="txt-to-sql.png"><link href="txt-to-sql.css" rel="stylesheet"></head><body><script>  var dictionary={
-    es:{
-      labelChoose:'Paso 1: ',
-      buttonChoose:'Elegir',
-      labelSeparator:'Separador: ',
-      separatorTitle:'Definir separador, si vacío, auto-detecta',
-      separatorHint:'auto detectar',
-  
-      loading:'cargando',
-      step2:'Paso 2: ',
-      generate:'generar',
-      generating:'generando',
+<!DOCTYPE html><html><!-- UTF-8: Sí--><head><title>txt-to-sql</title><meta charset="UTF-8"><link rel="icon" href="txt-to-sql.png" type="image/png"><link rel="shortcut icon" href="txt-to-sql.png" type="image/png"><link rel="apple-touch-icon" href="txt-to-sql.png"><link href="txt-to-sql.css" rel="stylesheet"></head><body><script>var dictionary={
+  es:{
+    labelChoose:'Paso 1: ',
+    buttonChoose:'Elegir',
+    labelSeparator:'Separador: ',
+    separatorTitle:'Definir separador, si vacío, auto-detecta',
+    separatorHint:'auto detectar',
+    loading:'cargando',
+    step2:'Paso 2: ',
+    generate:'generar',
+    generating:'generando',
     opts:{
       commas:'Alinear commas',
       columnAlignedMaxWidth:'Ancho máximo',
@@ -37,6 +36,9 @@
     download:'descargar',
     headerOptions:'Opciones',
     headerFields:'Campos',
+    titleLangEs:'Elegir español',
+    titleLangEn:'Elegir inglés',
+    issuesPng:'new-issue-es.png',
   },
   en:{
     labelChoose:'Step 1: ',
@@ -44,7 +46,6 @@
     buttonChoose:'select file ',
     separatorTitle:'Define separator, if empty, auto-detects it',
     separatorHint:'auto detect',
-
     loading:'loading',
     step2:'Step 2: ',
     generate:'generate',
@@ -76,9 +77,13 @@
     download:'download',
     headerOptions:'Options',
     headerFields:'Fields',
+    titleLangEs:'Choose spanish',
+    titleLangEn:'Choose english',
+    issuesPng:'new-issue-en.png',
   }
 };
-var messages=dictionary['es'];</script><a href="https://github.com/codenautas/txt-to-sql"><img style="position: absolute; top: 0; right: 0; border: 0" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a><div style="position: absolute; top: 40px; right: 140px; border: 0"><form><input type="radio" id="lang_es" name="lang" value="es" checked><img src="lang-es.png" alt="Choose spanish"><br><input type="radio" id="lang_en" name="lang" value="en"><img src="lang-en.png" alt="Choose english"></form><a href="https://github.com/codenautas/txt-to-sql/issues"><img style="position: absolute; top: 80px; left: 20px; border: 0" src="new-issue-es.png" alt="New issue"></a></div><div style="float:left;height:180px;margin:0px 30px"><img src="txt-to-sql.png"></div><h1>txt-to-sql</h1><div><label id="labelInputFile"></label><input type="file" id="inputFile"><span>&nbsp;</span><label id="labelInputSeparator"></label><input type="text" id="inputSeparator" size="8"></div><div id="steps"></div><pre id="log"></pre><pre id="errMessage" style="color:red"></pre></body><script>/* space */
+var currentLanguage='es';
+var messages=dictionary[currentLanguage];</script><a href="https://github.com/codenautas/txt-to-sql"><img style="position: absolute; top: 0; right: 0; border: 0" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a><div style="position: absolute; top: 40px; right: 140px; border: 0"><form><input type="radio" id="lang_es" name="lang" value="es" checked><img src="lang-es.png"><br><input type="radio" id="lang_en" name="lang" value="en"><img src="lang-en.png"></form><a href="https://github.com/codenautas/txt-to-sql/issues"><img id="issues" style="position: absolute; top: 80px; left: 20px; border: 0" src="new-issue-es.png" alt="New issue"></a></div><div style="float:left;height:180px;margin:0px 30px"><img src="txt-to-sql.png"></div><h1>txt-to-sql</h1><div><label id="labelInputFile"></label><input type="file" id="inputFile"><span>&nbsp;</span><label id="labelInputSeparator"></label><input type="text" id="inputSeparator" size="8"></div><div id="steps"></div><pre id="log"></pre><pre id="errMessage" style="color:red"></pre></body><script>/* space */
 var module = {};
 /* space */
 function getID(id) { return document.getElementById(id); }</script><script src="buffer.js"></script><script src="iconv-lite.js"></script><script>/* space */
@@ -91,7 +96,6 @@ window.require.definedModules['iconv-lite'] = iconv;
 /* space */</script><script src="best-globals.js"></script><script src="txt-to-sql.js"></script><script src="js-to-html.js"></script><script>/* space */
 var userOptions = {};
 var preparedColumns = {};
-// }[window.lang||'es'];
 function resetPage() {
     userOptions = {
         verboseErrors:true,
@@ -216,7 +220,7 @@ function handleGenerate(event){
         if(generated.warnings) {
             elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
         }
-        elems.push(html.label(' ('+stringizeStats(generated.stats)+')').create());
+        elems.push(html.label(' ('+stringizeStats(generated.stats, currentLanguage)+')').create());
         addStep(messages.step3, elems);
         
     }).catch(function(err){
@@ -294,17 +298,21 @@ function handlePrepare(event){
 }
 function changeLanguage(event){
     if(this.value) {
-        messages=dictionary[this.value];
-        document.getElementsByTagName("html")[0] = this.value;
+        currentLanguage=this.value;
+        messages=dictionary[currentLanguage];
+        document.getElementsByTagName("html")[0] = currentLanguage;
     } else {
         getID('lang_es').checked = true;
     }
-    getID('labelInputFile').innerHTML=messages.labelChooselabel=messages.labelChoose
-    getID('inputFile').title=messages.buttonChoose
-    getID('labelInputSeparator').innerHTML=messages.labelSeparator
+    getID('labelInputFile').innerHTML=messages.labelChooselabel=messages.labelChoose;
+    getID('inputFile').title=messages.buttonChoose;
+    getID('labelInputSeparator').innerHTML=messages.labelSeparator;
     var inputSeparator = getID('inputSeparator');
-    inputSeparator.title=messages.separatorTitle
-    inputSeparator.placeholder=messages.separatorHint
+    inputSeparator.title=messages.separatorTitle;
+    inputSeparator.placeholder=messages.separatorHint;
+    getID('lang_es').title = messages.titleLangEs;
+    getID('lang_en').title = messages.titleLangEn;
+    getID('issues').src = messages.issuesPng;
     resetPage();
     inputFile.value = "";
 }
