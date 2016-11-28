@@ -42,6 +42,8 @@ var messages={
       },
       step3:'Paso 3: ',
       download:'descargar',
+      headerOptions:'Opciones',
+      headerFields:'Campos',
   },
   en:{
       loading:'loading',
@@ -69,10 +71,12 @@ var messages={
         nuls:'NULLs',
         len:'Length',
         scale:'Scale',
-        cn:'CientificNotation'
+        cn:'CientificNotation',
       },
       step3:'Step 3: ',
       download:'download',
+      headerOptions:'Options',
+      headerFields:'Fields',
   }
 }[window.lang||'es'];
 function resetPage() {
@@ -223,7 +227,7 @@ function handlePrepare(event){
                                             prepared.opts.includePrimaryKey :
                                             prepared.columns.filter(function(c) {return c.inPrimaryKey; }).length>0;
             var tblOpts = html.table({class:'inner'},[
-                html.th({colspan:2},[html.td("Options")]).create(),
+                html.th({colspan:2},[html.td(messages.headerOptions)]).create(),
                 createOption(messages.opts.commas, 'columnAlignedCommas', 'checkbox', prepared.opts.columnAlignedCommas, 1),
                 createOption(messages.opts.columnAlignedMaxWidth, 'columnAlignedMaxWidth', 'text', prepared.opts.columnAlignedMaxWidth, 1),
                 createOption(messages.opts.format, 'columnNamesFormat', 'text', prepared.opts.columnNamesFormat, 15),
@@ -259,8 +263,7 @@ function handlePrepare(event){
                                     html.td(messages.cols.len),
                                     html.td(messages.cols.scale),
                                     html.td(messages.cols.cn)
-                           ]));
-            fields.unshift(html.th({colspan:7}, [html.td("Fields")]));
+                           ]));                fields.unshift(html.th({colspan:7}, [html.td(messages.headerFields)]));
             var tblFields = html.table({class:'inner'}, fields).create();
             addStep("", [html.table({class:'outer'}, [
                                         html.tr([
