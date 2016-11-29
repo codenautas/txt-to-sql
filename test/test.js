@@ -240,33 +240,38 @@ function addStringizeTests(fixtures, lang) {
             it.skip(name);
         } else {
             it(name, function(){
-                console.log("'"+txtToSql.stringizeStats(check.stats,lang)+"'");
-                console.log("'"+check.out+"'")
+                //console.log("'"+txtToSql.stringizeStats(check.stats,lang)+"'"); console.log("'"+check.out+"'")
                 expect(txtToSql.stringizeStats(check.stats,lang)).to.eql(check.out);
             });
         }
     });
 }
 
-describe.skip("stringizeStats", function(){
+describe("stringizeStats", function(){
     // Tiempo de generación NNs. Registros NN, columnas NN (textos NN, nulos NN), clave primaria: TTT, TTTT.
     var fixtures_en=[
         {stats:{rows:3,columns:3,textColumns:1, nullColumns:2, primaryKey:[], startTime:0, endTime:1000},
            out:'Elapsed time 1s. Rows 3, columns 3 (texts:1, nulls:2)' },
         {stats:{rows:0,columns:1,textColumns:0, nullColumns:1, primaryKey:[], startTime:1000, endTime:8010},
-           out:'Elapsed time 1s. Rows 3, columns 3 (texts:1, nulls:2)' },
+           out:'Elapsed time 7s, 10ms. Rows 0, columns 1 (texts:0, nulls:1)' },
         {stats:{rows:20,columns:12,textColumns:7, nullColumns:5, primaryKey:['c1','c2'], startTime:0, endTime:1000*60*60},
-           out:'rows:20, columns:12 (text:7, null:5), primary key[c1,c2], time:1h'},
+           out:'Elapsed time 1h. Rows 20, columns 12 (texts:7, nulls:5), primary key: c1, c2'},
         {stats:{rows:2,columns:1,textColumns:0, nullColumns:1, primaryKey:['c1'], startTime:0, endTime:1000*60*60+60001},
-           out:'rows:2, columns:1 (text:0, null:1), primary key[c1], time:1h, 1m, 1ms'},
+           out:'Elapsed time 1h, 1m, 1ms. Rows 2, columns 1 (texts:0, nulls:1), primary key: c1'},
         {stats:{rows:1,columns:2,textColumns:1, nullColumns:0, primaryKey:[], startTime:0, endTime:0},
-           out:'rows:1, columns:2 (text:1, null:0), time:0ms' },
+           out:'Elapsed time 0ms. Rows 1, columns 2 (texts:1, nulls:0)' },
     ];
     var fixtures_es=[];
     fixtures_en.forEach(function(fixture) {
         var fix = JSON.parse(JSON.stringify(fixture));
         Object.keys(txtToSql.dictionary['en']).forEach(function(word) {
-           fix.out = fixture.out.replace(word, txtToSql.dictionary['es'].word);
+            var search = txtToSql.dictionary['en'][word];
+            var rep = txtToSql.dictionary['es'][word];
+            if(word==='rows' || word==='time') {
+                search = txtToSql.capitalize(search);
+                rep = txtToSql.capitalize(rep);
+            }
+            fix.out = fix.out.replace(search, rep);
         });
         fixtures_es.push(fix);
     });
