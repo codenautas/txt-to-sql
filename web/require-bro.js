@@ -1,10 +1,11 @@
 "use strict";
+/*jshint eqnull:true */
+/*jshint browser:true */
 
 var requireBro = {};
 
-(function(){
+;(function(){
     /*global window*/
-    /* eslint no-return-assign: 0 */
     if(!window){
         throw new Error("require-bro is only for browser");
     }
@@ -22,21 +23,15 @@ var requireBro = {};
             });
             // console.log('requireBro', name, camelName, window.selfExplain);
             if(window[camelName]){
-                /* jshint -W093 */ 
                 return window.require.definedModules[name] = window[camelName];
-                /* jshint +W093 */ 
             }else{
                 camelName=camelName.substr(0,1).toUpperCase()+camelName.substr(1);
                 if(window[camelName]){
-                    /* jshint -W093 */ 
                     return window.require.definedModules[name] = window[camelName];
-                    /* jshint +W093 */ 
                 }else{
                     camelName=camelName.toLowerCase();
                     if(window[camelName]){
-                        /* jshint -W093 */ 
                         return window.require.definedModules[name] = window[camelName];
-                        /* jshint +W093 */ 
                     }else{
                         throw new Error("require-bro: module "+JSON.stringify(name)+" not found. It must included manually");
                     }
