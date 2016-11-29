@@ -6,9 +6,11 @@
     separatorTitle:'Definir separador, si vacío, auto-detecta',
     separatorHint:'auto detectar',
     loading:'cargando',
+    loaded:'cargado',
     step2:'Paso 2: ',
     generate:'generar',
     generating:'generando',
+    generated:'generado',
     opts:{
       commas:'Alinear commas',
       columnAlignedMaxWidth:'Ancho máximo',
@@ -47,9 +49,11 @@
     separatorTitle:'Define separator, if empty, auto-detects it',
     separatorHint:'auto detect',
     loading:'loading',
+    loaded:'loaded',
     step2:'Step 2: ',
     generate:'generate',
     generating:'generating',
+    generated:'generated',
     opts:{
       commas:'Align commas',
       columnAlignedMaxWidth:'Max width',
@@ -105,7 +109,10 @@ function resetPage() {
     if(defSeparator && defSeparator.value !=='') {
         userOptions.separator = defSeparator.value;
     }
-    while(steps.lastChild) { steps.removeChild(steps.lastChild); }
+    while(steps.lastChild) {
+        console.log("removing", steps.lastChild.id)
+        steps.removeChild(steps.lastChild);
+    }
     log.textContent="";
     errMessage.textContent="";
 }
@@ -222,8 +229,10 @@ function handleGenerate(event){
         if(generated.warnings) {
             elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
         }
+        elems.push(html.span(' '));
         elems.push(html.label(stringizeStats(generated.stats, currentLanguage)).create());
-        addStep(messages.step3, true, link, elems);            
+        addStep(messages.step3, true, link, elems);
+        log.textContent=messages.generated+' '+file.name;
     }).catch(function(err){
         errMessage.textContent=err.message;
     });
@@ -290,6 +299,7 @@ function handlePrepare(event){
                                             ]),
                                           ]).create()]);
            errMessage.textContent=""; // if all goes ok, clear' em
+           log.textContent=messages.loaded+' '+file.name;
            delete getID('inputFile').files;
         }).catch(function(err){
             errMessage.textContent=err.message+"\n"+err.stack;
