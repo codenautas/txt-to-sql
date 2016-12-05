@@ -360,11 +360,16 @@ html(lang=lang)
     function changeLanguage(event){
         if(this.value) {
             currentLanguage=this.value;
-            messages=dictionary[currentLanguage];
-            document.getElementsByTagName("html")[0] = currentLanguage;
         } else {
-            getID('lang_es').checked = true;
+            if(window.navigator.language.match(/^(en)/i)) {
+                currentLanguage = 'en';
+                getID('lang_en').checked = true;
+            } else {
+                getID('lang_es').checked = true;
+            }
         }
+        messages=dictionary[currentLanguage];
+        document.getElementsByTagName("html")[0] = currentLanguage;
         getID('labelInputFile').innerHTML=messages.labelChooselabel=messages.labelChoose;
         getID('inputFile').title=messages.buttonChoose;
         getID('labelInputSeparator').innerHTML=messages.labelSeparator;
