@@ -22,7 +22,7 @@
     "js-yaml": "~3.7.0",
 
     "best-globals": "~0.7.0",
-    "mini-tools": "~0.3.3"
+    "mini-tools": "~0.3.9"
   },
   "devDependencies": {
     "browserify": "~13.1.0",
