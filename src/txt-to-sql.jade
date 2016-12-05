@@ -215,6 +215,17 @@ html(lang=lang)
             html.td([createInput(name, type, value, width, id || name)])            
         ]).create();
     }
+    function onBlurValidateAgainstList(element, list) {
+        element.addEventListener('blur', function(event) {
+            var buttonGenerate = getID('generate');
+            buttonGenerate.disabled = list.indexOf(element.value)===-1;
+            if(buttonGenerate.disabled) {
+                errMessage.textContent = element.value+' not found in '+JSON.stringify(list);
+            } else {
+                errMessage.textContent = '';
+            }
+        }, false);
+    }
     function createList(label, name, value, alternatives, width) {
         var valuesID=name+'_values';
         var options=alternatives.map(function(item) {
@@ -311,7 +322,7 @@ html(lang=lang)
             }).then(function(prepared) {
                 if(prepared.errors) { throw new Error(prepared.errors.join('\n')); }
                 preparedColumns = prepared.columns;
-                var butGenerate = html.input({type:'button', value:messages.generate}).create();
+                var butGenerate = html.input({type:'button', value:messages.generate, id:'generate'}).create();
                 butGenerate.file = file;
                 butGenerate.addEventListener('click', handleGenerate, false);
                 var includePrimaryKeyValue = prepared.opts.includePrimaryKey !== null ?
@@ -362,6 +373,10 @@ html(lang=lang)
                                                     html.td([tblFields])
                                                 ]),
                                               ]).create()]);
+               onBlurValidateAgainstList(getID('columnNamesFormat'), txtToSql.validFormats);
+               onBlurValidateAgainstList(getID('outputEngine'), txtToSql.validEngines);
+               onBlurValidateAgainstList(getID('inputEncoding'), txtToSql.validEncodings);
+               onBlurValidateAgainstList(getID('outputEncoding'), txtToSql.validEncodings);
                errMessage.textContent=""; // if all goes ok, clear' em
                log.textContent=messages.loaded+' '+file.name;
                delete getID('inputFile').files;
