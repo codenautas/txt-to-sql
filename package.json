@@ -49,7 +49,7 @@
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/",
     "start": "node example/server.js",
     "all": "npm test && npm run test-cov && qa-control . -v",
-    "web": "node tools/web.js && git add web",
+    "web": "node tools/web.js && git add tools && git add web",
     "lint": "jshint .",
     "validate": "npm ls"
   },

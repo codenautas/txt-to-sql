@@ -72,11 +72,35 @@ function bundlePromise(browserifyObject) {
 
 var browserify = require('browserify');
 
-function browserifyOutDated(moduleDir, relativeModuleFileName, exposedName, outputDir) {
-    var b = browserify();
-    b.require('./node_modules/'+moduleDir+'/'+relativeModuleFileName, {expose: exposedName});
-    return bundlePromise(b).then(function(bfbuf) {
-        return fs.writeFile(outputDir+'/'+exposedName+'.js', bfbuf);
+function browserifyOutDated(moduleName, relativeModuleFileName, exposedName, outputDir) {
+    var moduleDir = './node_modules/'+moduleName+'/';
+    var registry='./tools/versions.json';
+    var regJSON, modJSON;
+    var mustUpdate = false;
+    return fs.readJson(registry).then(function(json) {
+        regJSON = json;
+        return fs.readJson(moduleDir+'package.json');
+    }).then(function(packageJson) {
+        modJSON = packageJson;
+        //console.log("regJSON", regJSON); console.log("packageJson", packageJson.name, packageJson.version);
+        if(! (modJSON.name in regJSON) || regJSON[modJSON.name] !== modJSON.version) {
+            mustUpdate = true;
+            regJSON[modJSON.name] = modJSON.version;
+            return fs.writeJson(registry, regJSON);
+        }
+    }).then(function() {
+        if(mustUpdate) {
+            var b = browserify();
+            b.require(moduleDir+relativeModuleFileName, {expose: exposedName});
+            return bundlePromise(b);            
+        }
+    }).then(function(bfbuf) {
+        if(mustUpdate) {
+            console.log("Updating to "+modJSON.name+' v.'+modJSON.version)
+            return fs.writeFile(outputDir+'/'+exposedName+'.js', bfbuf);
+        } else {
+            console.log("No update required for "+modJSON.name);
+        }
     });
 }
 
