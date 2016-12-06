@@ -164,7 +164,7 @@ function createOption(label, name, type, value, width, id) {
         html.td([createInput(name, type, value, width, id || name)])            
     ]).create();
 }
-function createListOnly(id, value, alternatives, clazz) {
+function createListOnly(id, value, alternatives, width) {
     var selected=false;
     var options=alternatives.map(function(item) {
         var atts ={value:item};
@@ -174,12 +174,12 @@ function createListOnly(id, value, alternatives, clazz) {
         }
         return html.option(atts, item);
     });
-    return html.select({id:id, class:clazz}, options).create();
+    return html.select({id:id, style:'width:'+width+'px'}, options).create();
 }
-function createList(label, id, value, alternatives, clazz) {
+function createList(label, id, value, alternatives, width) {
     return html.tr([
         html.td([html.label(label)]),
-        html.td([createListOnly(id, value, alternatives, clazz)])
+        html.td([createListOnly(id, value, alternatives, width)])
     ]).create();
 }
 function handleGenerate(event){
@@ -275,13 +275,13 @@ function handlePrepare(event){
                 html.th({colspan:2},[html.td(messages.headerOptions)]).create(),
                 createOption(messages.opts.commas, 'columnAlignedCommas', 'checkbox', prepared.opts.columnAlignedCommas, 1),
                 createOption(messages.opts.columnAlignedMaxWidth, 'columnAlignedMaxWidth', 'text', prepared.opts.columnAlignedMaxWidth, 1),
-                createList(messages.opts.format, 'columnNamesFormat', prepared.opts.columnNamesFormat, txtToSql.validFormats, 'width15'),
+                createList(messages.opts.format, 'columnNamesFormat', prepared.opts.columnNamesFormat, txtToSql.validFormats, 140),
                 createOption(messages.opts.separator, 'separator', 'text', prepared.opts.separator, 1),
-                createList(messages.opts.outformat, 'outputEngine', prepared.opts.outputEngine, txtToSql.validEngines, 'width10'),
+                createList(messages.opts.outformat, 'outputEngine', prepared.opts.outputEngine, txtToSql.validEngines, 90),
                 createOption(messages.opts.pk, 'includePrimaryKey', 'checkbox', includePrimaryKeyValue, 1),
                 createOption(messages.opts.verbose, 'verboseErrors', 'checkbox', prepared.opts.verboseErrors, 1),
-                createList(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, txtToSql.validEncodings, 'width7'),
-                createList(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, txtToSql.validEncodings, 'width7'),
+                createList(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, txtToSql.validEncodings, 70),
+                createList(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, txtToSql.validEncodings, 70),
                 createOption(messages.opts.ignoreNullLines, 'ignoreNullLines', 'checkbox', prepared.opts.ignoreNullLines, 1),
                 createOption(messages.opts.addDropTable, 'addDropTable', 'checkbox', prepared.opts.addDropTable, 1),
                 createOption(messages.opts.compactInsertLimit, 'compactInsertLimit', 'text', prepared.opts.compactInsertLimit, 1),
@@ -292,7 +292,9 @@ function handlePrepare(event){
                 var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                 return html.tr([
                             html.td([createInput('name', 'text', column.name, 15, 'col_name_'+index)]),
-                            html.td({id:'td_col_type_'+index}, [createListOnly('col_type_'+index, column.type, txtToSql.engineTypes[prepared.opts.outputEngine], 'width15'),]),
+                            html.td({id:'td_col_type_'+index}, [
+                                createListOnly('col_type_'+index, column.type, txtToSql.engineTypes[prepared.opts.outputEngine], 130)
+                            ]),
                             html.td([createInput('inPrimaryKey', 'checkbox', ipk, 0, 'col_pk_'+index)]),
                             html.td([createInput('hasNullValues', 'checkbox', hnv, 0, 'col_nulls_'+index)]),
                             html.td([createInput('maxLength', 'text', column.maxLength, 0, 'col_len_'+index)]),
@@ -336,7 +338,7 @@ function handlePrepare(event){
                     tdWithItem.appendChild(createListOnly('col_type_'+index,
                                                           prepared.columns[index].type,
                                                           txtToSql.engineTypes[prepared.opts.outputEngine],
-                                                          'width15'));
+                                                          130));
                     // ajustamos por si se seleccionó motor con nombres de tipos duplicados
                     getID('col_type_'+index).selectedIndex = selectedIndex;
                 });
