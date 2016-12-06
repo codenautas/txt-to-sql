@@ -750,8 +750,16 @@ txtToSql.initializeStats = initializeStats;
 txtToSql.finalizeStats = finalizeStats;
 txtToSql.stringizeStats = stringizeStats;
 
-txtToSql.validEngines = Object.keys(txtToSql.engines);
 txtToSql.validFormats = Object.keys(formatFunctions);
+txtToSql.validEngines = Object.keys(txtToSql.engines);
+function createEngineTypes() {
+    var et={};
+    txtToSql.validEngines.map(function(engine) {
+        et[engine] = txtToSql.engines[engine].types.map(function(type) { return type.typeName; });
+    });
+    return et;
+}
+txtToSql.engineTypes = createEngineTypes();
 
 txtToSql.defaultOpts = {
     columnNamesFormat: 'lowercased_names',

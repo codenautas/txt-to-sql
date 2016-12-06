@@ -329,6 +329,7 @@ html(lang=lang)
                     createOption(messages.opts.addDropTable, 'addDropTable', 'checkbox', prepared.opts.addDropTable, 1),
                     createOption(messages.opts.compactInsertLimit, 'compactInsertLimit', 'text', prepared.opts.compactInsertLimit, 1),
                 ]).create();
+                console.log(JSON.stringify(txtToSql.engineTypes));
                 var fields = prepared.columns.map(function(column, index) {
                     var ipk = column.inPrimaryKey!==null && column.inPrimaryKey;
                     var hnv = column.hasNullValues!==null && column.hasNullValues;
