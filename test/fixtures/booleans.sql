@@ -1,11 +1,9 @@
 create table "booleans" (
- "text-field" character varying(5),
- "int-field" integer,
- "num-field" numeric(8,6),
- "big" bigint,
- "double" double precision
+ "b1" boolean,
+ "b2" boolean,
+ "b3" boolean
 );
 
-insert into "booleans" ("text-field", "int-field", "num-field", "big", "double") values
- ('hello', 1, 3.141592, 1234567890, 1.12e-101),
- (null, null, null, 0, 0.0);
+insert into "booleans" ("b1", "b2", "b3") values
+ ('t', '1', 'y'),
+ ('f', '0', 'n');
