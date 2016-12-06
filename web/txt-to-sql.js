@@ -29,7 +29,8 @@ var types = [
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+$/},                                          // bigint
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*$/,                 useLength:true}, // numeric
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/},                  // double precision
-    {adapt:adaptText , pad:padLeft , dataPattern:/.?/,                                  useLength:true, isTextColumn:true}  // character varying
+    {adapt:adaptText , pad:padLeft , dataPattern:/.?/,                                  useLength:true, isTextColumn:true},  // character varying
+    {adapt:adaptPlain, pad:padRight, dataPattern:/^[yntf01]?/i}                                          // boolean
 ];
 
 function mapTypes(typeNames) {
@@ -46,29 +47,29 @@ function dropTable(tableName) { return "drop table "+tableName; }
 
 var engines = {
     'postgresql': {
-        types:mapTypes(['integer','bigint','numeric','double precision','character varying']),
+        types:mapTypes(['integer','bigint','numeric','double precision','character varying','boolean']),
         quote:quoteDouble,
         dropTable:dropTableIfExists
     },
     'mssql': {
-        types:mapTypes(['integer','bigint','numeric','real','varchar']),
+        types:mapTypes(['integer','bigint','numeric','real','varchar','bit']),
         quote:quoteBracket,
         noCompactInsert:true,
         dropTable:dropTable
     },
     'mysql': {
-        types:mapTypes(['integer','bigint','numeric','double precision','varchar']),
+        types:mapTypes(['integer','bigint','numeric','double precision','varchar','tinyint']),
         quote:quoteBackTick,
         dropTable:dropTableIfExists
     },
     'oracle': {
-        types:mapTypes(['integer','long','number','number','varchar2']),
+        types:mapTypes(['integer','long','number','number','varchar2','char']),
         quote:quoteDouble,
         noCompactInsert:true,
         dropTable:dropTable
     },
     'sqlite': {
-        types:mapTypes(['integer','integer','numeric','real','text']),
+        types:mapTypes(['integer','integer','numeric','real','text','boolean']),
         quote:quoteDouble,
         dropTable:dropTableIfExists,
         // http://www.sqlite.org/limits.html#max_compound_select
