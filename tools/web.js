@@ -70,6 +70,8 @@ function bundlePromise(browserifyObject) {
     });
 }
 
+var browserify = require('browserify');
+
 function generateWeb() {
     console.log("Generating web content...");
     var desDir = './web';
@@ -82,14 +84,12 @@ function generateWeb() {
     }).then(function() {
         return fs.copy('./node_modules/js-to-html/js-to-html.js', desDir+'/js-to-html.js');
     }).then(function() {
-        var browserify = require('browserify');
         var b = browserify();
         b.require('./node_modules/iconv-lite/lib/index.js', {expose: 'iconv-lite'});
         return bundlePromise(b);
     }).then(function(bfbuf) {
         return fs.writeFile(desDir+'/iconv-lite.js', bfbuf);
     }).then(function() {
-        var browserify = require('browserify');
         var b = browserify();
         b.require('./node_modules/buffer/index.js', {expose: 'buffer'});
         return bundlePromise(b);
