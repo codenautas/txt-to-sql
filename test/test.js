@@ -69,6 +69,7 @@ describe("fixtures", function(){
         {name:'insert-limit'},
         {name:'mssql-insert-limit'}, // compactInsertLimit should be ignored (#24)
         {name:'insert-limit2'},
+        {skip:true, name:'booleans'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
