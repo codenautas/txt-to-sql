@@ -617,7 +617,7 @@ function setup(info) {
 }
 
 function catchErrors(info, err) {
-    console.log("err", err); console.log("err.stack", err.stack); console.log("opts", info.opts)
+    //console.log("err", err); console.log("err.stack", err.stack); console.log("opts", info.opts)
     var errors = (err.errors || [err.message]);
     if(info.opts.verboseErrors) { errors.push(err.stack); }
     return { errors: errors, opts:info.opts};

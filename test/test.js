@@ -19,7 +19,7 @@ function loadYaml(fileName) {
     });
 }
 
-describe.only("fixtures", function(){
+describe("fixtures", function(){
     [
         {name:'example-one'},
         {name:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},

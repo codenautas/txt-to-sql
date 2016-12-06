@@ -16,7 +16,7 @@ columns:
   - name: date3
     type: date
     inPrimaryKey: false
-    maxLength: 8
+    maxLength: 9
     maxScale: 0
     hasNullValues: true
     hasCientificNotation: null
