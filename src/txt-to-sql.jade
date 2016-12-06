@@ -226,17 +226,14 @@ html(lang=lang)
             }
         }, false);
     }
-    function createList(label, name, value, alternatives, width) {
+    function createList(label, name, value, alternatives, clazz) {
         var valuesID=name+'_values';
         var options=alternatives.map(function(item) {
-            return html.option({value:item});
+            return html.option({value:item, selected:value==item}, item);
         });
         return html.tr([
             html.td([html.label(label)]),
-            html.td([
-                html.input({id:name, list:valuesID, value:value, size:(width || 5)}),
-                html.datalist({id:valuesID}, options)
-            ])
+            html.td([html.select({id:name, class:clazz}, options)])
         ]).create();
     }
     function handleGenerate(event){
@@ -332,13 +329,13 @@ html(lang=lang)
                     html.th({colspan:2},[html.td(messages.headerOptions)]).create(),
                     createOption(messages.opts.commas, 'columnAlignedCommas', 'checkbox', prepared.opts.columnAlignedCommas, 1),
                     createOption(messages.opts.columnAlignedMaxWidth, 'columnAlignedMaxWidth', 'text', prepared.opts.columnAlignedMaxWidth, 1),
-                    createList(messages.opts.format, 'columnNamesFormat', prepared.opts.columnNamesFormat, txtToSql.validFormats, 15),
+                    createList(messages.opts.format, 'columnNamesFormat', prepared.opts.columnNamesFormat, txtToSql.validFormats, 'width15'),
                     createOption(messages.opts.separator, 'separator', 'text', prepared.opts.separator, 1),
-                    createList(messages.opts.outformat, 'outputEngine', prepared.opts.outputEngine, txtToSql.validEngines, 10),
+                    createList(messages.opts.outformat, 'outputEngine', prepared.opts.outputEngine, txtToSql.validEngines, 'width10'),
                     createOption(messages.opts.pk, 'includePrimaryKey', 'checkbox', includePrimaryKeyValue, 1),
                     createOption(messages.opts.verbose, 'verboseErrors', 'checkbox', prepared.opts.verboseErrors, 1),
-                    createList(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, txtToSql.validEncodings, 7),
-                    createList(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, txtToSql.validEncodings, 7),
+                    createList(messages.opts.inputEncoding, 'inputEncoding', prepared.opts.inputEncoding, txtToSql.validEncodings, 'width7'),
+                    createList(messages.opts.outputEncoding, 'outputEncoding', prepared.opts.outputEncoding, txtToSql.validEncodings, 'width7'),
                     createOption(messages.opts.ignoreNullLines, 'ignoreNullLines', 'checkbox', prepared.opts.ignoreNullLines, 1),
                     createOption(messages.opts.addDropTable, 'addDropTable', 'checkbox', prepared.opts.addDropTable, 1),
                     createOption(messages.opts.compactInsertLimit, 'compactInsertLimit', 'text', prepared.opts.compactInsertLimit, 1),
