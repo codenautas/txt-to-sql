@@ -164,17 +164,6 @@ function createOption(label, name, type, value, width, id) {
         html.td([createInput(name, type, value, width, id || name)])            
     ]).create();
 }
-function onBlurValidateAgainstList(element, list) {
-    element.addEventListener('blur', function(event) {
-        var buttonGenerate = getID('generate');
-        buttonGenerate.disabled = list.indexOf(element.value)===-1;
-        if(buttonGenerate.disabled) {
-            errMessage.textContent = element.value+' not found in '+JSON.stringify(list);
-        } else {
-            errMessage.textContent = '';
-        }
-    }, false);
-}
 function createList(label, name, value, alternatives, clazz) {
     var valuesID=name+'_values';
     var options=alternatives.map(function(item) {
@@ -319,10 +308,6 @@ function handlePrepare(event){
                                                 html.td([tblFields])
                                             ]),
                                           ]).create()]);
-           onBlurValidateAgainstList(getID('columnNamesFormat'), txtToSql.validFormats);
-           onBlurValidateAgainstList(getID('outputEngine'), txtToSql.validEngines);
-           onBlurValidateAgainstList(getID('inputEncoding'), txtToSql.validEncodings);
-           onBlurValidateAgainstList(getID('outputEncoding'), txtToSql.validEncodings);
            errMessage.textContent=""; // if all goes ok, clear' em
            log.textContent=messages.loaded+' '+file.name;
            delete getID('inputFile').files;

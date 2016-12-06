@@ -750,8 +750,6 @@ txtToSql.initializeStats = initializeStats;
 txtToSql.finalizeStats = finalizeStats;
 txtToSql.stringizeStats = stringizeStats;
 
-txtToSql.engines = engines;
-
 txtToSql.validEngines = Object.keys(txtToSql.engines);
 txtToSql.validFormats = Object.keys(formatFunctions);
 
