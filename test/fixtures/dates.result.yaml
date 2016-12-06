@@ -1,0 +1,15 @@
+columns:
+  - name: date1
+    type: date
+    inPrimaryKey: true
+    maxLength: 10
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: date2
+    type: date
+    inPrimaryKey: false
+    maxLength: 9
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null

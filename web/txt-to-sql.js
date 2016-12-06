@@ -24,11 +24,19 @@ function filling(columnLength, val) { return val.length>=columnLength?'':new Arr
 function padLeft(columnLength, val) { return val+filling(columnLength, val); }
 function padRight(columnLength, val) { return filling(columnLength,val)+val; }
 
+var year='[1-9][0-9]{3}';
+var mon='[01]?[0-9]';
+var day='(30)|(31)|([12][0-9])';
+var sep='[/-]';
+//var dateRegExp = new RegExp('^(('+year+sep+mon+sep+day+')|('+day+sep+mon+sep+year+')|('+mon+sep+day+sep+year+'))$');
+var dateRegExp = new RegExp('^'+year+sep+mon+sep+day+'$');
+
 var types = [
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]{1,5}$/},                                      // integer
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+$/},                                          // bigint
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*$/,                 useLength:true}, // numeric
     {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/},                  // double precision
+    {adapt:adaptText,  pad:padRight, dataPattern:/^([1-9][0-9]{3}[-/][01]?[0-9][-/][0-3]?[0-9])$/},       // date
     {adapt:adaptText , pad:padLeft , dataPattern:/.?/,                                  useLength:true, isTextColumn:true},  // character varying
     //{adapt:adaptPlain, pad:padRight, dataPattern:/^[yntf01]$/i},                                       // boolean
 ];
@@ -47,29 +55,29 @@ function dropTable(tableName) { return "drop table "+tableName; }
 
 var engines = {
     'postgresql': {
-        types:mapTypes(['integer','bigint','numeric','double precision','character varying'/*,'boolean'*/]),
+        types:mapTypes(['integer','bigint','numeric','double precision','date','character varying'/*,'boolean'*/]),
         quote:quoteDouble,
         dropTable:dropTableIfExists
     },
     'mssql': {
-        types:mapTypes(['integer','bigint','numeric','real','varchar'/*,'bit'*/]),
+        types:mapTypes(['integer','bigint','numeric','real','date','varchar'/*,'bit'*/]),
         quote:quoteBracket,
         noCompactInsert:true,
         dropTable:dropTable
     },
     'mysql': {
-        types:mapTypes(['integer','bigint','numeric','double precision','varchar'/*,'tinyint'*/]),
+        types:mapTypes(['integer','bigint','numeric','double precision','date','varchar'/*,'tinyint'*/]),
         quote:quoteBackTick,
         dropTable:dropTableIfExists
     },
     'oracle': {
-        types:mapTypes(['integer','long','number','number','varchar2'/*,'char'*/]),
+        types:mapTypes(['integer','long','number','number','date','varchar2'/*,'char'*/]),
         quote:quoteDouble,
         noCompactInsert:true,
         dropTable:dropTable
     },
     'sqlite': {
-        types:mapTypes(['integer','integer','numeric','real','text'/*,'boolean'*/]),
+        types:mapTypes(['integer','integer','numeric','real','date','text'/*,'boolean'*/]),
         quote:quoteDouble,
         dropTable:dropTableIfExists,
         // http://www.sqlite.org/limits.html#max_compound_select
@@ -354,7 +362,12 @@ function determineColumnTypes(info){
         info.rows.forEach(function(row){
             var typeIndex=0;
             if(row[columnIndex]){
-                while(!row[columnIndex].match(info.outputEngine.types[typeIndex].dataPattern)) { typeIndex++; }
+                while(!row[columnIndex].match(info.outputEngine.types[typeIndex].dataPattern)) {
+                    // if(4===typeIndex) console.log("NO", info.outputEngine.types[typeIndex].dataPattern.source, row[columnIndex])
+                    typeIndex++;
+                }
+                // if(4===typeIndex && row[columnIndex].match(info.outputEngine.types[typeIndex].dataPattern))
+                   // console.log("SI", info.outputEngine.types[typeIndex].dataPattern.source, row[columnIndex])
                 if(typeIndex>maxTypeIndex){
                     maxTypeIndex=typeIndex;
                 }

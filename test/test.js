@@ -19,7 +19,7 @@ function loadYaml(fileName) {
     });
 }
 
-describe("fixtures", function(){
+describe.only("fixtures", function(){
     [
         {name:'example-one'},
         {name:'pk-simple', changeExpected:function(exp) { exp.opts.separator = '\t'; }},
@@ -70,6 +70,7 @@ describe("fixtures", function(){
         {name:'mssql-insert-limit'}, // compactInsertLimit should be ignored (#24)
         {name:'insert-limit2'},
         {skip:true, name:'booleans'},
+        {/*skip:true, */name:'dates'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
