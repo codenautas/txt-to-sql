@@ -215,14 +215,13 @@ html(lang=lang)
             html.td([createInput(name, type, value, width, id || name)])            
         ]).create();
     }
-    function createList(label, name, value, alternatives, clazz) {
-        var valuesID=name+'_values';
+    function createList(label, id, value, alternatives, clazz) {
         var options=alternatives.map(function(item) {
             return html.option({value:item, selected:value==item}, item);
         });
         return html.tr([
             html.td([html.label(label)]),
-            html.td([html.select({id:name, class:clazz}, options)])
+            html.td([html.select({id:id, class:clazz}, options)])
         ]).create();
     }
     function handleGenerate(event){
@@ -329,14 +328,14 @@ html(lang=lang)
                     createOption(messages.opts.addDropTable, 'addDropTable', 'checkbox', prepared.opts.addDropTable, 1),
                     createOption(messages.opts.compactInsertLimit, 'compactInsertLimit', 'text', prepared.opts.compactInsertLimit, 1),
                 ]).create();
-                console.log(JSON.stringify(txtToSql.engineTypes));
                 var fields = prepared.columns.map(function(column, index) {
                     var ipk = column.inPrimaryKey!==null && column.inPrimaryKey;
                     var hnv = column.hasNullValues!==null && column.hasNullValues;
                     var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                     return html.tr([
                                 html.td([createInput('name', 'text', column.name, 15, 'col_name_'+index)]),
-                                html.td([createInput('type', 'text', column.type, 10, 'col_type_'+index)]),
+                                // html.td([createInput('type', 'text', column.type, 10, 'col_type_'+index)]),
+                                html.td([createList('type', 'col_type_'+index, column.type, txtToSql.engineTypes[prepared.opts.outputEngine], 'width10'),]),
                                 html.td([createInput('inPrimaryKey', 'checkbox', ipk, 0, 'col_pk_'+index)]),
                                 html.td([createInput('hasNullValues', 'checkbox', hnv, 0, 'col_nulls_'+index)]),
                                 html.td([createInput('maxLength', 'text', column.maxLength, 0, 'col_len_'+index)]),
