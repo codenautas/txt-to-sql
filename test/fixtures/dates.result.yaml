@@ -13,3 +13,10 @@ columns:
     maxScale: 0
     hasNullValues: false
     hasCientificNotation: null
+  - name: date3
+    type: date
+    inPrimaryKey: false
+    maxLength: 8
+    maxScale: 0
+    hasNullValues: true
+    hasCientificNotation: null
