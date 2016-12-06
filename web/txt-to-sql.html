@@ -177,12 +177,9 @@ function createListOnly(id, value, alternatives, clazz) {
     return html.select({id:id, class:clazz}, options).create();
 }
 function createList(label, id, value, alternatives, clazz) {
-    var options=alternatives.map(function(item) {
-        return html.option({value:item, selected:value==item}, item);
-    });
     return html.tr([
         html.td([html.label(label)]),
-        html.td([html.select({id:id, class:clazz}, options)])
+        html.td([createListOnly(id, value, alternatives, clazz)])
     ]).create();
 }
 function handleGenerate(event){
