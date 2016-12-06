@@ -164,6 +164,18 @@ function createOption(label, name, type, value, width, id) {
         html.td([createInput(name, type, value, width, id || name)])            
     ]).create();
 }
+function createListOnly(id, value, alternatives, clazz) {
+    var selected=false;
+    var options=alternatives.map(function(item) {
+        var atts ={value:item};
+        if(! selected && value===item) {
+            selected = true;
+            atts.selected = true;
+        }
+        return html.option(atts, item);
+    });
+    return html.select({id:id, class:clazz}, options).create();
+}
 function createList(label, id, value, alternatives, clazz) {
     var options=alternatives.map(function(item) {
         return html.option({value:item, selected:value==item}, item);
@@ -283,8 +295,7 @@ function handlePrepare(event){
                 var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
                 return html.tr([
                             html.td([createInput('name', 'text', column.name, 15, 'col_name_'+index)]),
-                            // html.td([createInput('type', 'text', column.type, 10, 'col_type_'+index)]),
-                            html.td([createList('type', 'col_type_'+index, column.type, txtToSql.engineTypes[prepared.opts.outputEngine], 'width10'),]),
+                            html.td({id:'td_col_type_'+index}, [createListOnly('col_type_'+index, column.type, txtToSql.engineTypes[prepared.opts.outputEngine], 'width15'),]),
                             html.td([createInput('inPrimaryKey', 'checkbox', ipk, 0, 'col_pk_'+index)]),
                             html.td([createInput('hasNullValues', 'checkbox', hnv, 0, 'col_nulls_'+index)]),
                             html.td([createInput('maxLength', 'text', column.maxLength, 0, 'col_len_'+index)]),
@@ -311,6 +322,30 @@ function handlePrepare(event){
            errMessage.textContent=""; // if all goes ok, clear' em
            log.textContent=messages.loaded+' '+file.name;
            delete getID('inputFile').files;
+           var outputEngine = getID('outputEngine');
+           outputEngine.addEventListener('focus', function(event) { this.oldValue = this.selectedIndex;}, false);
+           outputEngine.addEventListener('change', function(event) {
+                var oldValues = txtToSql.engineTypes[txtToSql.validEngines[this.oldValue]];
+                var newEngine = txtToSql.validEngines[this.selectedIndex];
+                var newValues = txtToSql.engineTypes[newEngine];
+                prepared.opts.outputEngine = newEngine;
+                prepared.columns.forEach(function(column, index) {
+                    var item = getID('col_type_'+index);
+                    var selectedIndex = item.selectedIndex;
+                    //console.log("OLD", prepared.columns[index].type, "SELECTED", selectedIndex, "NEW", newValues[selectedIndex])
+                    prepared.columns[index].type = newValues[selectedIndex];
+                    var tdWithItem = getID('td_col_type_'+index);
+                    tdWithItem.removeChild(item);
+                    tdWithItem.appendChild(createListOnly('col_type_'+index,
+                                                          prepared.columns[index].type,
+                                                          txtToSql.engineTypes[prepared.opts.outputEngine],
+                                                          'width15'));
+                    // ajustamos por si se seleccionó motor con nombres de tipos duplicados
+                    getID('col_type_'+index).selectedIndex = selectedIndex;
+                });
+                // in case of selection without blur
+                this.oldValue = this.selectedIndex;
+           }, false);
         }).catch(function(err){
             errMessage.textContent=err.message+"\n"+err.stack;
         });
