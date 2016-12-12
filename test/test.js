@@ -339,4 +339,24 @@ describe("datatype validation", function(){
         expect(i('.1')).to.not.be.ok();
         expect(i('0.1')).to.not.be.ok();
     });
+    it("bigint", function(){
+        var bi = txtToSql.typeValidations['bigint'].checkOne;
+        // good
+        expect(bi('123456')).to.be.ok();
+        expect(bi('123456789')).to.be.ok();
+        expect(bi('-123456789')).to.be.ok();
+        // bad
+        expect(bi('0.1')).to.not.be.ok();
+        expect(bi('1.5')).to.not.be.ok();
+    });
+    it("numeric", function(){
+        var n = txtToSql.typeValidations['numeric'].checkOne;
+        // good
+        expect(n('123456.1')).to.be.ok();
+        expect(n('123456789.5')).to.be.ok();
+        expect(n('-123456789.666666')).to.be.ok();
+        // bad
+        expect(n('1.12e-101')).to.not.be.ok();
+        expect(n('2.12e-101333')).to.not.be.ok();
+    });
 });
