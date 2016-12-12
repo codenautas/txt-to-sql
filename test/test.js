@@ -208,6 +208,10 @@ describe("input errors", function(){
                     //console.log(check.name, "prep", prepared.errors, "expe", expected.errors)
                     expect(prepared.errors).to.eql(expected.errors);
                     expect(prepared.warnings).to.eql(expected.warnings);
+                    if(prepared.errorStack) {
+                        //console.log("prepared.errorStack", prepared.errorStack)
+                        expect(prepared.errorStack).to.match(/txt-to-sql.js/);
+                    }
                 }).then(done,done);
             });
         }

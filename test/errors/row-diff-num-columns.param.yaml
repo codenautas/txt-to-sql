@@ -1,1 +1,3 @@
 tableName: t1
+opts:
+  verboseErrors: true
