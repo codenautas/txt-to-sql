@@ -59,12 +59,12 @@ function isDate(values) {
         return val.match(dateRegExp);
     });
 }
-// function isTimestamp(values) {
-    // var tsRegExp = new RegExp('^('+year+'-'+mon+'-'+day+'( [0-2][0-9]:[0-2][0-9]:[0-2][0-9](\.[0-9]{3})?( [-+][0-9]:[0-0]{2})?)?)$');
-    // return values.every(function(val) {
-        // return val.match(tsRegExp);
-    // });
-// }
+function isTimestamp(values) {
+    var tsRegExp = new RegExp('^('+year+'-'+mon+'-'+day+' [0-2][0-9]:[0-2][0-9]:[0-2][0-9](\.[0-9]{3})?( [-+][0-9]:[0-0]{2})?)$');
+    return values.every(function(val) {
+        return val.match(tsRegExp);
+    });
+}
 function isVarchar(values) {
     return values.every(function(val) {
         return val.match(/.?/);
@@ -76,6 +76,7 @@ var types = [
     {adapt:adaptPlain, pad:padRight, validates:isBigInteger                                    }, // bigint
     {adapt:adaptPlain, pad:padRight, validates:isNumeric    , useLength:true                   }, // numeric
     {adapt:adaptPlain, pad:padRight, validates:isDouble                                        }, // double precision
+    {adapt:adaptText , pad:padRight, validates:isTimestamp                                     }, // timestamp
     {adapt:adaptText , pad:padRight, validates:isDate                                          }, // date
     {adapt:adaptText , pad:padLeft , validates:isVarchar    , useLength:true, isTextColumn:true}, // character varying
 ];
@@ -94,29 +95,29 @@ function dropTable(tableName) { return "drop table "+tableName; }
 
 var engines = {
     'postgresql': {
-        types:mapTypes([/*'boolean',*/'integer','bigint','numeric','double precision','date','character varying']),
+        types:mapTypes([/*'boolean',*/'integer','bigint','numeric','double precision','timestamp','date','character varying']),
         quote:quoteDouble,
         dropTable:dropTableIfExists
     },
     'mssql': {
-        types:mapTypes([/*'bit',*/'integer','bigint','numeric','real','date','varchar']),
+        types:mapTypes([/*'bit',*/'integer','bigint','numeric','real','timestamp','date','varchar']),
         quote:quoteBracket,
         noCompactInsert:true,
         dropTable:dropTable
     },
     'mysql': {
-        types:mapTypes([/*'tinyint',*/'integer','bigint','numeric','double precision','date','varchar']),
+        types:mapTypes([/*'tinyint',*/'integer','bigint','numeric','double precision','timestamp','date','varchar']),
         quote:quoteBackTick,
         dropTable:dropTableIfExists
     },
     'oracle': {
-        types:mapTypes([/*'char',*/'integer','long','number','binary_double','date','varchar2']),
+        types:mapTypes([/*'char',*/'integer','long','number','binary_double','timestamp','date','varchar2']),
         quote:quoteDouble,
         noCompactInsert:true,
         dropTable:dropTable
     },
     'sqlite': {
-        types:mapTypes([/*'boolean',*/'integer','integer','numeric','real','date','text']),
+        types:mapTypes([/*'boolean',*/'integer','integer','numeric','real','timestamp','date','text']),
         quote:quoteDouble,
         dropTable:dropTableIfExists,
         // http://www.sqlite.org/limits.html#max_compound_select
@@ -433,7 +434,7 @@ function determineColumnTypes(info){
     return info;
 }
 */
-function isTextType(typeName) { return typeName.match(/(text|char)/); }
+function isTextType(typeName) { return typeName.match(/(text|char|time|date)/); }
 function hasCientificNotation(typeName) { return typeName==='double precision'?false:null; }
 
 function getLengthInfo(val, typeName) {

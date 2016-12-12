@@ -3,20 +3,20 @@ columns:
     type: date
     inPrimaryKey: true
     maxLength: 10
-    maxScale: 0
+    maxScale: null
     hasNullValues: false
     hasCientificNotation: null
   - name: date2
     type: date
     inPrimaryKey: false
     maxLength: 9
-    maxScale: 0
+    maxScale: null
     hasNullValues: false
     hasCientificNotation: null
   - name: date3
     type: date
     inPrimaryKey: false
     maxLength: 9
-    maxScale: 0
+    maxScale: null
     hasNullValues: true
     hasCientificNotation: null
