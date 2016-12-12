@@ -53,9 +53,10 @@ var year='[1-9][0-9]{3}';
 var mon='[01]?[0-9]';
 var day='((30)|(31)|([0-2]?[0-9]))';
 function isDate(values) {
-    var sep='[/-]';
-    var dateRegExp = new RegExp('^(('+year+sep+mon+sep+day+')|('+day+sep+mon+sep+year+')|('+mon+sep+day+sep+year+'))$');
+    var sep='([/-])';
+    var dateRegExp = new RegExp('^(('+year+sep+mon+'\\3'+day+')|('+day+sep+mon+'\\13'+year+')|('+mon+sep+day+'\\15'+year+'))$');
     return values.every(function(val) {
+        //var matches = dateRegExp.exec(val); console.log("matching", val, matches);
         return val.match(dateRegExp);
     });
 }
