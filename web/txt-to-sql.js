@@ -60,7 +60,7 @@ function isDate(values) {
     });
 }
 function isTimestamp(values) {
-    var tsRegExp = new RegExp('^('+year+'-'+mon+'-'+day+' [0-2][0-9]:[0-2][0-9]:[0-2][0-9](\.[0-9]{3})?( [-+][0-9]:[0-0]{2})?)$');
+    var tsRegExp = new RegExp('^('+year+'-'+mon+'-'+day+' [0-2][0-9]:[0-2][0-9]:[0-2][0-9](\.[0-9]{3})?( [-+]1?[0-9]:[0-5][0-9])?)$');
     return values.every(function(val) {
         return val.match(tsRegExp);
     });
@@ -128,7 +128,10 @@ var engines = {
 function createTypeValidations() {
     var validations={};
     engines.postgresql.types.forEach(function(type) {
-        validations[type.typeName] = function(val) {  return type.validates([val]); };
+        validations[type.typeName] = {
+            checkOne : function(val) { return type.validates([val]); },
+            checkArray : type.validates
+        };
     });
     return validations;
 }

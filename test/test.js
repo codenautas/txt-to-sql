@@ -289,7 +289,22 @@ describe("stringizeStats", function(){
 
 describe("datatype validation", function(){
     it("timestamp", function(){
-        var ts = txtToSql.typeValidations['timestamp'];
+        var ts = txtToSql.typeValidations['timestamp'].checkOne;
+        var tsA = txtToSql.typeValidations['timestamp'].checkArray;
+        expect(tsA(['2010-01-21 00:10:00.009'])).to.be.ok(); // coverage
+        // good
         expect(ts('2016-11-21 10:00:01')).to.be.ok();
+        expect(ts('2009-05-06 00:10:00 +4:00')).to.be.ok();
+        expect(ts('2009-05-06 00:00:00 -12:00')).to.be.ok();
+        expect(ts('2009-05-06 00:00:00 +13:00')).to.be.ok();
+        // bad
+        expect(ts('2016-11-21 0:00:01')).to.not.be.ok();
+        expect(ts('2016-11-21 30:00:01')).to.not.be.ok();
+        expect(ts('2016-21-21 30:00:01')).to.not.be.ok();
+        expect(ts('2016-11-32 30:00:01')).to.not.be.ok();
+        expect(ts('216-11-32 30:00:01')).to.not.be.ok();
+        expect(ts('2009-05-06 00:10:00.100 /4:00')).to.not.be.ok();
+        expect(ts('2009-05-06 00:10:00.100 4:00')).to.not.be.ok();
+        expect(ts('2009-05-06 00:00:00 +13:60')).to.not.be.ok();
     });
 });
