@@ -307,16 +307,22 @@ describe("datatype validation", function(){
         expect(ts('2009-05-06 00:10:00.100 4:00')).to.not.be.ok();
         expect(ts('2009-05-06 00:00:00 +13:60')).to.not.be.ok();
     });
-    it("dates", function(){
+    it("date", function(){
         var d = txtToSql.typeValidations['date'].checkOne;
         // good
         expect(d('2016-11-21')).to.be.ok();
         expect(d('2016/11/21')).to.be.ok();
         expect(d('1/29/1969')).to.be.ok();
         expect(d('29/1/1969')).to.be.ok();
+        expect(d('31/3/1969')).to.be.ok();
+        expect(d('31/03/1969')).to.be.ok();
+        expect(d('30/3/969')).to.be.ok();
         // bad
+        expect(d('12016/11/21')).to.not.be.ok();
         expect(d('2016/11-21')).to.not.be.ok();
         expect(d('3-29/1969')).to.not.be.ok();
         expect(d('29/3-1969')).to.not.be.ok();
+        expect(d('32/3/1969')).to.not.be.ok();
+        expect(d('30/3/0969')).to.not.be.ok();
     });
 });

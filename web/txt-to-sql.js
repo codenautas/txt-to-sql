@@ -49,7 +49,7 @@ function isDouble(values) {
         return val.match(/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/);
     });
 }
-var year='[1-9][0-9]{3}';
+var year='[1-9]?[0-9]{3}';
 var mon='[01]?[0-9]';
 var day='((30)|(31)|([0-2]?[0-9]))';
 function isDate(values) {
