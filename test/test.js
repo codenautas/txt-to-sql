@@ -375,4 +375,11 @@ describe("datatype validation", function(){
         expect(d('30/3/0969')).to.not.be.ok();
         expect(d('not a date')).to.not.be.ok();
     });
+    it("boolean", function(){
+        var b = txtToSql.typeValidations['boolean'].checkArray;
+        // good
+        expect(b(['1','1','0','1'])).to.be.ok();
+        // bad
+        expect(b(['3','1','0','1'])).to.not.be.ok();
+    });
 });
