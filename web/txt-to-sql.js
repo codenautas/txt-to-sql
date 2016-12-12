@@ -30,14 +30,35 @@ var day='((30)|(31)|([0-2]?[0-9]))';
 var sep='[/-]';
 var dateRegExp = new RegExp('^(('+year+sep+mon+sep+day+')|('+day+sep+mon+sep+year+')|('+mon+sep+day+sep+year+'))$');
 
+function isBoolean(val) {
+    return val.match(/^[yntf01]$/i);
+}
+function isInteger(val) {
+    return val.match(/^-?[0-9]{1,5}$/);
+}
+function isBigInteger(val) {
+    return val.match(/^-?[0-9]+$/);
+}
+function isNumeric(val) {
+    return val.match(/^-?[0-9]+\.?[0-9]*$/);
+}
+function isDouble(val) {
+    return val.match(/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/);
+}
+function isDate(val) {
+    return val.match(dateRegExp);
+}
+function isVarchar(val) {
+    return val.match(/.?/);
+}
 var types = [
-    {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]{1,5}$/},                                      // integer
-    {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+$/},                                          // bigint
-    {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*$/,                 useLength:true}, // numeric
-    {adapt:adaptPlain, pad:padRight, dataPattern:/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/},                  // double precision
-    {adapt:adaptText,  pad:padRight, dataPattern:dateRegExp},                                            // date
-    {adapt:adaptText , pad:padLeft , dataPattern:/.?/,                                  useLength:true, isTextColumn:true},  // character varying
-    //{adapt:adaptPlain, pad:padRight, dataPattern:/^[yntf01]$/i},                                       // boolean
+  //{adapt:adaptPlain, pad:padRight, isValid:isBoolean                                       }, // boolean  
+    {adapt:adaptPlain, pad:padRight, isValid:isInteger                                       }, // integer
+    {adapt:adaptPlain, pad:padRight, isValid:isBigInteger                                    }, // bigint
+    {adapt:adaptPlain, pad:padRight, isValid:isNumeric    , useLength:true                   }, // numeric
+    {adapt:adaptPlain, pad:padRight, isValid:isDouble                                        }, // double precision
+    {adapt:adaptText , pad:padRight, isValid:isDate                                          }, // date
+    {adapt:adaptText , pad:padLeft , isValid:isVarchar    , useLength:true, isTextColumn:true}, // character varying
 ];
 
 function mapTypes(typeNames) {
@@ -361,12 +382,9 @@ function determineColumnTypes(info){
         info.rows.forEach(function(row){
             var typeIndex=0;
             if(row[columnIndex]){
-                while(!row[columnIndex].match(info.outputEngine.types[typeIndex].dataPattern)) {
-                    // if(4===typeIndex) console.log("NO", info.outputEngine.types[typeIndex].dataPattern.source, row[columnIndex])
+                while(! info.outputEngine.types[typeIndex].isValid(row[columnIndex])) {
                     typeIndex++;
                 }
-                // if(4===typeIndex && row[columnIndex].match(info.outputEngine.types[typeIndex].dataPattern))
-                   // console.log("SI", info.outputEngine.types[typeIndex].dataPattern.source, row[columnIndex])
                 if(typeIndex>maxTypeIndex){
                     maxTypeIndex=typeIndex;
                 }
