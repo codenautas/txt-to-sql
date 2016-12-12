@@ -2,7 +2,7 @@ columns:
   - name: ts1
     type: timestamp
     inPrimaryKey: true
-    maxLength: 10
+    maxLength: 25
     maxScale: 0
     hasNullValues: false
     hasCientificNotation: null
