@@ -325,4 +325,18 @@ describe("datatype validation", function(){
         expect(d('32/3/1969')).to.not.be.ok();
         expect(d('30/3/0969')).to.not.be.ok();
     });
+    it("integer", function(){
+        var i = txtToSql.typeValidations['integer'].checkOne;
+        // good
+        expect(i('1')).to.be.ok();
+        expect(i('1323')).to.be.ok();
+        expect(i('12345')).to.be.ok();
+        expect(i('0')).to.be.ok();
+        expect(i('-1')).to.be.ok();
+        // bad
+        expect(i('123456')).to.not.be.ok();
+        expect(i('1.1')).to.not.be.ok();
+        expect(i('.1')).to.not.be.ok();
+        expect(i('0.1')).to.not.be.ok();
+    });
 });
