@@ -1,0 +1,15 @@
+columns:
+  - name: ts1
+    type: timestamp
+    inPrimaryKey: true
+    maxLength: 10
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: fecha
+    type: date
+    inPrimaryKey: false
+    maxLength: 9
+    maxScale: 0
+    hasNullValues: true
+    hasCientificNotation: null
