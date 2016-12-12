@@ -127,7 +127,7 @@ var engines = {
 
 function createTypeValidations() {
     var validations={};
-    engines['postgresql'].types.forEach(function(type) {
+    engines.postgresql.types.forEach(function(type) {
         validations[type.typeName] = function(val) {  return type.validates([val]); };
     });
     return validations;
