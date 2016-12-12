@@ -30,7 +30,7 @@ columns:
     hasNullValues: false
     hasCientificNotation: null
   - name: 'double col'
-    type: number
+    type: binary_double
     inPrimaryKey: false
     maxLength: 1
     maxScale: 7
