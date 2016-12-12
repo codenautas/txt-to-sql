@@ -24,31 +24,45 @@ function filling(columnLength, val) { return val.length>=columnLength?'':new Arr
 function padLeft(columnLength, val) { return val+filling(columnLength, val); }
 function padRight(columnLength, val) { return filling(columnLength,val)+val; }
 
-function isBoolean(val) {
-    return val.match(/^[yntf01]$/i);
+function isBoolean(values) {
+    return values.every(function(val) {
+        return val.match(/^[yntf01]$/i);
+    });
 }
-function isInteger(val) {
-    return val.match(/^-?[0-9]{1,5}$/);
+function isInteger(values) {
+    return values.every(function(val) {
+        return val.match(/^-?[0-9]{1,5}$/);
+    });
 }
-function isBigInteger(val) {
-    return val.match(/^-?[0-9]+$/);
+function isBigInteger(values) {
+    return values.every(function(val) {
+        return val.match(/^-?[0-9]+$/);
+    });
 }
-function isNumeric(val) {
-    return val.match(/^-?[0-9]+\.?[0-9]*$/);
+function isNumeric(values) {
+    return values.every(function(val) {
+        return val.match(/^-?[0-9]+\.?[0-9]*$/);
+    });
 }
-function isDouble(val) {
-    return val.match(/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/);
+function isDouble(values) {
+    return values.every(function(val) {
+        return val.match(/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/);
+    });
 }
-function isDate(val) {
+function isDate(values) {
     var year='[1-9][0-9]{3}';
     var mon='[01]?[0-9]';
     var day='((30)|(31)|([0-2]?[0-9]))';
     var sep='[/-]';
     var dateRegExp = new RegExp('^(('+year+sep+mon+sep+day+')|('+day+sep+mon+sep+year+')|('+mon+sep+day+sep+year+'))$');
-    return val.match(dateRegExp);
+    return values.every(function(val) {
+        return val.match(dateRegExp);
+    });
 }
-function isVarchar(val) {
-    return val.match(/.?/);
+function isVarchar(values) {
+    return values.every(function(val) {
+        return val.match(/.?/);
+    });
 }
 var types = [
   //{adapt:adaptPlain, pad:padRight, validates:isBoolean                                       }, // boolean  
@@ -378,6 +392,25 @@ function verifyColumnNames(info) {
 function determineColumnTypes(info){
     info.columnsInfo.forEach(function(columnInfo, columnIndex){
         var maxTypeIndex=0;
+        var typeIndex=0;
+        var values = [];
+        info.rows.forEach(function(row){
+            if(row[columnIndex]){ values.push(row[columnIndex]); }
+        });
+        while(! info.outputEngine.types[typeIndex].validates(values)) {
+            typeIndex++;
+        }
+        if(typeIndex>maxTypeIndex){
+            maxTypeIndex=typeIndex;
+        }
+        columnInfo.typeInfo = info.outputEngine.types[maxTypeIndex];
+    });
+    return info;
+}
+/*
+function determineColumnTypes(info){
+    info.columnsInfo.forEach(function(columnInfo, columnIndex){
+        var maxTypeIndex=0;
         info.rows.forEach(function(row){
             var typeIndex=0;
             if(row[columnIndex]){
@@ -393,8 +426,7 @@ function determineColumnTypes(info){
     });
     return info;
 }
-
-
+*/
 function isTextType(typeName) { return typeName.match(/(text|char)/); }
 function hasCientificNotation(typeName) { return typeName==='double precision'?false:null; }
 
@@ -636,8 +668,8 @@ function setup(info) {
 function catchErrors(info, err) {
     //console.log("err", err); console.log("err.stack", err.stack); console.log("opts", info.opts)
     var errors = (err.errors || [err.message]);
-    if(info.opts.verboseErrors) { errors.push(err.stack); }
-    return { errors: errors, opts:info.opts};
+    var stack = info.opts.verboseErrors ? err.stack : null;
+    return { errors: errors, opts:info.opts, stack:stack};
 }
 
 function generatePrepareResult(info) {
