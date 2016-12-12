@@ -288,6 +288,54 @@ describe("stringizeStats", function(){
 });
 
 describe("datatype validation", function(){
+    it("integer", function(){
+        var i = txtToSql.typeValidations['integer'].checkOne;
+        // good
+        expect(i('1')).to.be.ok();
+        expect(i('1323')).to.be.ok();
+        expect(i('12345')).to.be.ok();
+        expect(i('0')).to.be.ok();
+        expect(i('-1')).to.be.ok();
+        // bad
+        expect(i('123456')).to.not.be.ok();
+        expect(i('1.1')).to.not.be.ok();
+        expect(i('.1')).to.not.be.ok();
+        expect(i('0.1')).to.not.be.ok();
+        expect(i('texto')).to.not.be.ok();
+    });
+    it("bigint", function(){
+        var bi = txtToSql.typeValidations['bigint'].checkOne;
+        // good
+        expect(bi('123456')).to.be.ok();
+        expect(bi('123456789')).to.be.ok();
+        expect(bi('-123456789')).to.be.ok();
+        // bad
+        expect(bi('0.1')).to.not.be.ok();
+        expect(bi('1.5')).to.not.be.ok();
+        expect(bi('string')).to.not.be.ok();
+    });
+    it("numeric", function(){
+        var n = txtToSql.typeValidations['numeric'].checkOne;
+        // good
+        expect(n('123456.1')).to.be.ok();
+        expect(n('123456789.5')).to.be.ok();
+        expect(n('-123456789.666666')).to.be.ok();
+        // bad
+        expect(n('1.12e-101')).to.not.be.ok();
+        expect(n('2.12e-101333')).to.not.be.ok();
+        expect(n('palabra')).to.not.be.ok();
+    });
+    it("double precision", function(){
+        var dp = txtToSql.typeValidations['double precision'].checkOne;
+        // good
+        expect(dp('123456.1')).to.be.ok();
+        expect(dp('123456789.5')).to.be.ok();
+        expect(dp('-123456789.666666')).to.be.ok();
+        expect(dp('1.12e-101')).to.be.ok();
+        expect(dp('2.12e-101333')).to.be.ok();
+        // bad
+        expect(dp('a1.12e-101')).to.not.be.ok();
+    });
     it("timestamp", function(){
         var ts = txtToSql.typeValidations['timestamp'].checkOne;
         var tsA = txtToSql.typeValidations['timestamp'].checkArray;
@@ -306,6 +354,7 @@ describe("datatype validation", function(){
         expect(ts('2009-05-06 00:10:00.100 /4:00')).to.not.be.ok();
         expect(ts('2009-05-06 00:10:00.100 4:00')).to.not.be.ok();
         expect(ts('2009-05-06 00:00:00 +13:60')).to.not.be.ok();
+        expect(ts('not a timestamp')).to.not.be.ok();
     });
     it("date", function(){
         var d = txtToSql.typeValidations['date'].checkOne;
@@ -324,39 +373,6 @@ describe("datatype validation", function(){
         expect(d('29/3-1969')).to.not.be.ok();
         expect(d('32/3/1969')).to.not.be.ok();
         expect(d('30/3/0969')).to.not.be.ok();
-    });
-    it("integer", function(){
-        var i = txtToSql.typeValidations['integer'].checkOne;
-        // good
-        expect(i('1')).to.be.ok();
-        expect(i('1323')).to.be.ok();
-        expect(i('12345')).to.be.ok();
-        expect(i('0')).to.be.ok();
-        expect(i('-1')).to.be.ok();
-        // bad
-        expect(i('123456')).to.not.be.ok();
-        expect(i('1.1')).to.not.be.ok();
-        expect(i('.1')).to.not.be.ok();
-        expect(i('0.1')).to.not.be.ok();
-    });
-    it("bigint", function(){
-        var bi = txtToSql.typeValidations['bigint'].checkOne;
-        // good
-        expect(bi('123456')).to.be.ok();
-        expect(bi('123456789')).to.be.ok();
-        expect(bi('-123456789')).to.be.ok();
-        // bad
-        expect(bi('0.1')).to.not.be.ok();
-        expect(bi('1.5')).to.not.be.ok();
-    });
-    it("numeric", function(){
-        var n = txtToSql.typeValidations['numeric'].checkOne;
-        // good
-        expect(n('123456.1')).to.be.ok();
-        expect(n('123456789.5')).to.be.ok();
-        expect(n('-123456789.666666')).to.be.ok();
-        // bad
-        expect(n('1.12e-101')).to.not.be.ok();
-        expect(n('2.12e-101333')).to.not.be.ok();
+        expect(d('not a date')).to.not.be.ok();
     });
 });
