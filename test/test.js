@@ -279,5 +279,6 @@ describe("stringizeStats", function(){
     });
     addStringizeTests(fixtures_en, 'en');
     addStringizeTests(fixtures_es, 'es');
+    addStringizeTests(fixtures_es, null);
 });
 
