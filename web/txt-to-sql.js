@@ -49,16 +49,22 @@ function isDouble(values) {
         return val.match(/^-?[0-9]+\.?[0-9]*([eE]-?[0-9]+)?$/);
     });
 }
+var year='[1-9][0-9]{3}';
+var mon='[01]?[0-9]';
+var day='((30)|(31)|([0-2]?[0-9]))';
 function isDate(values) {
-    var year='[1-9][0-9]{3}';
-    var mon='[01]?[0-9]';
-    var day='((30)|(31)|([0-2]?[0-9]))';
     var sep='[/-]';
     var dateRegExp = new RegExp('^(('+year+sep+mon+sep+day+')|('+day+sep+mon+sep+year+')|('+mon+sep+day+sep+year+'))$');
     return values.every(function(val) {
         return val.match(dateRegExp);
     });
 }
+// function isTimestamp(values) {
+    // var tsRegExp = new RegExp('^('+year+'-'+mon+'-'+day+'( [0-2][0-9]:[0-2][0-9]:[0-2][0-9](\.[0-9]{3})?( [-+][0-9]:[0-0]{2})?)?)$');
+    // return values.every(function(val) {
+        // return val.match(tsRegExp);
+    // });
+// }
 function isVarchar(values) {
     return values.every(function(val) {
         return val.match(/.?/);
@@ -88,29 +94,29 @@ function dropTable(tableName) { return "drop table "+tableName; }
 
 var engines = {
     'postgresql': {
-        types:mapTypes(['integer','bigint','numeric','double precision','date','character varying'/*,'boolean'*/]),
+        types:mapTypes([/*'boolean',*/'integer','bigint','numeric','double precision','date','character varying']),
         quote:quoteDouble,
         dropTable:dropTableIfExists
     },
     'mssql': {
-        types:mapTypes(['integer','bigint','numeric','real','date','varchar'/*,'bit'*/]),
+        types:mapTypes([/*'bit',*/'integer','bigint','numeric','real','date','varchar']),
         quote:quoteBracket,
         noCompactInsert:true,
         dropTable:dropTable
     },
     'mysql': {
-        types:mapTypes(['integer','bigint','numeric','double precision','date','varchar'/*,'tinyint'*/]),
+        types:mapTypes([/*'tinyint',*/'integer','bigint','numeric','double precision','date','varchar']),
         quote:quoteBackTick,
         dropTable:dropTableIfExists
     },
     'oracle': {
-        types:mapTypes(['integer','long','number','binary_double','date','varchar2'/*,'char'*/]),
+        types:mapTypes([/*'char',*/'integer','long','number','binary_double','date','varchar2']),
         quote:quoteDouble,
         noCompactInsert:true,
         dropTable:dropTable
     },
     'sqlite': {
-        types:mapTypes(['integer','integer','numeric','real','date','text'/*,'boolean'*/]),
+        types:mapTypes([/*'boolean',*/'integer','integer','numeric','real','date','text']),
         quote:quoteDouble,
         dropTable:dropTableIfExists,
         // http://www.sqlite.org/limits.html#max_compound_select
