@@ -125,6 +125,15 @@ var engines = {
     }
 };
 
+function createTypeValidations() {
+    var validations={};
+    engines['postgresql'].types.forEach(function(type) {
+        validations[type.typeName] = function(val) {  return type.validates([val]); };
+    });
+    return validations;
+}
+txtToSql.typeValidations = createTypeValidations();
+
 function throwIfErrors(errors) {
     if(errors.length) {
         var e = new Error();

@@ -287,3 +287,9 @@ describe("stringizeStats", function(){
     addStringizeTests(fixtures_es, null);
 });
 
+describe("datatype validation", function(){
+    it("timestamp", function(){
+        var ts = txtToSql.typeValidations['timestamp'];
+        expect(ts('2016-11-21 10:00:01')).to.be.ok();
+    });
+});
