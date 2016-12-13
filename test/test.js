@@ -288,6 +288,16 @@ describe("stringizeStats", function(){
 });
 
 describe("datatype validation", function(){
+    it("boolean", function(){
+        var b1 = txtToSql.typeValidations['boolean'].checkOne;
+        var b = txtToSql.typeValidations['boolean'].checkArray;
+        expect(b1('null')).to.be.ok(); // coverage
+        // good
+        expect(b(0, [['1'],['1'],['0'],['1']])).to.be.ok();
+        expect(b(0, [['1'],['0'],[null],['0'],['1']])).to.be.ok();
+        // bad
+        expect(b(0, [['3'],['1'],['0'],['1']])).to.not.be.ok();
+    });
     it("integer", function(){
         var i = txtToSql.typeValidations['integer'].checkOne;
         // good
@@ -336,26 +346,6 @@ describe("datatype validation", function(){
         // bad
         expect(dp('a1.12e-101')).to.not.be.ok();
     });
-    it("timestamp", function(){
-        var ts = txtToSql.typeValidations['timestamp'].checkOne;
-        var tsA = txtToSql.typeValidations['timestamp'].checkArray;
-        expect(tsA(0, [['2010-01-21 00:10:00.009']])).to.be.ok(); // coverage
-        // good
-        expect(ts('2016-11-21 10:00:01')).to.be.ok();
-        expect(ts('2009-05-06 00:10:00 +4:00')).to.be.ok();
-        expect(ts('2009-05-06 00:00:00 -12:00')).to.be.ok();
-        expect(ts('2009-05-06 00:00:00 +13:00')).to.be.ok();
-        // bad
-        expect(ts('2016-11-21 0:00:01')).to.not.be.ok();
-        expect(ts('2016-11-21 30:00:01')).to.not.be.ok();
-        expect(ts('2016-21-21 30:00:01')).to.not.be.ok();
-        expect(ts('2016-11-32 30:00:01')).to.not.be.ok();
-        expect(ts('216-11-32 30:00:01')).to.not.be.ok();
-        expect(ts('2009-05-06 00:10:00.100 /4:00')).to.not.be.ok();
-        expect(ts('2009-05-06 00:10:00.100 4:00')).to.not.be.ok();
-        expect(ts('2009-05-06 00:00:00 +13:60')).to.not.be.ok();
-        expect(ts('not a timestamp')).to.not.be.ok();
-    });
     it("date", function(){
         var d = txtToSql.typeValidations['date'].checkOne;
         // good
@@ -375,14 +365,24 @@ describe("datatype validation", function(){
         expect(d('30/3/0969')).to.not.be.ok();
         expect(d('not a date')).to.not.be.ok();
     });
-    it("boolean", function(){
-        var b1 = txtToSql.typeValidations['boolean'].checkOne;
-        var b = txtToSql.typeValidations['boolean'].checkArray;
-        expect(b1('null')).to.be.ok(); // coverage
+    it("timestamp", function(){
+        var ts = txtToSql.typeValidations['timestamp'].checkOne;
+        var tsA = txtToSql.typeValidations['timestamp'].checkArray;
+        expect(tsA(0, [['2010-01-21 00:10:00.009']])).to.be.ok(); // coverage
         // good
-        expect(b(0, [['1'],['1'],['0'],['1']])).to.be.ok();
-        expect(b(0, [['1'],['0'],[null],['0'],['1']])).to.be.ok();
+        expect(ts('2016-11-21 10:00:01')).to.be.ok();
+        expect(ts('2009-05-06 00:10:00 +4:00')).to.be.ok();
+        expect(ts('2009-05-06 00:00:00 -12:00')).to.be.ok();
+        expect(ts('2009-05-06 00:00:00 +13:00')).to.be.ok();
         // bad
-        expect(b(0, [['3'],['1'],['0'],['1']])).to.not.be.ok();
+        expect(ts('2016-11-21 0:00:01')).to.not.be.ok();
+        expect(ts('2016-11-21 30:00:01')).to.not.be.ok();
+        expect(ts('2016-21-21 30:00:01')).to.not.be.ok();
+        expect(ts('2016-11-32 30:00:01')).to.not.be.ok();
+        expect(ts('216-11-32 30:00:01')).to.not.be.ok();
+        expect(ts('2009-05-06 00:10:00.100 /4:00')).to.not.be.ok();
+        expect(ts('2009-05-06 00:10:00.100 4:00')).to.not.be.ok();
+        expect(ts('2009-05-06 00:00:00 +13:60')).to.not.be.ok();
+        expect(ts('not a timestamp')).to.not.be.ok();
     });
 });
