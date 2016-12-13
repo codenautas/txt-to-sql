@@ -16,7 +16,7 @@
   },
   "files": ["bin", "lib", "web"],
   "dependencies": {
-    "commander": "2.8.1",
+    "commander": "2.9.0",
     "fs-promise": "~1.0.0",
     "iconv-lite": "~0.4.13",
     "js-yaml": "~3.7.0",
