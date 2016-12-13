@@ -287,7 +287,7 @@ describe("stringizeStats", function(){
     addStringizeTests(fixtures_es, null);
 });
 
-describe.skip("datatype validation", function(){
+describe("datatype validation", function(){
     it("integer", function(){
         var i = txtToSql.typeValidations['integer'].checkOne;
         // good
@@ -339,7 +339,7 @@ describe.skip("datatype validation", function(){
     it("timestamp", function(){
         var ts = txtToSql.typeValidations['timestamp'].checkOne;
         var tsA = txtToSql.typeValidations['timestamp'].checkArray;
-        expect(tsA(['2010-01-21 00:10:00.009'])).to.be.ok(); // coverage
+        expect(tsA(0, [['2010-01-21 00:10:00.009']])).to.be.ok(); // coverage
         // good
         expect(ts('2016-11-21 10:00:01')).to.be.ok();
         expect(ts('2009-05-06 00:10:00 +4:00')).to.be.ok();
@@ -378,8 +378,8 @@ describe.skip("datatype validation", function(){
     it("boolean", function(){
         var b = txtToSql.typeValidations['boolean'].checkArray;
         // good
-        expect(b(['1','1','0','1'])).to.be.ok();
+        expect(b(0, [['1'],['1'],['0'],['1']])).to.be.ok();
         // bad
-        expect(b(['3','1','0','1'])).to.not.be.ok();
+        expect(b(0, [['3'],['1'],['0'],['1']])).to.not.be.ok();
     });
 });
