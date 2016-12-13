@@ -294,9 +294,13 @@ describe("datatype validation", function(){
         expect(b1('null')).to.be.ok(); // coverage
         // good
         expect(b(0, [['1'],['1'],['0'],['1']])).to.be.ok();
+        expect(b(0, [['uno']])).to.be.ok();
+        expect(b(0, [[null],['uno']])).to.be.ok();
         expect(b(0, [['1'],['0'],[null],['0'],['1']])).to.be.ok();
+        expect(b(0, [[null],['1'],['0'],['0'],['1'],[null]])).to.be.ok();
         // bad
         expect(b(0, [['3'],['1'],['0']])).to.not.be.ok();
+        expect(b(0, [['3'],['1'],['3'],['1'],['3'],['1'],['0']])).to.not.be.ok();
         expect(b(0, [['tito'],['loncho'],['pepe'],['tito']])).to.not.be.ok();
     });
     it("integer", function(){
