@@ -1,11 +1,8 @@
 "use strict";
 
-var fs = require('fs-promise');
 var txtToSql = require('../lib/txt-to-sql.js');
 var txtToSqlFast = require('../bin/fast.js');
 var expect = require('expect.js');
-var selfExplain = require('self-explain');
-var differences = selfExplain.assert.allDifferences;
 var changing = require('best-globals').changing;
 var yaml = require('js-yaml');
 var stream = require('stream');

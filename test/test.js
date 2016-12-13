@@ -3,8 +3,7 @@
 var fs = require('fs-promise');
 var txtToSql = require('../lib/txt-to-sql.js');
 var expect = require('expect.js');
-var selfExplain = require('self-explain');
-var differences = selfExplain.assert.allDifferences;
+var discrepances = require('discrepances');
 var changing = require('best-globals').changing;
 var yaml = require('js-yaml');
 var common = require('./test-common');
@@ -123,7 +122,7 @@ describe("fixtures", function(){
                         console.log("diff in ", comp, "\n"+expected.rawSql.toString().substring(comp))
                     }
                     expect(generated.rawSql).to.eql(expected.rawSql);
-                    expect(differences(generated.rawSql,expected.rawSql)).to.eql(null);
+                    expect(discrepances(generated.rawSql,expected.rawSql)).to.eql(null);
                     // coherencia entre prepared y generated
                     expect(generated.errors).to.eql(prepared.errors);
                     if(expected.stats) {
@@ -153,7 +152,7 @@ describe("specials", function(){
         }).then(function(generated){
             return fs.readFile('./test/fixtures/example-one.sql').then(function(rawSql){
                 expect(generated.rawSql).to.eql(rawSql);
-                expect(differences(generated.rawSql,rawSql)).to.eql(null);
+                expect(discrepances(generated.rawSql,rawSql)).to.eql(null);
                 return;
             });
         }).then(done,done);
