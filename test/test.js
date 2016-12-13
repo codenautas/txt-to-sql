@@ -70,6 +70,7 @@ describe("fixtures", function(){
         {name:'insert-limit2'},
         {name:'dates'},
         {name:'timestamps'},
+        {skip:true, name:'broken-lines'},
         {skip:true, name:'booleans'},
     ].forEach(function(fixture){
         if(fixture.skip) {
@@ -388,5 +389,91 @@ describe("datatype validation", function(){
         expect(ts('2009-05-06 00:10:00.100 4:00')).to.not.be.ok();
         expect(ts('2009-05-06 00:00:00 +13:60')).to.not.be.ok();
         expect(ts('not a timestamp')).to.not.be.ok();
+    });
+});
+
+describe/*.only*/("fixLine", function(){
+    it("simple", function(){
+        var lines=[
+            "uno;dos;tres",
+            "cuatro;cin",
+            "co;seis",
+            "siete;ocho;nueve",
+        ];
+        var check=[
+            "uno;dos;tres",
+            "cuatro;cin\nco;seis",
+            "siete;ocho;nueve",
+        ];
+        var fixed = txtToSql.fixLines({opts:{separator:';'}, columnsInfo:new Array(3)}, lines);
+        //console.log(fixed)
+        expect(fixed).to.eql(check)
+    });
+    it("three lines", function(){
+        var lines=[
+            "uno;dos;tres",
+            "cuatro;cin",
+            "co y medio ",
+            "y finalmente;seis",
+            "siete;ocho;nueve",
+        ];
+        var check=[
+            "uno;dos;tres",
+            "cuatro;cin\nco y medio \ny finalmente;seis",
+            "siete;ocho;nueve",
+        ];
+        var fixed = txtToSql.fixLines({opts:{separator:';'}, columnsInfo:new Array(3)}, lines);
+        //console.log(fixed)
+        expect(fixed).to.eql(check)
+    });
+    it("at the end", function(){
+        var lines=[
+            "uno;dos;tres",
+            "cuatro;cin",
+            "co y medio ",
+            "y finalmente;seis"
+        ];
+        var check=[
+            "uno;dos;tres",
+            "cuatro;cin\nco y medio \ny finalmente;seis"
+        ];
+        var fixed = txtToSql.fixLines({opts:{separator:';'}, columnsInfo:new Array(3)}, lines);
+        //console.log(fixed)
+        expect(fixed).to.eql(check)
+    });
+    it("at the beggining", function(){
+        var lines=[
+            "cuatro;cin",
+            "co y medio ",
+            "y finalmente;seis",
+            "siete;ocho;nueve",
+        ];
+        var check=[
+            "cuatro;cin\nco y medio \ny finalmente;seis",
+            "siete;ocho;nueve",
+        ];
+        var fixed = txtToSql.fixLines({opts:{separator:';'}, columnsInfo:new Array(3)}, lines);
+        //console.log(fixed)
+        expect(fixed).to.eql(check)
+    });
+    it(" a couple of joins", function(){
+        var lines=[
+            "uno;dos;tres",
+            "cuatro;cin",
+            "co y medio ",
+            "y finalmente;seis",
+            "siete;ocho;nueve",
+            "diez todo en una linea",
+            ";once;doce"
+        ];
+        var check=[
+            "uno;dos;tres",
+            "cuatro;cin\nco y medio \ny finalmente;seis",
+            "siete;ocho;nueve",
+            "diez todo en una linea;once;doce"
+        ];
+        var fixed = txtToSql.fixLines({opts:{separator:';'}, columnsInfo:new Array(3)}, lines);
+        // console.log(fixed)
+        expect(fixed).to.eql(check)
     });
 });

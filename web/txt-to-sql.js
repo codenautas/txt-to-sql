@@ -351,9 +351,86 @@ function separateOneRow(info, line) {
     }
 }
 
+txtToSql.fixLines = function fixLines(info, lines) {
+    var ln=0;
+    while(ln<lines.length) {
+        var cols=separateOneRow(info, lines[ln]);
+        // console.log("--cols", cols)
+        if(cols.length !== info.columnsInfo.length) {
+            var wrongLine = ln;
+            ++ln;
+            var col=cols.length;
+            // console.log("col", col)
+            if(col-1) {
+                cols.splice(cols.length-1, 0, info.opts.separator)
+            }
+            
+            do {
+                // console.log("line", ln, lines[ln], lines)
+                var firstIsSep = lines[ln][0] === info.opts.separator;
+                var separated = separateOneRow(info, lines[ln]);
+                if(separated.length>1) {
+                    var left=separated.length;
+                    var index=0;
+                    for( ; index<separated.length; ++index) {
+                        var c = separated[index];
+                        ++col;
+                        --left;
+                        // console.log("joining", c, col, info.columnsInfo.length, left, "FIS", firstIsSep)
+                        if(c !== '') {
+                            // console.log("  not empty");
+                            if(col<=info.columnsInfo.length && ! firstIsSep) {
+                                // console.log(" NL")
+                                cols.push('\n');
+                            } else {
+                                // console.log(" SEP")
+                                cols.push(info.opts.separator);
+                            }
+                            cols.push(c);                            
+                        }
+                        // console.log("  cols", cols)
+                        // console.log("  separated", index, col, info.columnsInfo.length)
+                        if(col>info.columnsInfo.length) {
+                            break;
+                        }
+                    }
+                    while(left) {
+                        ++index;
+                        // console.log("lefties", left, index, separated.length, separated[index])
+                        var c = separated[index];
+                        cols.push(info.opts.separator);
+                        cols.push(c);
+                        --left;
+                    }
+                } else {
+                    // console.log("one", separated[0])
+                    cols.push('\n'+separated[0]);
+                }
+                ++ln;
+                // console.log("end loop", ln, lines[ln], col, info.columnsInfo.length,
+                            // (col<info.columnsInfo.length?"OK!":"BREAKING"));
+            }
+            while(col<info.columnsInfo.length);
+            // console.log(" PRE splice", ln, lines)
+            // console.log("   COLS", cols.length, cols);
+            lines[wrongLine] = cols.join('');
+            lines.splice(wrongLine+1, ln-wrongLine-1);
+            // console.log(" POST splice", lines)
+            //console.log("saliendo", cols)
+            --ln;
+        } else {
+            ++ln;
+        }
+        // console.log("outer loop", ln, lines[ln])
+    }
+    return lines;
+}
+
+
 function separateRows(info) {
     info.rows = info.lines.filter(function(line){ return line.trim()!==""; })
                           .map(function(line){ return separateOneRow(info, line); });
+    // info.rows = txtToSql.fixLines(info, info.lines).map(function(line){ return separateOneRow(info, line); });
     return info;
 }
 

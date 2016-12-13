@@ -1,0 +1,22 @@
+columns:
+  - name: txt1
+    type: character varying
+    inPrimaryKey: true
+    maxLength: 3
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: txt2
+    type: character varying
+    inPrimaryKey: false
+    maxLength: 3
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: txt3
+    type: character varying
+    inPrimaryKey: false
+    maxLength: 4
+    maxScale: null
+    hasNullValues: false
+    hasCientificNotation: null
