@@ -35,7 +35,7 @@
     "pug": "~2.0.0-beta4",
     "stylus": "~0.54.5",
     
-    "discrepances": "~0.0.13",
+    "discrepances": "~0.0.14",
     "js-to-html": "~0.9.2",
     "require-bro": "~0.1.3"
   },
