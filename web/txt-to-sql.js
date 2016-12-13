@@ -35,12 +35,13 @@ function evaluateColumn(column, rows, regex) {
 function isBoolean(column, rows) {
     var vals=[];
     for(var row=0; row<rows.length; ++row) {
-        if(rows[row][column]) {
+        if(! rows[row][column]) {
+            continue;
+        } else {
             if(vals.length>2) { return false; }
             if(vals.indexOf(rows[row][column])===-1) {
                 vals.push(rows[row][column]);
             }
-
         }
     }
     return true;
@@ -416,24 +417,6 @@ function verifyColumnNames(info) {
     return info;
 }
 
-function determineColumnTypesArray(info){
-    info.columnsInfo.forEach(function(columnInfo, columnIndex){
-        var maxTypeIndex=0;
-        var typeIndex=0;
-        var values = [];
-        info.rows.forEach(function(row){
-            if(row[columnIndex]){ values.push(row[columnIndex]); }
-        });
-        while(! info.outputEngine.types[typeIndex].validates(values)) {
-            typeIndex++;
-        }
-        if(typeIndex>maxTypeIndex){
-            maxTypeIndex=typeIndex;
-        }
-        columnInfo.typeInfo = info.outputEngine.types[maxTypeIndex];
-    });
-    return info;
-}
 function determineColumnTypes(info){
     info.columnsInfo.forEach(function(columnInfo, columnIndex){
         var maxTypeIndex=0;

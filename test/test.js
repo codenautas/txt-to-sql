@@ -376,9 +376,12 @@ describe("datatype validation", function(){
         expect(d('not a date')).to.not.be.ok();
     });
     it("boolean", function(){
+        var b1 = txtToSql.typeValidations['boolean'].checkOne;
         var b = txtToSql.typeValidations['boolean'].checkArray;
+        expect(b1('null')).to.be.ok(); // coverage
         // good
         expect(b(0, [['1'],['1'],['0'],['1']])).to.be.ok();
+        expect(b(0, [['1'],['0'],[null],['0'],['1']])).to.be.ok();
         // bad
         expect(b(0, [['3'],['1'],['0'],['1']])).to.not.be.ok();
     });
