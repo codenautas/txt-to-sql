@@ -18,10 +18,10 @@
   "dependencies": {
     "commander": "2.9.0",
     "fs-promise": "~1.0.0",
-    "iconv-lite": "~0.4.13",
+    "iconv-lite": "~0.4.15",
     "js-yaml": "~3.7.0",
 
-    "best-globals": "~0.7.0",
+    "best-globals": "~0.7.1",
     "mini-tools": "~0.3.9"
   },
   "devDependencies": {
