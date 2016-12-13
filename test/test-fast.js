@@ -43,11 +43,14 @@ describe("fast-fixtures", function(){
         {name:'mssql-comma-align', customThreshold:true},
         {name:'mssql-with-drop-table', customThreshold:true},
         {name:'oracle-with-drop-table'},
+        {name:'mssql-example-one', title:'mssql-coverage',
+         changeParam:function(param) { param.opts.inputEncoding=null; param.opts.outputEncoding=null; }
+        },
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
         } else {
-            it("fixture: "+fixture.name, function(done){
+            it("fixture: "+(fixture.title || fixture.name), function(done){
                 this.timeout(5000);
                 var defaultOpts = {inputEncoding:'UTF8', outputEncoding:'UTF8'};
                 var param={tableName:fixture.name};
@@ -74,6 +77,8 @@ describe("fast-fixtures", function(){
                         throw new Error('Unhandled output test! Re-think next setIfFileExists() line!!');
                     }
                     return common.setIfFileExists(basePath+'.sql', expected, 'rawSql', {});
+                }).then(function() {
+                    if(fixture.changeParam) { fixture.changeParam(param); }
                 }).then(function() {
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
