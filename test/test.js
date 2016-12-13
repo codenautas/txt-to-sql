@@ -287,7 +287,7 @@ describe("stringizeStats", function(){
     addStringizeTests(fixtures_es, null);
 });
 
-describe("datatype validation", function(){
+describe.skip("datatype validation", function(){
     it("integer", function(){
         var i = txtToSql.typeValidations['integer'].checkOne;
         // good
