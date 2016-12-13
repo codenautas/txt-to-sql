@@ -35,9 +35,7 @@ function evaluateColumn(column, rows, regex) {
 function isBoolean(column, rows) {
     var vals=[];
     for(var row=0; row<rows.length; ++row) {
-        if(! rows[row][column]) {
-            continue;
-        } else {
+        if(rows[row][column]) {
             if(vals.indexOf(rows[row][column])===-1) {
                 vals.push(rows[row][column]);
             }
@@ -429,26 +427,7 @@ function determineColumnTypes(info){
     });
     return info;
 }
-/*
-function determineColumnTypes(info){
-    info.columnsInfo.forEach(function(columnInfo, columnIndex){
-        var maxTypeIndex=0;
-        info.rows.forEach(function(row){
-            var typeIndex=0;
-            if(row[columnIndex]){
-                while(! info.outputEngine.types[typeIndex].validates(row[columnIndex])) {
-                    typeIndex++;
-                }
-                if(typeIndex>maxTypeIndex){
-                    maxTypeIndex=typeIndex;
-                }
-            }
-        });
-        columnInfo.typeInfo = info.outputEngine.types[maxTypeIndex];
-    });
-    return info;
-}
-*/
+
 function isTextType(typeName) { return typeName.match(/(text|char|time|date)/); }
 function hasCientificNotation(typeName) { return typeName==='double precision'?false:null; }
 
