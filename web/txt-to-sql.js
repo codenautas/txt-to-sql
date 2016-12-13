@@ -38,10 +38,10 @@ function isBoolean(column, rows) {
         if(! rows[row][column]) {
             continue;
         } else {
-            if(vals.length>2) { return false; }
             if(vals.indexOf(rows[row][column])===-1) {
                 vals.push(rows[row][column]);
             }
+            if(vals.length>2) { return false; }
         }
     }
     return true;
