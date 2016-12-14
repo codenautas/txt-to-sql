@@ -1,11 +1,8 @@
 "use strict";
 
-var fs = require('fs-promise');
 var txtToSql = require('../lib/txt-to-sql.js');
 var txtToSqlFast = require('../bin/fast.js');
 var expect = require('expect.js');
-var selfExplain = require('self-explain');
-var differences = selfExplain.assert.allDifferences;
 var changing = require('best-globals').changing;
 var yaml = require('js-yaml');
 var stream = require('stream');
@@ -88,8 +85,10 @@ describe("fast-fixtures", function(){
                     return txtToSqlFast.doFast(param, basePath, threshold, generated);
                 }).then(function(){
                     var gen = generated.lines.join('');
+                    //gen = gen.trimLeft();
                     var exp = expected.rawSql.toString();
-                    // console.log("GEN '"+gen+"'"); console.log("EXP '"+exp+"'")
+                    //var exp = expected.rawSql.toString().split("\n\n")[1];
+                    //console.log("GEN '"+gen+"'"); console.log("EXP '"+exp+"'")
                     expect(gen).to.eql(exp);
                }).then(done,done);
             });

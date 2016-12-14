@@ -395,9 +395,15 @@ bestGlobals.compareForOrder = function compareForOrder(sortColumns){
 };
 
 bestGlobals.sleep = function sleep(milliseconds){
-    return new Promise(function(resolve){
-        setTimeout(resolve,milliseconds);
-    });
+    var pseudoFunction = function sleepAndPass(value){
+        return new Promise(function(resolve){
+            setTimeout(function(){ resolve(value); },milliseconds);
+        });
+    };
+    pseudoFunction.then = function then(f){
+        return pseudoFunction().then(f);
+    };
+    return pseudoFunction;
 };
 
 /* istanbul ignore next */
