@@ -9,7 +9,7 @@ columns:
   - name: txt2
     type: character varying
     inPrimaryKey: false
-    maxLength: 3
+    maxLength: 13
     maxScale: null
     hasNullValues: false
     hasCientificNotation: null

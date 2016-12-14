@@ -70,7 +70,7 @@ describe("fixtures", function(){
         {name:'insert-limit2'},
         {name:'dates'},
         {name:'timestamps'},
-        {skip:true, name:'broken-lines'},
+        {name:'broken-lines'},
         {skip:true, name:'booleans'},
     ].forEach(function(fixture){
         if(fixture.skip) {
@@ -178,7 +178,7 @@ describe("input errors", function(){
         { name:'one-column-no-sep'},
         { name:'invalid-utf8'},
         { name:'invalid-ansi', skip:true},
-        { name:'row-diff-num-columns'},
+        { skip:true, name:'row-diff-num-columns'},
         { name:'missing-col-names'},
         { name:'include-pk-without-pk-columns'},
         { name:'req-columns-no-pk'},
