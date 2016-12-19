@@ -158,14 +158,15 @@ var formatFunctions = {
 };
 
 txtToSql.validEncodings = ['ASCII7', 'UTF8' , 'ANSI'];
-function checkEncodingParam(encoding, inOrOut, errors) {
+function checkEncodingParam(info, encoding, inOrOut, errors) {
     if(encoding && txtToSql.validEncodings.indexOf(encoding)===-1) {
-        errors.push("unsupported "+inOrOut+" encoding '"+encoding+"'");
+        errors.push(info.messages.unsupported+' '+inOrOut+" encoding '"+encoding+"'");
     }
 }
 
 function verifyInputParams(info){
     info.opts = changing(txtToSql.defaultOpts, info.opts || {});
+    info.messages=txtToSql.dictionary[info.opts.lang];
     var errors=[];
     if(! info.tableName) { errors.push('undefined table name'); }
     if(! info.rawTable) {
@@ -177,10 +178,10 @@ function verifyInputParams(info){
         errors.push("inexistent column names format '"+info.opts.columnNamesFormat+"'");
     }
     if(! (info.opts.outputEngine in engines)) {
-        errors.push("unsupported output engine '"+info.opts.outputEngine+"'");
+        errors.push(info.messages.unsupported+" output engine '"+info.opts.outputEngine+"'");
     }
-    checkEncodingParam(info.opts.inputEncoding, 'input', errors);
-    checkEncodingParam(info.opts.outputEncoding, 'output', errors);
+    checkEncodingParam(info, info.opts.inputEncoding, 'input', errors);
+    checkEncodingParam(info, info.opts.outputEncoding, 'output', errors);
     throwIfErrors(errors);
     info.outputEngine=engines[info.opts.outputEngine];
     info.quote = info.outputEngine.quote;
@@ -734,20 +735,24 @@ txtToSql.capitalize = function capitalize(str) {
 
 txtToSql.dictionary={
     en:{
-        rows:'rows',
-        columns:'columns',
-        text:'texts',
+        row:'row',
+        column:'column',
+        text:'text',
         nulls:'nulls',
         pk:'primary key',
         time:'elapsed time',
+        unsupported:'unsupported',
+        shouldhave:'should have',
     },
     es:{
-        rows:'registros',
-        columns:'columnas',
-        text:'textos',
+        row:'registro',
+        column:'columna',
+        text:'texto',
         nulls:'nulos',
         pk:'clave primaria',
         time:'tiempo de generación',
+        unsupported:'no soportado',
+        shouldhave:'debe tener',
     }
 };
 
@@ -766,8 +771,8 @@ function stringizeStats(stats) {
     if(secs>0) { t.push(secs+'s'); }
     if(ms>0) { t.push(ms+'ms'); }
     if(! t.length) { t.push('0ms'); }    
-    r.push(txtToSql.capitalize(messages.rows)+' '+stats.rows);
-    r.push(messages.columns+' '+stats.columns+' ('+messages.text+':'+stats.textColumns+', '+messages.nulls+':'+stats.nullColumns+')');
+    r.push(txtToSql.capitalize(messages.row)+'s '+stats.rows);
+    r.push(messages.column+'s '+stats.columns+' ('+messages.text+'s:'+stats.textColumns+', '+messages.nulls+':'+stats.nullColumns+')');
     if(stats.primaryKey.length) {
         r.push(messages.pk+': '+stats.primaryKey.join(', '));
     }

@@ -275,7 +275,7 @@ describe("stringizeStats", function(){
         Object.keys(txtToSql.dictionary['en']).forEach(function(word) {
             var search = txtToSql.dictionary['en'][word];
             var rep = txtToSql.dictionary['es'][word];
-            if(word==='rows' || word==='time') {
+            if(word==='row' || word==='time') {
                 search = txtToSql.capitalize(search);
                 rep = txtToSql.capitalize(rep);
             }
