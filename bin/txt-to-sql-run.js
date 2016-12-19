@@ -145,6 +145,7 @@ Promise.resolve().then(function() {
             return miniTools.readConfig(existentFiles);
         }).then(function(data) {
             params.opts = data.opts;
+            params.opts.lang = cmdParams.lang;
             if(! params.tableName) {
                 params.tableName = inputName;
             }
@@ -164,7 +165,7 @@ Promise.resolve().then(function() {
             }
         }).then(function() {
             if(params.stats) {
-                process.stdout.write("\n"+txtToSql.stringizeStats(params.stats, cmdParams.lang));
+                process.stdout.write("\n"+txtToSql.stringizeStats(params.stats));
             }         
         });
    }

@@ -34,3 +34,4 @@ stats:
   textColumns: 4
   nullColumns: 0
   primaryKey: [x,y]
+  lang: en

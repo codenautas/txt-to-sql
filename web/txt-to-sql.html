@@ -103,7 +103,8 @@ var preparedColumns = {};
 function resetPage() {
     userOptions = {
         verboseErrors:true,
-        columnAlignedCommas:true
+        columnAlignedCommas:true,
+        lang:currentLanguage
     };
     defSeparator = getID('inputSeparator');
     if(defSeparator && defSeparator.value !=='') {
@@ -248,7 +249,7 @@ function handleGenerate(event){
             elems.push(html.span('  warning(s): '+generated.warnings.join(', ')).create())
         }
         elems.push(html.span(' '));
-        elems.push(html.label(stringizeStats(generated.stats, currentLanguage)).create());
+        elems.push(html.label(stringizeStats(generated.stats)).create());
         addStep(messages.step3, true, link, elems);
         log.textContent=messages.generated+' '+file.name;
     }).catch(function(err){

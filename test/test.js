@@ -248,7 +248,8 @@ function addStringizeTests(fixtures, lang) {
         } else {
             it(name, function(){
                 //console.log("'"+txtToSql.stringizeStats(check.stats,lang)+"'"); console.log("'"+check.out+"'")
-                expect(txtToSql.stringizeStats(check.stats,lang)).to.eql(check.out);
+                check.stats.lang = lang || txtToSql.defaultOpts.lang;
+                expect(txtToSql.stringizeStats(check.stats)).to.eql(check.out);
             });
         }
     });
@@ -284,7 +285,7 @@ describe("stringizeStats", function(){
     });
     addStringizeTests(fixtures_en, 'en');
     addStringizeTests(fixtures_es, 'es');
-    addStringizeTests(fixtures_es, null);
+    addStringizeTests(fixtures_en, null);
 });
 
 describe("datatype validation", function(){

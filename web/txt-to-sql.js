@@ -706,7 +706,8 @@ function prepare(info) {
 
 function initializeStats(info) {
     info.stats = {
-        startTime:new Date().getTime()
+        startTime:new Date().getTime(),
+        lang:info.opts.lang
     };
     return info;
 }
@@ -732,14 +733,6 @@ txtToSql.capitalize = function capitalize(str) {
 };
 
 txtToSql.dictionary={
-    es:{
-        rows:'registros',
-        columns:'columnas',
-        text:'textos',
-        nulls:'nulos',
-        pk:'clave primaria',
-        time:'tiempo de generación',
-    },
     en:{
         rows:'rows',
         columns:'columns',
@@ -747,11 +740,19 @@ txtToSql.dictionary={
         nulls:'nulls',
         pk:'primary key',
         time:'elapsed time',
+    },
+    es:{
+        rows:'registros',
+        columns:'columnas',
+        text:'textos',
+        nulls:'nulos',
+        pk:'clave primaria',
+        time:'tiempo de generación',
     }
 };
 
-function stringizeStats(stats, lang) {
-    var messages=txtToSql.dictionary[lang||'es'];
+function stringizeStats(stats) {
+    var messages=txtToSql.dictionary[stats.lang];
     var r=[];
     var time = stats.endTime - stats.startTime;
     var ms = parseInt((time%1000), 10);
@@ -775,8 +776,8 @@ function stringizeStats(stats, lang) {
 
 function generateScripts(info){
     return Promise.resolve(info)
-    .then(initializeStats)
     .then(setup)
+    .then(initializeStats)
     .then(quoteNames)
     .then(generateDropTable)
     .then(generateCreateScript)
@@ -861,7 +862,8 @@ txtToSql.defaultOpts = {
     outputEncoding: false,
     addDropTable: false,
     ignoreNullLines: false,
-    compactInsertLimit:0
+    compactInsertLimit:0,
+    lang:'en'
 };
 
 module.exports = txtToSql;
