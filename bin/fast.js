@@ -23,7 +23,6 @@ function fastProcessLine(info, line) {
 
 function fastAnalyzeLines(info) {
     txtToSql.separateRows(info);
-    txtToSql.verifyColumnCount(info);
     txtToSql.transformNames(info);
     txtToSql.verifyColumnNames(info);
     txtToSql.determineColumnTypes(info);
