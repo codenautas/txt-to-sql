@@ -239,17 +239,17 @@ function processEncodingOptions(info) {
         var inFromToString = info.rawTable.toString("utf8");
         if(info.opts.inputEncoding==='ANSI') {
             if(inFromToString.substr(1).indexOf('\uFFFD')<0) {
-                throw new Error('ansi -> utf8: replacement character not found');
+                throw new Error(info.messages.errConvRep);
             }
             info.decodedBuffer = iconv.decode(info.rawTable, "win1252");
             if(compareBuffers(info.decodedBuffer, info.rawTable) === -1) {
-                throw new Error('ansi -> utf8: no conversion performed');
+                throw new Error(info.messages.errConv);
             }
         } else if(info.opts.inputEncoding==='UTF8') {
             info.decodedBuffer = inFromToString;
             var result = compareBuffers(info.rawTable, new Buffer(info.decodedBuffer, 'utf8'));
             if(result !== -1) {
-                throw new Error('utf8 check failed in position: '+result);
+                throw new Error(txtToSql.errString(info, 'errUTF',[result]));
             }
         } else {
             info.decodedBuffer = inFromToString;
@@ -272,7 +272,7 @@ function determineSeparator(info){
             return info.headers.split(separator).length>1;
         });
         if(separatorCandidates.length<=0){
-            throw new Error('no separator detected');
+            throw new Error(info.messages.errSeparator);
         }
         info.opts.separator=separatorCandidates[0];
     }
@@ -334,9 +334,7 @@ function separateColumns(info){
     info.columnsInfo = info.delimiter ? separateWithDelimiter(info) : separateWithSeparator(info);
     if(info.opts.columns && 'name' in info.opts.columns[0]) {
         if(info.opts.columns.length !== info.columnsInfo.length) {
-            throw new Error('wrong number of column names: expected '+
-                            info.columnsInfo.length+
-                            ', obtained '+info.opts.columns.length);
+            throw new Error(txtToSql.errString(info, 'errNumCols',[info.columnsInfo.length,info.opts.columns.length]));
         }
         info.columnsInfo.forEach(function(column, index) {
             column.name = info.opts.columns[index].name;
@@ -756,6 +754,11 @@ txtToSql.dictionary={
         errBadRowMulti:'row multiline #$1~#$2 has $3 fields, should have $4',
         errColMissing:"missing name for column #$1",
         errColDupli:"duplicated column name '$1'",
+        errConvRep:'ansi -> utf8: replacement character not found',
+        errConv:'ansi -> utf8: no conversion performed',
+        errUTF:'utf8 check failed in position: $1',
+        errSeparator:'no separator detected',
+        errNumCols:'wrong number of column names: expected $1, obtained $2',
     },
     es:{
         row:'registro',
@@ -774,6 +777,11 @@ txtToSql.dictionary={
         errBadRowMulti:'registro multilínea #$1~#$2 tiene $3 campos, debería tener $4',
         errColMissing:"falta nombre para la columna #$1",
         errColDupli:"nombre de columna duplicado '$1'",
+        errConvRep:'ansi -> utf8: caracter de reemplazo no encontrado',
+        errConv:'ansi -> utf8: no se realizó la conversión',
+        errUTF:'verificación utf8 falló en la posición: $1',
+        errSeparator:'no se detectó el separador',
+        errNumCols:'número de nombres de columna incorrecto: esperados $1, recibidos $2',
     }
 };
 
