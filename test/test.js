@@ -478,3 +478,10 @@ describe/*.only*/("fixLine", function(){
         expect(fixed).to.eql(check)
     });
 });
+
+describe.skip("language errors", function(){
+    it("makeError", function(done){
+        var makeErr = txtToSql.makeError;
+        expect(makeErr("error $1 is $2", ['uno','dos'])).to.eql('error uno is dos')
+    });
+});
