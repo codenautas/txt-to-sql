@@ -352,64 +352,42 @@ function separateOneRow(info, line) {
 
 txtToSql.fixLines = function fixLines(info, lines) {
     var errors=[];
+    var numColumns = info.columnsInfo.length;
     var ln=0;
     info.lineInfo = {};
-    // console.log("Expecting "+info.columnsInfo.length+" columns")
     while(ln<lines.length) {
         var cols=separateOneRow(info, lines[ln]);
-        if(cols.length !== info.columnsInfo.length) {
-            // console.log("  Multiline", ln, lines[ln])
+        var brokenLine = { count:cols.length, lines:[lines[ln]] };
+        if(brokenLine.count !== numColumns) {
             var wrongLine = ln;
             ++ln;
-            var col=cols.length;
-            if(col-1) {
-                cols.splice(cols.length-1, 0, info.opts.separator)
-            }            
             do {
-                var firstIsSep = lines[ln] && lines[ln][0] === info.opts.separator;
                 var separated = separateOneRow(info, lines[ln]);
-                if(separated.length>1) {
-                    var left=separated.length;
-                    var index=0;
-                    for( ; index<separated.length; ++index) {
-                        if(col>=info.columnsInfo.length) { break; }
-                        var c = separated[index];
-                        ++col;
-                        --left;
-                        if(c !== '') {
-                            if(col<=info.columnsInfo.length && ! firstIsSep) {
-                                cols.push('\n');
-                            } else {
-                                cols.push(info.opts.separator);
-                            }
-                            cols.push(c);                            
-                        }
+                if((brokenLine.count+separated.length-1) <= numColumns) {
+                    if(separated.length>1) {
+                        brokenLine.count += separated.length-1;
                     }
-                    while(left) {
-                        var c = separated[index];
-                        cols.push(info.opts.separator);
-                        cols.push(c);
-                        --left;
+                    if(lines[ln].substr(0, info.opts.separator.length) != info.opts.separator) {
+                        brokenLine.lines.push('\n')
                     }
+                    brokenLine.lines.push(lines[ln])
                 } else {
-                    cols.push('\n'+separated[0]);
+                    errors.push("row multiline #"+wrongLine+"~"+ln+" has "+brokenLine.lines[0].length+" fields, should have "+numColumns);
+                    break;
                 }
                 ++ln;
             }
-            while(col<info.columnsInfo.length);
-            lines[wrongLine] = cols.join('');
+            while(brokenLine.count<numColumns);
+            lines[wrongLine] = brokenLine.lines.join('');
             lines.splice(wrongLine+1, ln-wrongLine-1);
             --ln;
         } else {
-            // console.log("  OKline", ln, lines[ln])
             ++ln;
         }
     }
-    //lines.forEach(function(line, index) { var arr = line.split(info.opts.separator);  arr.forEach(function(cell, ci) {  console.log("  lines["+index+"]", arr.length, cell);   });    });
     throwIfErrors(errors);
     return lines;
 }
-
 
 function separateRows(info) {
     info.rows = txtToSql.fixLines(info, info.lines.filter(function(line){ return line.trim()!==""; })).map(function(line){

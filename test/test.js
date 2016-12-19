@@ -160,7 +160,7 @@ describe("specials", function(){
     });
 });
 
-describe("input errors", function(){
+describe/*.only*/("input errors", function(){
     var dummyBuffer = new Buffer('dummy', 'binary');
     [
         { name:'no-rawtable'},
@@ -407,7 +407,7 @@ describe/*.only*/("fixLine", function(){
         ];
         var fixed = txtToSql.fixLines({opts:{separator:';'}, columnsInfo:new Array(3)}, lines);
         //console.log(fixed)
-        expect(fixed).to.eql(check)
+        expect(fixed).to.eql(check)            
     });
     it("three lines", function(){
         var lines=[
@@ -471,6 +471,28 @@ describe/*.only*/("fixLine", function(){
             "cuatro;cin\nco y medio \ny finalmente;seis",
             "siete;ocho;nueve",
             "diez todo en una linea;once;doce"
+        ];
+        var fixed = txtToSql.fixLines({opts:{separator:';'}, columnsInfo:new Array(3)}, lines);
+        // console.log(fixed)
+        expect(fixed).to.eql(check)
+    });
+    it.skip("the failing case", function(){
+        var lines=[
+            "text-field;int-field;num-field;big;double",
+            "hello;1;3.141592;1234567890;1.12e-101",
+            "bye;1;3.141592;1.12e-101",
+            "sayonara;1;3.141592;1234567890;1.12e-101",
+            "aligato;3.141592;1.12e-101",
+            "0",
+            ";;;0;0.0"
+        ];
+        var check=[
+            "text-field;int-field;num-field;big;double",
+            "hello;1;3.141592;1234567890;1.12e-101\nbye;1;3.141592;1.12e-101",
+            "sayonara;1;3.141592;1234567890;1.12e-101",
+            "aligato;3.141592;1.12e-101",
+            "0",
+            ";;;0;0.0"
         ];
         var fixed = txtToSql.fixLines({opts:{separator:';'}, columnsInfo:new Array(3)}, lines);
         // console.log(fixed)
