@@ -479,9 +479,12 @@ describe/*.only*/("fixLine", function(){
     });
 });
 
-describe.skip("language errors", function(){
-    it("makeError", function(done){
+describe("language errors", function(){
+    it("makeError", function(){
         var makeErr = txtToSql.makeError;
-        expect(makeErr("error $1 is $2", ['uno','dos'])).to.eql('error uno is dos')
+       expect(makeErr("error $1 is $2", ['uno','dos'])).to.eql('error uno is dos') ;
+       expect(makeErr("error nada is menos", ['uno','dos'])).to.eql('error nada is menos') ;
+       expect(makeErr("error $1 menos", ['uno','dos'])).to.eql('error uno menos') ;
+       expect(makeErr("error $1 menos", [])).to.eql('error $1 menos') ;        
     });
 });
