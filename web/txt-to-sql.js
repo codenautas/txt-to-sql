@@ -355,21 +355,19 @@ txtToSql.fixLines = function fixLines(info, lines) {
     var numColumns = info.columnsInfo.length;
     var ln=0;
     var linesJoined=0;
-    info.lineInfo = {};
     while(ln<lines.length) {
         var firstLine = separateOneRow(info, lines[ln]);
-        var brokenLine = { count:firstLine.length, lines:[lines[ln]] };
-        var wrongLine = ln;
-        if(brokenLine.count !== numColumns) {
+        var brokenLine = { num: ln, cols:firstLine.length, lines:[lines[ln]] };
+        if(brokenLine.cols !== numColumns) {
             ++ln;
             do {
                 var separated = separateOneRow(info, lines[ln]);
-                if((brokenLine.count+separated.length-1) <= numColumns) {
+                if((brokenLine.cols+separated.length-1) <= numColumns) {
                     if(separated.length>1) {
-                        brokenLine.count += separated.length-1;
+                        brokenLine.cols += separated.length-1;
                     }
-                    if(lines[ln].substr(0, info.opts.separator.length) != info.opts.separator) {
-                        brokenLine.lines.push('\n')
+                    if(lines[ln].substr(0, info.opts.separator.length) !== info.opts.separator) {
+                        brokenLine.lines.push('\n');
                     }
                     brokenLine.lines.push(lines[ln]);
                     ++linesJoined;
@@ -377,16 +375,16 @@ txtToSql.fixLines = function fixLines(info, lines) {
                     if(brokenLine.lines.length===1) {
                         errors.push("row #"+ln+" has "+firstLine.length+" fields, should have "+numColumns);
                     } else {
-                        errors.push("row multiline #"+parseInt(wrongLine+linesJoined+1,10)+"~#"+parseInt(ln+linesJoined,10)+" has "+firstLine.length+" fields, should have "+numColumns);
+                        errors.push("row multiline #"+parseInt(brokenLine.num+linesJoined+1,10)+"~#"+parseInt(ln+linesJoined,10)+" has "+firstLine.length+" fields, should have "+numColumns);
                     }
                     ++ln;
                     break;
                 }
                 ++ln;
             }
-            while(brokenLine.count<numColumns);
-            lines[wrongLine] = brokenLine.lines.join('');
-            lines.splice(wrongLine+1, ln-wrongLine-1);
+            while(brokenLine.cols<numColumns);
+            lines[brokenLine.num] = brokenLine.lines.join('');
+            lines.splice(brokenLine.num+1, ln-brokenLine.num-1);
             --ln;
         } else {
             ++ln;
@@ -394,7 +392,7 @@ txtToSql.fixLines = function fixLines(info, lines) {
     }
     throwIfErrors(errors);
     return lines;
-}
+};
 
 function separateRows(info) {
     info.rows = txtToSql.fixLines(info, info.lines.filter(function(line){ return line.trim()!==""; })).map(function(line){
