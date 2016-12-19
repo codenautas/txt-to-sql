@@ -456,7 +456,7 @@ describe/*.only*/("fixLine", function(){
         //console.log(fixed)
         expect(fixed).to.eql(check)
     });
-    it(" a couple of joins", function(){
+    it("a couple of joins", function(){
         var lines=[
             "uno;dos;tres",
             "cuatro;cin",

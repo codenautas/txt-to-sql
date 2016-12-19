@@ -351,10 +351,14 @@ function separateOneRow(info, line) {
 }
 
 txtToSql.fixLines = function fixLines(info, lines) {
+    var errors=[];
     var ln=0;
+    info.lineInfo = {};
+    // console.log("Expecting "+info.columnsInfo.length+" columns")
     while(ln<lines.length) {
         var cols=separateOneRow(info, lines[ln]);
         if(cols.length !== info.columnsInfo.length) {
+            // console.log("  Multiline", ln, lines[ln])
             var wrongLine = ln;
             ++ln;
             var col=cols.length;
@@ -368,6 +372,7 @@ txtToSql.fixLines = function fixLines(info, lines) {
                     var left=separated.length;
                     var index=0;
                     for( ; index<separated.length; ++index) {
+                        if(col>=info.columnsInfo.length) { break; }
                         var c = separated[index];
                         ++col;
                         --left;
@@ -379,12 +384,8 @@ txtToSql.fixLines = function fixLines(info, lines) {
                             }
                             cols.push(c);                            
                         }
-                        if(col>info.columnsInfo.length) {
-                            break;
-                        }
                     }
                     while(left) {
-                        ++index;
                         var c = separated[index];
                         cols.push(info.opts.separator);
                         cols.push(c);
@@ -400,9 +401,12 @@ txtToSql.fixLines = function fixLines(info, lines) {
             lines.splice(wrongLine+1, ln-wrongLine-1);
             --ln;
         } else {
+            // console.log("  OKline", ln, lines[ln])
             ++ln;
         }
     }
+    //lines.forEach(function(line, index) { var arr = line.split(info.opts.separator);  arr.forEach(function(cell, ci) {  console.log("  lines["+index+"]", arr.length, cell);   });    });
+    throwIfErrors(errors);
     return lines;
 }
 
