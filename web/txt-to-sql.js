@@ -160,7 +160,7 @@ var formatFunctions = {
 txtToSql.validEncodings = ['ASCII7', 'UTF8' , 'ANSI'];
 function checkEncodingParam(info, encoding, inOrOut, errors) {
     if(encoding && txtToSql.validEncodings.indexOf(encoding)===-1) {
-        errors.push(info.messages.unsupported+' '+inOrOut+" encoding '"+encoding+"'");
+        errors.push(txtToSql.errString(info, 'errBadEncoding',[inOrOut, encoding]));
     }
 }
 
@@ -170,15 +170,15 @@ function verifyInputParams(info){
     var errors=[];
     if(! info.tableName) { errors.push('undefined table name'); }
     if(! info.rawTable) {
-        errors.push('no rawTable in input');
+        errors.push(info.messages.errNullTable);
     } else if(!(info.rawTable instanceof Buffer)) {
-        errors.push('info.rawTable must be an Buffer');
+        errors.push(info.messages.errBadBuffer);
     }
     if(! (info.opts.columnNamesFormat in formatFunctions)) {
-        errors.push("inexistent column names format '"+info.opts.columnNamesFormat+"'");
+        errors.push(txtToSql.errString(info, 'errBadFormat',[info.opts.columnNamesFormat]));
     }
     if(! (info.opts.outputEngine in engines)) {
-        errors.push(info.messages.unsupported+" output engine '"+info.opts.outputEngine+"'");
+        errors.push(txtToSql.errString(info, 'errOutputEngine',[info.opts.outputEngine]));
     }
     checkEncodingParam(info, info.opts.inputEncoding, 'input', errors);
     checkEncodingParam(info, info.opts.outputEncoding, 'output', errors);
@@ -374,13 +374,12 @@ txtToSql.fixLines = function fixLines(info, lines) {
                     ++linesJoined;
                 } else {
                     if(brokenLine.lines.length===1) {
-                        errors.push(info.messages.row+' #'+ln+' '+info.messages.has+' '+firstLine.length+' '+
-                                    info.messages.field+'s, '+info.messages.shouldHave+' '+numColumns);
+                        errors.push(txtToSql.errString(info, 'errBadRow',[ln, firstLine.length, numColumns]));
                     } else {
-                        errors.push(info.messages.row+' '+info.messages.multiline+' #'+
-                                   parseInt(brokenLine.num+linesJoined+1,10)+'~#'+
-                                   parseInt(ln+linesJoined,10)+' '+info.messages.has+' '+firstLine.length+' '+
-                                   info.messages.field+'s, '+info.messages.shouldHave+' '+numColumns);
+                        errors.push(txtToSql.errString(info, 'errBadRowMulti', [parseInt(brokenLine.num+linesJoined+1,10),
+                                                                                parseInt(ln+linesJoined,10),
+                                                                                firstLine.length,
+                                                                                numColumns]));
                     }
                     ++ln;
                     break;
@@ -745,11 +744,13 @@ txtToSql.dictionary={
         nulls:'nulls',
         pk:'primary key',
         time:'elapsed time',
-        unsupported:'unsupported',
-        has:'has',
-        shouldHave:'should have',
-        field:'field',
-        multiline:'multiline',
+        errNullTable:'no rawTable in input',
+        errBadBuffer:'info.rawTable must be a Buffer',
+        errBadEncoding:"unsupported $1 encoding '$2'",
+        errBadFormat:"inexistent column names format '$1'",
+        errOutputEngine:"unsupported output engine '$1'",
+        errBadRow:'row #$1 has $2 fields, should have $3',
+        errBadRowMulti:'row multiline #$1~#$2 has $3 fields, should have $4',
     },
     es:{
         row:'registro',
@@ -758,11 +759,13 @@ txtToSql.dictionary={
         nulls:'nulos',
         pk:'clave primaria',
         time:'tiempo de generación',
-        unsupported:'no soportado',
-        has:'tiene',
-        shouldHave:'debe tener',
-        field:'campo',
-        multiline:'mulitilínea',
+        errBadBuffer:'info.rawTable debe ser un Buffer',
+        errNullTable:'falta rawTable en la entrada',
+        errBadEncoding:"encoding de entrada $1 '$2' no soportado",
+        errBadFormat:"formato de nombres de columna inexistente '$1'",
+        errOutputEngine:"motor de salida no soportado '$1'",
+        errBadRow:'registro #$1 tiene $2 campos, debería tener $3',
+        errBadRowMulti:'registro multilínea #$1~#$2 tiene $3 campos, debería tener $4',
     }
 };
 
@@ -776,6 +779,10 @@ txtToSql.makeError=function makeError(dictionaryVar, params) {
         }
     }
     return err;
+};
+
+txtToSql.errString=function errString(info, varName, params) {
+    return txtToSql.makeError(txtToSql.dictionary[info.opts.lang][varName], params);
 };
 
 function stringizeStats(stats) {

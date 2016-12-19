@@ -1,2 +1,2 @@
 errors:
-  - info.rawTable must be an Buffer
+  - info.rawTable must be a Buffer
