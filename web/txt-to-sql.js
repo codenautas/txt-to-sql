@@ -168,7 +168,9 @@ function verifyInputParams(info){
     info.opts = changing(txtToSql.defaultOpts, info.opts || {});
     info.messages=txtToSql.dictionary[info.opts.lang];
     var errors=[];
-    if(! info.tableName) { errors.push('undefined table name'); }
+    if(! info.tableName) {
+        errors.push(info.messages.errUndefTable);
+    }
     if(! info.rawTable) {
         errors.push(info.messages.errNullTable);
     } else if(!(info.rawTable instanceof Buffer)) {
@@ -417,10 +419,10 @@ function verifyColumnNames(info) {
     var empty = "";
     info.columnsInfo.forEach(function(columnInfo, columnIndex){
         if(columnInfo.name===empty) {
-            errors.push("missing name for column #"+(columnIndex+1));
+            errors.push(txtToSql.errString(info, 'errColMissing',[columnIndex+1]));
         } else {
             if(columnInfo.name in namesHash) {
-                errors.push("duplicated column name '"+columnInfo.name+"'");
+                errors.push(txtToSql.errString(info, 'errColDupli',[columnInfo.name]));
             } else {
                 namesHash[columnInfo.name] = true;
             }
@@ -744,6 +746,7 @@ txtToSql.dictionary={
         nulls:'nulls',
         pk:'primary key',
         time:'elapsed time',
+        errUndefTable:'undefined table name',
         errNullTable:'no rawTable in input',
         errBadBuffer:'info.rawTable must be a Buffer',
         errBadEncoding:"unsupported $1 encoding '$2'",
@@ -751,6 +754,8 @@ txtToSql.dictionary={
         errOutputEngine:"unsupported output engine '$1'",
         errBadRow:'row #$1 has $2 fields, should have $3',
         errBadRowMulti:'row multiline #$1~#$2 has $3 fields, should have $4',
+        errColMissing:"missing name for column #$1",
+        errColDupli:"duplicated column name '$1'",
     },
     es:{
         row:'registro',
@@ -759,6 +764,7 @@ txtToSql.dictionary={
         nulls:'nulos',
         pk:'clave primaria',
         time:'tiempo de generación',
+        errUndefTable:'nombre de table indefinido',
         errBadBuffer:'info.rawTable debe ser un Buffer',
         errNullTable:'falta rawTable en la entrada',
         errBadEncoding:"encoding de entrada $1 '$2' no soportado",
@@ -766,6 +772,8 @@ txtToSql.dictionary={
         errOutputEngine:"motor de salida no soportado '$1'",
         errBadRow:'registro #$1 tiene $2 campos, debería tener $3',
         errBadRowMulti:'registro multilínea #$1~#$2 tiene $3 campos, debería tener $4',
+        errColMissing:"falta nombre para la columna #$1",
+        errColDupli:"nombre de columna duplicado '$1'",
     }
 };
 
