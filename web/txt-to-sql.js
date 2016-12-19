@@ -354,12 +354,13 @@ txtToSql.fixLines = function fixLines(info, lines) {
     var errors=[];
     var numColumns = info.columnsInfo.length;
     var ln=0;
+    var linesJoined=0;
     info.lineInfo = {};
     while(ln<lines.length) {
-        var cols=separateOneRow(info, lines[ln]);
-        var brokenLine = { count:cols.length, lines:[lines[ln]] };
+        var firstLine = separateOneRow(info, lines[ln]);
+        var brokenLine = { count:firstLine.length, lines:[lines[ln]] };
+        var wrongLine = ln;
         if(brokenLine.count !== numColumns) {
-            var wrongLine = ln;
             ++ln;
             do {
                 var separated = separateOneRow(info, lines[ln]);
@@ -370,9 +371,15 @@ txtToSql.fixLines = function fixLines(info, lines) {
                     if(lines[ln].substr(0, info.opts.separator.length) != info.opts.separator) {
                         brokenLine.lines.push('\n')
                     }
-                    brokenLine.lines.push(lines[ln])
+                    brokenLine.lines.push(lines[ln]);
+                    ++linesJoined;
                 } else {
-                    errors.push("row multiline #"+wrongLine+"~"+ln+" has "+brokenLine.lines[0].length+" fields, should have "+numColumns);
+                    if(brokenLine.lines.length===1) {
+                        errors.push("row #"+ln+" has "+firstLine.length+" fields, should have "+numColumns);
+                    } else {
+                        errors.push("row multiline #"+parseInt(wrongLine+linesJoined+1,10)+"~"+parseInt(ln+linesJoined,10)+" has "+firstLine.length+" fields, should have "+numColumns);
+                    }
+                    ++ln;
                     break;
                 }
                 ++ln;
