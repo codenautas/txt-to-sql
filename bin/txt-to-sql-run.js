@@ -155,10 +155,27 @@ Promise.resolve().then(function() {
         }).then(function(rawInput) {
             params.rawTable = rawInput;
             if(cmdParams.fast) {
+                var sqlDML=[];
+                var sqlPK;
                 return fast.doFast(params, inputBase, fastBufferingThreshold).then(function(res) {
+                    res.preparedResult.scripts.forEach(function(script) {
+                        switch(script.type) {
+                            case 'drop table':
+                            case 'create table':
+                                sqlDML.push(script.sql);
+                                break;
+                            case 'primary key':
+                                sqlPK = script.sql;
+                                break;
+                        }
+                    });
                     return writeConfigYaml(createParams(params, res.preparedResult), inputBase+'.yaml');
                 }).then(function() {
                     process.stdout.write("Generated '"+inputBase+".sql'");
+                }).then(function() {
+                    return fs.writeFile(inputBase+'-create.sql', sqlDML.join('\n'), {encoding:'utf8'});
+                }).then(function() {
+                    
                 });
             } else if (cmdParams.prepare) {
                 return doPrepare(params, inputYaml);

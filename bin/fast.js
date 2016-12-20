@@ -83,7 +83,6 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
     var inStream, outStream;
     var rl;
     var preparedResult;
-    var endResult;
     return Promise.resolve().then(function() {
         return txtToSql.initializeStats(params);
     }).then(txtToSql.verifyInputParams)
@@ -128,15 +127,12 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                 preparedResult = fastAnalyzeLines(info);
                 fastFinalize(info, outStream);
             }
+            preparedResult.scripts = info.scripts;
             rl.preparedResult = preparedResult;
             rl.stats = txtToSql.finalizeStats(info).stats;
             outStream.end();
         });
         return streamToPromise(rl);
-    }).then(function(res) {
-        endResult = res;
-    }).then(function() {
-        return endResult;
     });
 }
 
