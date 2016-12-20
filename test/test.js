@@ -288,130 +288,130 @@ describe("datatype validation", function(){
         it("check", function(){
             var b1 = txtToSql.typeValidations['boolean'].checkOne;
             var b = txtToSql.typeValidations['boolean'].checkArray;
-            expect(b1('null')).to.be.ok(); // coverage
-            expect(b1('')).to.not.be.ok(); // coverage
+            expect(b1('null')).to.eql(true); // coverage
+            expect(b1('')).to.eql(false); // coverage
             // good, 1 value
-            expect(b(0, [['uno']])).to.be.ok();
-            expect(b(0, [[''],['uno']])).to.be.ok();
-            expect(b(0, [['true'],['true'],['true']])).to.be.ok();
-            expect(b(0, [['pi'],['pi'],['pi']])).to.be.ok();
+            expect(b(0, [['uno']])).to.eql(true);
+            expect(b(0, [[''],['uno']])).to.eql(true);
+            expect(b(0, [['true'],['true'],['true']])).to.eql(true);
+            expect(b(0, [['pi'],['pi'],['pi']])).to.eql(true);
             // good, 2 values
-            expect(b(0, [['1'],['1'],['0'],['1']])).to.be.ok();
-            expect(b(0, [['1'],['0'],[''],['0'],['1']])).to.be.ok();
-            expect(b(0, [[''],['1'],['0'],['0'],['1'],['']])).to.be.ok();
-            expect(b(0, [['1'],['2'],['2'],['1'],['']])).to.be.ok();
-            expect(b(0, [['si'],['si']])).to.be.ok();
-            expect(b(0, [['no'],['no'],['si'],['no'],['si']])).to.be.ok();
-            expect(b(0, [['true'],['true'],['false']])).to.be.ok();
+            expect(b(0, [['1'],['1'],['0'],['1']])).to.eql(true);
+            expect(b(0, [['1'],['0'],[''],['0'],['1']])).to.eql(true);
+            expect(b(0, [[''],['1'],['0'],['0'],['1'],['']])).to.eql(true);
+            expect(b(0, [['1'],['2'],['2'],['1'],['']])).to.eql(true);
+            expect(b(0, [['si'],['si']])).to.eql(true);
+            expect(b(0, [['no'],['no'],['si'],['no'],['si']])).to.eql(true);
+            expect(b(0, [['true'],['true'],['false']])).to.eql(true);
             // bad
-            expect(b(0, [['3'],['1'],['0']])).to.not.be.ok();
-            expect(b(0, [['3'],['1'],['3'],['1'],['3'],['1'],['0']])).to.not.be.ok();
-            expect(b(0, [['tito'],['loncho'],['pepe'],['tito']])).to.not.be.ok();
-            expect(b(0, [['juan'],['pedro'],['pedro'],['juan']])).to.not.be.ok();
+            expect(b(0, [['3'],['1'],['0']])).to.eql(false);
+            expect(b(0, [['3'],['1'],['3'],['1'],['3'],['1'],['0']])).to.eql(false);
+            expect(b(0, [['tito'],['loncho'],['pepe'],['tito']])).to.eql(false);
+            expect(b(0, [['juan'],['pedro'],['pedro'],['juan']])).to.eql(false);
         });
         it("parse", function(){
             var p = txtToSql.typeValidations['boolean'].parseOne;
             // true
-            expect(p('1')).to.be.ok();
-            expect(p('t')).to.be.ok();
-            expect(p('true')).to.be.ok();
+            expect(p('1')).to.eql(true);
+            expect(p('t')).to.eql(true);
+            expect(p('true')).to.eql(true);
             // true porque se supone que el "check" está ok!!
-            expect(p('uno')).to.be.ok();
-            expect(p('anything')).to.be.ok();
+            expect(p('uno')).to.eql(true);
+            expect(p('anything')).to.eql(true);
             // false
-            expect(p('naranja')).to.not.be.ok();
-            expect(p('n')).to.not.be.ok();
-            expect(p('f')).to.not.be.ok();
-            expect(p('0')).to.not.be.ok();
-            expect(p('2')).to.not.be.ok();
+            expect(p('naranja')).to.eql(false);
+            expect(p('n')).to.eql(false);
+            expect(p('f')).to.eql(false);
+            expect(p('0')).to.eql(false);
+            expect(p('2')).to.eql(false);
         });
     });
     it("integer", function(){
         var i = txtToSql.typeValidations['integer'].checkOne;
         // good
-        expect(i('1')).to.be.ok();
-        expect(i('1323')).to.be.ok();
-        expect(i('12345')).to.be.ok();
-        expect(i('0')).to.be.ok();
-        expect(i('-1')).to.be.ok();
+        expect(i('1')).to.eql(true);
+        expect(i('1323')).to.eql(true);
+        expect(i('12345')).to.eql(true);
+        expect(i('0')).to.eql(true);
+        expect(i('-1')).to.eql(true);
         // bad
-        expect(i('123456')).to.not.be.ok();
-        expect(i('1.1')).to.not.be.ok();
-        expect(i('.1')).to.not.be.ok();
-        expect(i('0.1')).to.not.be.ok();
-        expect(i('texto')).to.not.be.ok();
+        expect(i('123456')).to.eql(false);
+        expect(i('1.1')).to.eql(false);
+        expect(i('.1')).to.eql(false);
+        expect(i('0.1')).to.eql(false);
+        expect(i('texto')).to.eql(false);
     });
     it("bigint", function(){
         var bi = txtToSql.typeValidations['bigint'].checkOne;
         // good
-        expect(bi('123456')).to.be.ok();
-        expect(bi('123456789')).to.be.ok();
-        expect(bi('-123456789')).to.be.ok();
+        expect(bi('123456')).to.eql(true);
+        expect(bi('123456789')).to.eql(true);
+        expect(bi('-123456789')).to.eql(true);
         // bad
-        expect(bi('0.1')).to.not.be.ok();
-        expect(bi('1.5')).to.not.be.ok();
-        expect(bi('string')).to.not.be.ok();
+        expect(bi('0.1')).to.eql(false);
+        expect(bi('1.5')).to.eql(false);
+        expect(bi('string')).to.eql(false);
     });
     it("numeric", function(){
         var n = txtToSql.typeValidations['numeric'].checkOne;
         // good
-        expect(n('123456.1')).to.be.ok();
-        expect(n('123456789.5')).to.be.ok();
-        expect(n('-123456789.666666')).to.be.ok();
+        expect(n('123456.1')).to.eql(true);
+        expect(n('123456789.5')).to.eql(true);
+        expect(n('-123456789.666666')).to.eql(true);
         // bad
-        expect(n('1.12e-101')).to.not.be.ok();
-        expect(n('2.12e-101333')).to.not.be.ok();
-        expect(n('palabra')).to.not.be.ok();
+        expect(n('1.12e-101')).to.eql(false);
+        expect(n('2.12e-101333')).to.eql(false);
+        expect(n('palabra')).to.eql(false);
     });
     it("double precision", function(){
         var dp = txtToSql.typeValidations['double precision'].checkOne;
         // good
-        expect(dp('123456.1')).to.be.ok();
-        expect(dp('123456789.5')).to.be.ok();
-        expect(dp('-123456789.666666')).to.be.ok();
-        expect(dp('1.12e-101')).to.be.ok();
-        expect(dp('2.12e-101333')).to.be.ok();
+        expect(dp('123456.1')).to.eql(true);
+        expect(dp('123456789.5')).to.eql(true);
+        expect(dp('-123456789.666666')).to.eql(true);
+        expect(dp('1.12e-101')).to.eql(true);
+        expect(dp('2.12e-101333')).to.eql(true);
         // bad
-        expect(dp('a1.12e-101')).to.not.be.ok();
+        expect(dp('a1.12e-101')).to.eql(false);
     });
     it("date", function(){
         var d = txtToSql.typeValidations['date'].checkOne;
         // good
-        expect(d('2016-11-21')).to.be.ok();
-        expect(d('2016/11/21')).to.be.ok();
-        expect(d('1/29/1969')).to.be.ok();
-        expect(d('29/1/1969')).to.be.ok();
-        expect(d('31/3/1969')).to.be.ok();
-        expect(d('31/03/1969')).to.be.ok();
-        expect(d('30/3/969')).to.be.ok();
+        expect(d('2016-11-21')).to.eql(true);
+        expect(d('2016/11/21')).to.eql(true);
+        expect(d('1/29/1969')).to.eql(true);
+        expect(d('29/1/1969')).to.eql(true);
+        expect(d('31/3/1969')).to.eql(true);
+        expect(d('31/03/1969')).to.eql(true);
+        expect(d('30/3/969')).to.eql(true);
         // bad
-        expect(d('12016/11/21')).to.not.be.ok();
-        expect(d('2016/11-21')).to.not.be.ok();
-        expect(d('3-29/1969')).to.not.be.ok();
-        expect(d('29/3-1969')).to.not.be.ok();
-        expect(d('32/3/1969')).to.not.be.ok();
-        expect(d('30/3/0969')).to.not.be.ok();
-        expect(d('not a date')).to.not.be.ok();
+        expect(d('12016/11/21')).to.eql(false);
+        expect(d('2016/11-21')).to.eql(false);
+        expect(d('3-29/1969')).to.eql(false);
+        expect(d('29/3-1969')).to.eql(false);
+        expect(d('32/3/1969')).to.eql(false);
+        expect(d('30/3/0969')).to.eql(false);
+        expect(d('not a date')).to.eql(false);
     });
     it("timestamp", function(){
         var ts = txtToSql.typeValidations['timestamp'].checkOne;
         var tsA = txtToSql.typeValidations['timestamp'].checkArray;
-        expect(tsA(0, [['2010-01-21 00:10:00.009']])).to.be.ok(); // coverage
+        expect(tsA(0, [['2010-01-21 00:10:00.009']])).to.eql(true); // coverage
         // good
-        expect(ts('2016-11-21 10:00:01')).to.be.ok();
-        expect(ts('2009-05-06 00:10:00 +4:00')).to.be.ok();
-        expect(ts('2009-05-06 00:00:00 -12:00')).to.be.ok();
-        expect(ts('2009-05-06 00:00:00 +13:00')).to.be.ok();
+        expect(ts('2016-11-21 10:00:01')).to.eql(true);
+        expect(ts('2009-05-06 00:10:00 +4:00')).to.eql(true);
+        expect(ts('2009-05-06 00:00:00 -12:00')).to.eql(true);
+        expect(ts('2009-05-06 00:00:00 +13:00')).to.eql(true);
         // bad
-        expect(ts('2016-11-21 0:00:01')).to.not.be.ok();
-        expect(ts('2016-11-21 30:00:01')).to.not.be.ok();
-        expect(ts('2016-21-21 30:00:01')).to.not.be.ok();
-        expect(ts('2016-11-32 30:00:01')).to.not.be.ok();
-        expect(ts('216-11-32 30:00:01')).to.not.be.ok();
-        expect(ts('2009-05-06 00:10:00.100 /4:00')).to.not.be.ok();
-        expect(ts('2009-05-06 00:10:00.100 4:00')).to.not.be.ok();
-        expect(ts('2009-05-06 00:00:00 +13:60')).to.not.be.ok();
-        expect(ts('not a timestamp')).to.not.be.ok();
+        expect(ts('2016-11-21 0:00:01')).to.eql(false);
+        expect(ts('2016-11-21 30:00:01')).to.eql(false);
+        expect(ts('2016-21-21 30:00:01')).to.eql(false);
+        expect(ts('2016-11-32 30:00:01')).to.eql(false);
+        expect(ts('216-11-32 30:00:01')).to.eql(false);
+        expect(ts('2009-05-06 00:10:00.100 /4:00')).to.eql(false);
+        expect(ts('2009-05-06 00:10:00.100 4:00')).to.eql(false);
+        expect(ts('2009-05-06 00:00:00 +13:60')).to.eql(false);
+        expect(ts('not a timestamp')).to.eql(false);
     });
 });
 
