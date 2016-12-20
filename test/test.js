@@ -116,12 +116,7 @@ describe("fixtures", function(){
                     }
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
-                    var comp = txtToSql.compareBuffers(generated.rawSql, expected.rawSql);
-                    if(comp !==-1) {
-                        console.log("GEN", generated.rawSql.toString());
-                        console.log("EXP", expected.rawSql.toString());
-                        console.log("diff in ", comp, "\n"+expected.rawSql.toString().substring(comp))
-                    }
+                    common.logBuffersIfDifferent(generated.rawSql,expected.rawSql);
                     expect(generated.rawSql).to.eql(expected.rawSql);
                     expect(discrepances(generated.rawSql,expected.rawSql)).to.eql(null);
                     // coherencia entre prepared y generated

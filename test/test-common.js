@@ -39,4 +39,13 @@ me.loadDefaultExpectedResult = function loadDefaultExpectedResult() {
     return Promise.resolve(me.defaultExpectedResult);
 }
 
+me.logBuffersIfDifferent = function logBuffersIfDifferent(gen, exp) {
+    var comp = txtToSql.compareBuffers(gen, exp);
+    if(comp !==-1) {
+        console.log("GEN '"+gen+"'");
+        console.log("EXP '"+exp+"'")
+        console.log("DIFF STARTS in "+parseInt(comp,10), "\n"+(exp.length>gen.length ? exp : gen).toString().substring(comp))
+    }
+}
+
 module.exports = me;
