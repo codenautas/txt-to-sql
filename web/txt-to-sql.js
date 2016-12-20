@@ -32,6 +32,13 @@ function evaluateColumn(column, rows, regex) {
     }
     return true;
 }
+var booleanRegExps = [
+    {t:/^1$/,       f:/^0$/},
+    {t:/^1$/,       f:/^2$/},
+    {t:/^t/i,       f:/^f/i},
+    {t:/^[^n]/i,    f:/^[n]/i}
+];
+
 function isBoolean(column, rows) {
     var vals=[];
     for(var row=0; row<rows.length; ++row) {
@@ -42,7 +49,21 @@ function isBoolean(column, rows) {
             if(vals.length>2) { return false; }
         }
     }
-    return true;
+    if(vals.length==2) {
+        return booleanRegExps.some(function(rgx) {
+            //console.log("vals", vals, '->', rgx)
+            //console.log(' ',vals[0], vals[0].match(rgx.t)?"OK":"nop")
+            //console.log(' ',vals[1], vals[1].match(rgx.f)?"OK":"nop")
+            return (vals[0].match(rgx.t) && vals[1].match(rgx.f))
+                    || (vals[1].match(rgx.t) && vals[0].match(rgx.f));
+        });
+    } else {
+        return vals.some(function(val) {
+            return booleanRegExps.some(function(rgx) {
+                return val.match(rgx.f) || val.match(rgx.t)
+            });
+        });
+    }
 }
 
 function isInteger(column, rows) {

@@ -288,16 +288,23 @@ describe("datatype validation", function(){
         var b1 = txtToSql.typeValidations['boolean'].checkOne;
         var b = txtToSql.typeValidations['boolean'].checkArray;
         expect(b1('null')).to.be.ok(); // coverage
+        expect(b1('')).to.not.be.ok(); // coverage
         // good
         expect(b(0, [['1'],['1'],['0'],['1']])).to.be.ok();
         expect(b(0, [['uno']])).to.be.ok();
-        expect(b(0, [[null],['uno']])).to.be.ok();
-        expect(b(0, [['1'],['0'],[null],['0'],['1']])).to.be.ok();
-        expect(b(0, [[null],['1'],['0'],['0'],['1'],[null]])).to.be.ok();
+        expect(b(0, [[''],['uno']])).to.be.ok();
+        expect(b(0, [['1'],['0'],[''],['0'],['1']])).to.be.ok();
+        expect(b(0, [[''],['1'],['0'],['0'],['1'],['']])).to.be.ok();
+        expect(b(0, [['1'],['2'],['2'],['1'],['']])).to.be.ok();
+        expect(b(0, [['si'],['si']])).to.be.ok();
+        expect(b(0, [['no'],['no'],['si'],['no'],['si']])).to.be.ok();
+        expect(b(0, [['true'],['true'],['true']])).to.be.ok();
+        expect(b(0, [['true'],['true'],['false']])).to.be.ok();
         // bad
         expect(b(0, [['3'],['1'],['0']])).to.not.be.ok();
         expect(b(0, [['3'],['1'],['3'],['1'],['3'],['1'],['0']])).to.not.be.ok();
         expect(b(0, [['tito'],['loncho'],['pepe'],['tito']])).to.not.be.ok();
+        expect(b(0, [['juan'],['pedro'],['pedro'],['juan']])).to.not.be.ok();
     });
     it("integer", function(){
         var i = txtToSql.typeValidations['integer'].checkOne;
