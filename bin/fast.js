@@ -47,6 +47,7 @@ function fastInsert(outStream, info, line) {
 function fastCreateCreate(info) {
     txtToSql.quoteNames(info);
     txtToSql.generateDropTable(info);
+    txtToSql.generateAlterTableAddPK(info);
     txtToSql.generateCreateScript(info);
 }
 

@@ -164,7 +164,7 @@ Promise.resolve().then(function() {
                             case 'create table':
                                 sqlDML.push(script.sql);
                                 break;
-                            case 'primary key':
+                            case 'add primary key':
                                 sqlPK = script.sql;
                                 break;
                         }
