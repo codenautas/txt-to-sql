@@ -175,7 +175,14 @@ Promise.resolve().then(function() {
                 }).then(function() {
                     return fs.writeFile(inputBase+'-create.sql', sqlDML.join('\n'), {encoding:'utf8'});
                 }).then(function() {
-                    
+                    process.stdout.write("\nGenerated '"+inputBase+"-create.sql'");
+                    if(sqlPK) {
+                        return fs.writeFile(inputBase+'-pk.sql', sqlPK, {encoding:'utf8'});
+                    }
+                }).then(function() {
+                    if(sqlPK) {
+                        process.stdout.write("\nGenerated '"+inputBase+"-pk.sql'");
+                    }
                 });
             } else if (cmdParams.prepare) {
                 return doPrepare(params, inputYaml);
