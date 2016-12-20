@@ -24,7 +24,7 @@ var fastBufferingThreshold = 2;
 
 var originalEngines = {};
 
-describe("fast-fixtures", function(){
+describe/*.skip*/("fast-fixtures", function(){
     before(function() {
        originalEngines = JSON.parse(JSON.stringify(txtToSql.engines));
        for(var name in txtToSql.engines) {
@@ -37,8 +37,8 @@ describe("fast-fixtures", function(){
     [
         {name:'mssql-example-one'},
         {name:'oracle-example-one'},
-        {name:'mssql-comma-align', customThreshold:true},
-        {name:'mssql-with-drop-table', customThreshold:true},
+        {name:'mssql-comma-align'},
+        {name:'mssql-with-drop-table'},
         {name:'oracle-with-drop-table'},
         {name:'mssql-example-one', title:'mssql-coverage',
          changeParam:function(param) { param.opts.inputEncoding=null; param.opts.outputEncoding=null; }
@@ -79,9 +79,7 @@ describe("fast-fixtures", function(){
                 }).then(function() {
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
-                    var threshold = fixture.customThreshold ?
-                        param.rawTable.toString().split(/\r?\n/).length :
-                        fastBufferingThreshold;
+                    var threshold = param.rawTable.toString().split(/\r?\n/).length;
                     return txtToSqlFast.doFast(param, basePath, threshold, generated);
                 }).then(function(){
                     var gen = generated.lines.join('');

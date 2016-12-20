@@ -1,14 +1,14 @@
 columns:
   - name: b1
     type: boolean
-    inPrimaryKey: false
+    inPrimaryKey: true
     maxLength: 1
     maxScale: 0
     hasNullValues: false
     hasCientificNotation: null
   - name: b2
     type: boolean
-    inPrimaryKey: false
+    inPrimaryKey: true
     maxLength: 1
     maxScale: 0
     hasNullValues: false
