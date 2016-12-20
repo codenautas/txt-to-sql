@@ -40,7 +40,6 @@ function fastInsert(outStream, info, line) {
         var insertLines = insertValues.map(function(iv) {
             return iv.map(function(c) { return insertInto + c + ";"; }).join('\n');
         }).join('\n');
-        //outStream.write('\n'+insertLines);
         outStream.write(insertLines+'\n');
     }
 }
@@ -57,18 +56,10 @@ function writeInsertsToStream(scripts, outStream) {
     if(ins.length) {
        outStream.write(ins[0].sql+'\n'); 
     }
-    
-    //scripts.forEach(function(script, index) {
-    //    outStream.write(script.sql);
-    //    if((index+1)<scripts.length) {
-    //        outStream.write('\n');
-    //    }
-    //});
 }
 
 function fastFinalize(info, outStream) {
     fastCreateCreate(info);
-    //txtToSql.removeIgnoredLines(info);
     txtToSql.generateInsertScript(info);
     writeInsertsToStream(info.scripts, outStream);
 }

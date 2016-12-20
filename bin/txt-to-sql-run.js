@@ -33,7 +33,6 @@ cmdParams.prepare = program.prepare;
 cmdParams.fast = program.fast;
 cmdParams.exportDefaults = program.exportDefaults;
 cmdParams.lang = program.lang;
-
 //console.log("cmdParams", cmdParams)
 
 // numero de lineas a leer para analizar entrada
