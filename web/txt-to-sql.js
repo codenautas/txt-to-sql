@@ -24,14 +24,6 @@ function filling(columnLength, val) { return val.length>=columnLength?'':new Arr
 function padLeft(columnLength, val) { return val+filling(columnLength, val); }
 function padRight(columnLength, val) { return filling(columnLength,val)+val; }
 
-function evaluateColumn(column, rows, regex) {
-    for(var row=0; row<rows.length; ++row) {
-        if(rows[row][column] && ! rows[row][column].match(regex)) {
-            return false;
-        }
-    }
-    return true;
-}
 var booleanRegExps = [
     {t:/^1$/,       f:/^0$/},
     {t:/^1$/,       f:/^2$/},
@@ -49,23 +41,28 @@ function isBoolean(column, rows) {
             if(vals.length>2) { return false; }
         }
     }
-    if(vals.length==2) {
+    if(vals.length===2) {
         return booleanRegExps.some(function(rgx) {
-            //console.log("vals", vals, '->', rgx)
-            //console.log(' ',vals[0], vals[0].match(rgx.t)?"OK":"nop")
-            //console.log(' ',vals[1], vals[1].match(rgx.f)?"OK":"nop")
-            return (vals[0].match(rgx.t) && vals[1].match(rgx.f))
-                    || (vals[1].match(rgx.t) && vals[0].match(rgx.f));
+            return (vals[0].match(rgx.t) && vals[1].match(rgx.f)) ||
+                   (vals[1].match(rgx.t) && vals[0].match(rgx.f));
         });
     } else {
         return vals.some(function(val) {
             return booleanRegExps.some(function(rgx) {
-                return val.match(rgx.f) || val.match(rgx.t)
+                return val.match(rgx.f) || val.match(rgx.t);
             });
         });
     }
 }
 
+function evaluateColumn(column, rows, regex) {
+    for(var row=0; row<rows.length; ++row) {
+        if(rows[row][column] && ! rows[row][column].match(regex)) {
+            return false;
+        }
+    }
+    return true;
+}
 function isInteger(column, rows) {
     return evaluateColumn(column, rows, /^-?[0-9]{1,5}$/);
 }
