@@ -56,21 +56,11 @@ function isBoolean(column, rows) {
 }
 // asume que son booleanos validos!!
 function parseBoolean(val) {
-    var rv; // undefined
-    if(! booleanRegExps.some(function(rgx) {
-        if(val.match(rgx.t)) {
-            rv = true;
-            return true;
-        }
-        if(val.match(rgx.f)) {
-            rv = false;
-            return true;
-        }
-        return false;
-    })) {
-        throw new Error('no match');
+    for(var re=0;re<booleanRegExps.length; ++re) {
+        var rgx = booleanRegExps[re];
+        if(val.match(rgx.t)) { return true; }
+        if(val.match(rgx.f)) { return false; }
     }
-    return rv;
 }
 
 function evaluateColumn(column, rows, regex) {
