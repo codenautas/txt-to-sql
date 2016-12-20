@@ -50,7 +50,7 @@ function fastCreateCreate(info) {
     txtToSql.generateCreateScript(info);
 }
 
-function writeScriptsToStream(scripts, outStream) {
+function writeInsertsToStream(scripts, outStream) {
     scripts.forEach(function(script, index) {
         outStream.write(script.sql);
         if((index+1)<scripts.length) {
@@ -63,7 +63,7 @@ function fastFinalize(info, outStream) {
     fastCreateCreate(info);
     //txtToSql.removeIgnoredLines(info);
     txtToSql.generateInsertScript(info);
-    writeScriptsToStream(info.scripts, outStream);
+    writeInsertsToStream(info.scripts, outStream);
 }
 
 function streamToPromise(stream) {
@@ -83,6 +83,7 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
     var inStream, outStream;
     var rl;
     var preparedResult;
+    var endResult;
     return Promise.resolve().then(function() {
         return txtToSql.initializeStats(params);
     }).then(txtToSql.verifyInputParams)
@@ -110,7 +111,7 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
                         preparedResult = fastAnalyzeLines(info);
                         fastCreateCreate(info);
                         // deben estar drop y create
-                        writeScriptsToStream(info.scripts, outStream);
+                        writeInsertsToStream(info.scripts, outStream);
                         info.lines.forEach(function(ln) {
                             fastInsert(outStream, info, ln);
                         });
@@ -132,6 +133,10 @@ function doFast(params, inputBase, fastBufferingThreshold, outputStream) {
             outStream.end();
         });
         return streamToPromise(rl);
+    }).then(function(res) {
+        endResult = res;
+    }).then(function() {
+        return endResult;
     });
 }
 

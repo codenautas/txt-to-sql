@@ -19,7 +19,7 @@ program
     .option('-p, --prepare', 'Analyzes input and generates input.yaml')
     .option('-f, --fast', 'Uses streams to process input')
     .option('-e, --export-defaults', 'Exports defaults to txt-to-sql-defaults.yaml')
-    .option('-l, --lang [es]', 'Language of statistics','es')
+    .option('-l, --lang [en]', 'Language of statistics','en')
     .parse(process.argv);
 
 
@@ -33,6 +33,8 @@ cmdParams.prepare = program.prepare;
 cmdParams.fast = program.fast;
 cmdParams.exportDefaults = program.exportDefaults;
 cmdParams.lang = program.lang;
+
+//console.log("cmdParams", cmdParams)
 
 // numero de lineas a leer para analizar entrada
 var fastBufferingThreshold = 50;
@@ -144,7 +146,7 @@ Promise.resolve().then(function() {
             existentFiles.unshift(txtToSql.defaultOpts);
             return miniTools.readConfig(existentFiles);
         }).then(function(data) {
-            params.opts = data.opts;
+            params.opts = data.opts || {};
             params.opts.lang = cmdParams.lang;
             if(! params.tableName) {
                 params.tableName = inputName;
