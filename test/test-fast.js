@@ -85,10 +85,15 @@ describe("fast-fixtures", function(){
                     return txtToSqlFast.doFast(param, basePath, threshold, generated);
                 }).then(function(){
                     var gen = generated.lines.join('');
-                    //gen = gen.trimLeft();
-                    var exp = expected.rawSql.toString();
-                    //var exp = expected.rawSql.toString().split("\n\n")[1];
-                    //console.log("GEN '"+gen+"'"); console.log("EXP '"+exp+"'")
+                    var eparts = expected.rawSql.toString().split("\n\n");
+                    // extraemos el insert
+                    var exp = eparts[eparts.length-1].trimLeft()+'\n';                    
+                    var comp = txtToSql.compareBuffers(gen, exp);
+                    if(comp !==-1) {
+                        console.log("GEN '"+gen+"'");
+                        console.log("EXP '"+exp+"'")
+                        console.log("diff in ", comp, "\n"+exp.substring(comp))
+                    }
                     expect(gen).to.eql(exp);
                }).then(done,done);
             });

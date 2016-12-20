@@ -40,24 +40,30 @@ function fastInsert(outStream, info, line) {
         var insertLines = insertValues.map(function(iv) {
             return iv.map(function(c) { return insertInto + c + ";"; }).join('\n');
         }).join('\n');
-        outStream.write('\n'+insertLines);
+        //outStream.write('\n'+insertLines);
+        outStream.write(insertLines+'\n');
     }
 }
 
 function fastCreateCreate(info) {
     txtToSql.quoteNames(info);
     txtToSql.generateDropTable(info);
-    txtToSql.generateAlterTableAddPK(info);
     txtToSql.generateCreateScript(info);
+    txtToSql.generateAlterTableAddPK(info);
 }
 
 function writeInsertsToStream(scripts, outStream) {
-    scripts.forEach(function(script, index) {
-        outStream.write(script.sql);
-        if((index+1)<scripts.length) {
-            outStream.write('\n');
-        }
-    });
+    var ins = scripts.filter(function(script) { return script.type==='insert'; });
+    if(ins.length) {
+       outStream.write(ins[0].sql+'\n'); 
+    }
+    
+    //scripts.forEach(function(script, index) {
+    //    outStream.write(script.sql);
+    //    if((index+1)<scripts.length) {
+    //        outStream.write('\n');
+    //    }
+    //});
 }
 
 function fastFinalize(info, outStream) {

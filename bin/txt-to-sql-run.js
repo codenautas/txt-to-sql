@@ -165,7 +165,7 @@ Promise.resolve().then(function() {
                                 sqlDML.push(script.sql);
                                 break;
                             case 'add primary key':
-                                sqlPK = script.sql;
+                                sqlPK = script.sql+';';
                                 break;
                         }
                     });
