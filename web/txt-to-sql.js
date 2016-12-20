@@ -576,7 +576,7 @@ function generateDropTable(info) {
 function generateAlterTableAddPK(info) {
     if(info.primaryKey && info.outputEngine.alterTableAddPK) {
         info.scripts.push({type:'add primary key',
-                            sql: info.outputEngine.alterTableAddPK(info.quotedTableName, info.quote(info.tableName+'_pk'), info.primaryKey)})
+                            sql: info.outputEngine.alterTableAddPK(info.quotedTableName, info.quote(info.tableName+'_pk'), info.primaryKey)});
     }
     return info;
 }
