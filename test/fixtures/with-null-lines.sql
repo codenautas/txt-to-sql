@@ -5,8 +5,8 @@ create table "with-null-lines" (
 );
 
 insert into "with-null-lines" ("c1", "i1", "i2") values
- ('hello', 1, 2),
- ('bye', 2, 2),
- ('hi', 3, 2),
- ('greetings', 4, 2),
+ ('hello', 1, 4),
+ ('bye', 2, 3),
+ ('hi', 3, 4),
+ ('greetings', 4, 4),
  ('hey', null, null);

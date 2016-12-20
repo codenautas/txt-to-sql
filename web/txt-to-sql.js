@@ -41,14 +41,17 @@ function isBoolean(column, rows) {
             if(vals.length>2) { return false; }
         }
     }
+    // console.log( column, vals)
     if(vals.length===2) {
         return booleanRegExps.some(function(rgx) {
+            //console.log("    DOS", (((vals[0].match(rgx.t) && vals[1].match(rgx.f)) || (vals[1].match(rgx.t) && vals[0].match(rgx.f)))?"OK":"nop"))
             return (vals[0].match(rgx.t) && vals[1].match(rgx.f)) ||
                    (vals[1].match(rgx.t) && vals[0].match(rgx.f));
         });
     } else {
         return vals.some(function(val) {
             return booleanRegExps.some(function(rgx) {
+                // console.log("    UNO", ((val.match(rgx.f) || val.match(rgx.t))?"OK: "+rgx.t.source:"nop"));
                 return val.match(rgx.f) || val.match(rgx.t);
             });
         });
@@ -99,7 +102,7 @@ function isVarchar(column, rows) {
     return evaluateColumn(column, rows, /.?/);
 }
 var types = [
-  //{adapt:adaptPlain, pad:padRight, validates:isBoolean                                       }, // boolean  
+    {adapt:adaptPlain, pad:padRight, validates:isBoolean                                       }, // boolean  
     {adapt:adaptPlain, pad:padRight, validates:isInteger                                       }, // integer
     {adapt:adaptPlain, pad:padRight, validates:isBigInteger                                    }, // bigint
     {adapt:adaptPlain, pad:padRight, validates:isNumeric    , useLength:true                   }, // numeric
@@ -127,33 +130,33 @@ function alterTableAddPK(quotedTableName, pkName, pkArray) {
 
 var engines = {
     'postgresql': {
-        types:mapTypes([/*'boolean',*/'integer','bigint','numeric','double precision','date','timestamp','character varying']),
+        types:mapTypes(['boolean','integer','bigint','numeric','double precision','date','timestamp','character varying']),
         quote:quoteDouble,
         dropTable:dropTableIfExists,
         alterTableAddPK:alterTableAddPK
     },
     'mssql': {
-        types:mapTypes([/*'bit',*/'integer','bigint','numeric','real','date','timestamp','varchar']),
+        types:mapTypes(['bit','integer','bigint','numeric','real','date','timestamp','varchar']),
         quote:quoteBracket,
         noCompactInsert:true,
         dropTable:dropTable,
         alterTableAddPK:alterTableAddPK
     },
     'mysql': {
-        types:mapTypes([/*'tinyint',*/'integer','bigint','numeric','double precision','date','timestamp','varchar']),
+        types:mapTypes(['tinyint','integer','bigint','numeric','double precision','date','timestamp','varchar']),
         quote:quoteBackTick,
         dropTable:dropTableIfExists,
         alterTableAddPK:alterTableAddPK
     },
     'oracle': {
-        types:mapTypes([/*'char',*/'integer','long','number','binary_double','date','timestamp','varchar2']),
+        types:mapTypes(['char','integer','long','number','binary_double','date','timestamp','varchar2']),
         quote:quoteDouble,
         noCompactInsert:true,
         dropTable:dropTable,
         alterTableAddPK:alterTableAddPK
     },
     'sqlite': {
-        types:mapTypes([/*'boolean',*/'integer','integer','numeric','real','date','timestamp','text']),
+        types:mapTypes(['boolean','integer','integer','numeric','real','date','timestamp','text']),
         quote:quoteDouble,
         dropTable:dropTableIfExists,
         // http://www.sqlite.org/limits.html#max_compound_select
@@ -928,11 +931,7 @@ function createTypeValidations() {
         };
     });
     // agrego boolean provisoriamente sólo para testear
-    validations.boolean = {
-        checkOne : function(val) { return isBoolean(0, [[val]]); },
-        checkArray : isBoolean,
-        parseOne : parseBoolean
-    };
+    validations.boolean.parseOne = parseBoolean;
     return validations;
 }
 txtToSql.typeValidations = createTypeValidations();

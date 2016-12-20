@@ -140,13 +140,15 @@ describe("specials", function(){
     it("manage mixed line ends", function(done){
         var rawTable=new Buffer(
             "text-field;int-field;num-field;big;double\n"+
-            "hello;1;3.141592;1234567890;1.12e-101\r\n"+
+            "hello;4;3.141592;1234567890;1.12e-101\r\n"+
+            "bye;5;3.141593;1234567890;1.12e-101\r\n"+
             ";;;0;0.0", 'binary'
         );
         Promise.resolve().then(function(){
             return txtToSql.generateScripts({tableName:'example-one', rawTable:rawTable});
         }).then(function(generated){
             return fs.readFile('./test/fixtures/example-one.sql').then(function(rawSql){
+                common.logBuffersIfDifferent(generated.rawSql,rawSql);
                 expect(generated.rawSql).to.eql(rawSql);
                 expect(discrepances(generated.rawSql,rawSql)).to.eql(null);
                 return;

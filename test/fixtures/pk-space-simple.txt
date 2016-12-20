@@ -1,4 +1,4 @@
 X        Y       Z
 a        c       d
 a        b/\s+/c d
-a/\s+/b  c       d
+a/\s+/b  c       e

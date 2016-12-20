@@ -7,6 +7,6 @@ create table `mysql-pk-complex-all` (
 
 insert into `mysql-pk-complex-all` (`'text'field`, ```int``field`, `"num"1`) values
  ('hello', 1, 3.141592),
- ('ciao', 2, 3),
+ ('ciao', 4, 3),
  ('hello', 1, 2),
- ('ciao', 2, 4);
+ ('ciao', 4, 4);

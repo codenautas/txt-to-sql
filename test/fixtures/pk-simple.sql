@@ -8,5 +8,6 @@ create table "pk-simple" (
 );
 
 insert into "pk-simple" ("text-field", "int-field", "num-field", "big", "double") values
- ('hello', 1, 3.141592, 1234567890, 1.12e-101),
+ ('hello', 4, 3.141592, 1234567890, 1.12e-101),
+ ('bye', 5, 3.141593, 1234567890, 1.12e-101),
  ('ciao', null, null, 0, 0.0);

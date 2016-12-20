@@ -7,4 +7,4 @@ create table "broken-lines" (
 
 insert into "broken-lines" ("txt1", "txt2", "txt3") values
  ('uno', 'dos', 'tres'),
- ('una', 'linea\npartida', 'tres');
+ ('una', 'linea\npartida', 'catr');

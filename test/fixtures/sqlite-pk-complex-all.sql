@@ -7,6 +7,6 @@ create table "sqlite-pk-complex-all" (
 
 insert into "sqlite-pk-complex-all" ("TextCol", "integerCol", "NumericWith""quotes""") values
  ('hello', 1, 3.141592),
- ('ciao', 2, 3),
+ ('ciao', 4, 3),
  ('hello', 1, 2),
- ('ciao', 2, 4);
+ ('ciao', 4, 4);

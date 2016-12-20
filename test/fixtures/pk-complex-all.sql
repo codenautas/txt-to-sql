@@ -6,7 +6,7 @@ create table "pk-complex-all" (
 );
 
 insert into "pk-complex-all" ("text-field", "int-field", "num""1""") values
- ('hello', 1, 3.141592),
+ ('hello', 4, 3.141592),
  ('ciao', 2, 3),
- ('hello', 1, 2),
+ ('hello', 4, 2),
  ('ciao', 2, 4);

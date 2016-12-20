@@ -8,4 +8,4 @@ create table "pk-space-simple" (
 insert into "pk-space-simple" ("x", "y", "z") values
  ('a', 'c', 'd'),
  ('a', 'b/\s+/c', 'd'),
- ('a/\s+/b', 'c', 'd');
+ ('a/\s+/b', 'c', 'e');
