@@ -1,0 +1,24 @@
+columns:
+  - name: b1
+    type: char
+    inPrimaryKey: true
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: b2
+    type: char
+    inPrimaryKey: true
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: b3
+    type: char
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+opts:
+  outputEngine: oracle

@@ -107,9 +107,9 @@ var types = [
     {typeName:'bigint'   , adapt:adaptPlain, pad:padRight, validates:isBigInteger , parse:parseNop                                   },
     {typeName:'numeric'  , adapt:adaptPlain, pad:padRight, validates:isNumeric    , parse:parseNop, useLength:true                   },
     {typeName:'double'   , adapt:adaptPlain, pad:padRight, validates:isDouble     , parse:parseNop                                   },
-    {typeName:'date'     , adapt:adaptText , pad:padRight, validates:isDate       , parse:parseNop                                   },
-    {typeName:'timestamp', adapt:adaptText , pad:padRight, validates:isTimestamp  , parse:parseNop                                   },
-    {typeName:'varchar'  , adapt:adaptText , pad:padLeft , validates:isVarchar    , parse:parseNop, useLength:true, isTextColumn:true},
+    {typeName:'date'     , adapt:adaptText , pad:padRight, validates:isDate       , parse:parseNop                                   , isNotNumeric:true},
+    {typeName:'timestamp', adapt:adaptText , pad:padRight, validates:isTimestamp  , parse:parseNop                                   , isNotNumeric:true},
+    {typeName:'varchar'  , adapt:adaptText , pad:padLeft , validates:isVarchar    , parse:parseNop, useLength:true, isTextColumn:true, isNotNumeric:true},
 ];
 
 function quoteBackTick(objectName) { return '`'+objectName.replace(/`/g,'``')+'`'; }
@@ -520,11 +520,10 @@ function determineColumnTypes(info){
     return info;
 }
 
-function isNotNumberType(typeName) { return typeName.match(/(text|char|time|date)/); }
 function hasCientificNotation(typeName) { return typeName==='double precision'?false:null; }
 
-function getLengthInfo(val, typeName) {
-    if(isNotNumberType(typeName)) { return {length:val.length || 0, scale:0}; }
+function getLengthInfo(val, isNotNumeric) {
+    if(isNotNumeric) { return {length:val.length || 0, scale:0}; }
     if(! val) { return {length:0, scale:0}; }
     var num = val.split('.');
     return {length:num[0].length, scale:num.length===2?num[1].length:0};
@@ -546,14 +545,14 @@ function determineColumnValuesInfo(info) {
     var defaults = new Array(info.columnsInfo.length);
     info.columnsInfo.forEach(function(colInfo, colIndex) {
         colInfo.maxLength            = setCol(info, 'maxLength', colIndex, 0, defaults);
-        colInfo.maxScale             = setCol(info, 'maxScale', colIndex, isNotNumberType(colInfo.typeInfo.typeName)?null:0, defaults); // maxima cantidad de decimales
+        colInfo.maxScale             = setCol(info, 'maxScale', colIndex, colInfo.typeInfo.isNotNumeric?null:0, defaults); // maxima cantidad de decimales
         colInfo.hasNullValues        = setCol(info, 'hasNullValues', colIndex, false, defaults);
         colInfo.hasCientificNotation = setCol(info, 'hasCientificNotation', colIndex, hasCientificNotation(colInfo.typeInfo.typeName), defaults);
     });
     info.rows.forEach(function(row) {
         info.columnsInfo.forEach(function(column, columnIndex) {
             var val=row[columnIndex];
-            var lenInfo = getLengthInfo(val, column.typeInfo.typeName);
+            var lenInfo = getLengthInfo(val, column.typeInfo.isNotNumeric);
             if(! defaults.maxLength && column.maxLength<lenInfo.length) { column.maxLength=lenInfo.length; }
             if(! defaults.maxScale && column.maxScale!==null && column.maxScale<lenInfo.scale) { column.maxScale=lenInfo.scale; }
             if(! defaults.hasNullValues && ! column.hasNullValues && ! val) { column.hasNullValues=true; }
@@ -929,8 +928,7 @@ function generateScripts(info){
     .catch(catchErrors.bind(null, info));
 }
 
-txtToSql.isNotNumberType = isNotNumberType;
-txtToSql.getLengthInfo = getLengthInfo;
+//txtToSql.getLengthInfo = getLengthInfo;
 txtToSql.prepare = prepare;
 txtToSql.generateScripts = generateScripts;
 txtToSql.engines = engines;
