@@ -5,20 +5,20 @@ columns:
     maxLength: 1
     maxScale: 0
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: b2
     type: char
     inPrimaryKey: true
     maxLength: 1
     maxScale: 0
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: b3
     type: char
     inPrimaryKey: false
     maxLength: 1
     maxScale: 0
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
 opts:
   outputEngine: oracle

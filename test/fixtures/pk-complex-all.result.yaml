@@ -5,18 +5,18 @@ columns:
     maxLength: 5
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: int-field
     type: integer
     inPrimaryKey: true
     maxLength: 1
     maxScale: 0
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: num"1"
     type: numeric
     inPrimaryKey: true
     maxLength: 1
     maxScale: 6
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null

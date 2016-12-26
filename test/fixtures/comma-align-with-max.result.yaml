@@ -8,18 +8,18 @@ columns:
     maxLength: 15
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: int-field
     type: integer
     inPrimaryKey: true
     maxLength: 2
     maxScale: 0
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: numerico-el-1
     type: numeric
     inPrimaryKey: false
     maxLength: 2
     maxScale: 6
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null

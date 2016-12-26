@@ -5,4 +5,4 @@ columns:
     maxLength: 29
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null

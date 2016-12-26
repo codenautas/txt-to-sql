@@ -7,32 +7,32 @@ columns:
     maxLength: 5
     maxScale: null
     hasNullValues: true
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: int-col
     type: integer
     inPrimaryKey: false
     maxLength: 1
     maxScale: 0
     hasNullValues: true
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: num-col
     type: numeric
     inPrimaryKey: false
     maxLength: 1
     maxScale: 6
     hasNullValues: true
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: big-col
     type: integer
     inPrimaryKey: false
     maxLength: 10
     maxScale: 0
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: double-col
     type: real
     inPrimaryKey: false
     maxLength: 1
     maxScale: 7
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null

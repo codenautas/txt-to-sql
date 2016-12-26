@@ -5,14 +5,14 @@ columns:
     maxLength: 10
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: numero
     type: integer
     inPrimaryKey: false
     maxLength: 2
     maxScale: 0
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
 opts:
   outputEngine: mssql
   compactInsertLimit: 7

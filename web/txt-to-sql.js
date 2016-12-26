@@ -520,7 +520,7 @@ function determineColumnTypes(info){
     return info;
 }
 
-function hasCientificNotation(typeName) { return typeName==='double precision'?false:null; }
+function hasScientificNotation(typeName) { return typeName==='double precision'?false:null; }
 
 function getLengthInfo(val, isNotNumeric) {
     if(isNotNumeric) { return {length:val.length || 0, scale:0}; }
@@ -547,7 +547,7 @@ function determineColumnValuesInfo(info) {
         colInfo.maxLength            = setCol(info, 'maxLength', colIndex, 0, defaults);
         colInfo.maxScale             = setCol(info, 'maxScale', colIndex, colInfo.typeInfo.isNotNumeric?null:0, defaults); // maxima cantidad de decimales
         colInfo.hasNullValues        = setCol(info, 'hasNullValues', colIndex, false, defaults);
-        colInfo.hasCientificNotation = setCol(info, 'hasCientificNotation', colIndex, hasCientificNotation(colInfo.typeInfo.typeName), defaults);
+        colInfo.hasScientificNotation = setCol(info, 'hasScientificNotation', colIndex, hasScientificNotation(colInfo.typeInfo.typeName), defaults);
     });
     info.rows.forEach(function(row) {
         info.columnsInfo.forEach(function(column, columnIndex) {
@@ -556,7 +556,7 @@ function determineColumnValuesInfo(info) {
             if(! defaults.maxLength && column.maxLength<lenInfo.length) { column.maxLength=lenInfo.length; }
             if(! defaults.maxScale && column.maxScale!==null && column.maxScale<lenInfo.scale) { column.maxScale=lenInfo.scale; }
             if(! defaults.hasNullValues && ! column.hasNullValues && ! val) { column.hasNullValues=true; }
-            if(! defaults.hasCientificNotation && column.hasCientificNotation===false && val.match(/[eE]/)) { column.hasCientificNotation=true; }
+            if(! defaults.hasScientificNotation && column.hasScientificNotation===false && val.match(/[eE]/)) { column.hasScientificNotation=true; }
         });
     });
     return  info;

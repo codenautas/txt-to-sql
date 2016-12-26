@@ -271,7 +271,7 @@ html(lang=lang)
                     hasNullValues:colNulls.checked,
                     maxLength:colLen.value,
                     maxScale:colScale.value,
-                    hasCientificNotation:colCN.checked
+                    hasScientificNotation:colCN.checked
                 });
             } else {
                 userOptions.columns[index].name = colName.value;
@@ -280,7 +280,7 @@ html(lang=lang)
                 userOptions.columns[index].hasNullValues = colNulls.checked;
                 userOptions.columns[index].maxLength = colLen.value;
                 userOptions.columns[index].maxScale = colScale.value;
-                userOptions.columns[index].hasCientificNotation = colCN.checked;
+                userOptions.columns[index].hasScientificNotation = colCN.checked;
             }
         });
         
@@ -342,7 +342,7 @@ html(lang=lang)
                 var fields = prepared.columns.map(function(column, index) {
                     var ipk = column.inPrimaryKey!==null && column.inPrimaryKey;
                     var hnv = column.hasNullValues!==null && column.hasNullValues;
-                    var hcn = column.hasCientificNotation!==null && column.hasCientificNotation;
+                    var hcn = column.hasScientificNotation!==null && column.hasScientificNotation;
                     return html.tr([
                                 html.td([createInput('name', 'text', column.name, 15, 'col_name_'+index)]),
                                 html.td({id:'td_col_type_'+index}, [
@@ -352,7 +352,7 @@ html(lang=lang)
                                 html.td([createInput('hasNullValues', 'checkbox', hnv, 0, 'col_nulls_'+index)]),
                                 html.td([createInput('maxLength', 'text', column.maxLength, 0, 'col_len_'+index)]),
                                 html.td([createInput('maxScale', 'text', column.maxScale || 0, 0, 'col_scale_'+index)]),
-                                html.td([createInput('hasCientificNotation', 'checkbox', hcn, 0, 'col_cn_'+index)])
+                                html.td([createInput('hasScientificNotation', 'checkbox', hcn, 0, 'col_cn_'+index)])
                            ]);
                 });
                 fields.unshift(html.tr([

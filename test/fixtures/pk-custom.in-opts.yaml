@@ -5,25 +5,25 @@ columns:
     maxLength: 2
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: x
     type: character varying
     inPrimaryKey: true
     maxLength: 2
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: y
     type: character varying
     inPrimaryKey: true
     maxLength: 2
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: z
     type: character varying
     inPrimaryKey: false
     maxLength: 1
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null

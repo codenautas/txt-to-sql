@@ -7,25 +7,25 @@ opts:
     maxLength: 2
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: CustomX
     type: character varying
     inPrimaryKey: true
     maxLength: 2
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: YCustom
     type: character varying
     inPrimaryKey: true
     maxLength: 2
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: ZCustom
     type: character varying
     inPrimaryKey: false
     maxLength: 1
     maxScale: null
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null

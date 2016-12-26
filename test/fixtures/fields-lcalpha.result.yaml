@@ -7,39 +7,39 @@ columns:
     maxLength: 13
     maxScale: null
     hasNullValues: true
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: esdrujulo
     type: integer
     inPrimaryKey: false
     maxLength: 1
     maxScale: 0
     hasNullValues: true
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: masdias
     type: numeric
     inPrimaryKey: false
     maxLength: 1
     maxScale: 6
     hasNullValues: true
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: faltanaeeiiuoooo
     type: bigint
     inPrimaryKey: false
     maxLength: 10
     maxScale: 0
     hasNullValues: false
-    hasCientificNotation: null
+    hasScientificNotation: null
   - name: _1numeroyacento
     type: double precision
     inPrimaryKey: false
     maxLength: 1
     maxScale: 7
     hasNullValues: false
-    hasCientificNotation: true
+    hasScientificNotation: true
   - name: maas
     type: integer
     inPrimaryKey: false
     maxLength: 0
     maxScale: 0
     hasNullValues: true
-    hasCientificNotation: null
+    hasScientificNotation: null
