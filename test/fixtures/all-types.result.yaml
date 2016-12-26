@@ -48,3 +48,10 @@ columns:
     maxScale: null
     hasNullValues: true
     hasScientificNotation: null
+  - name: marcadetiempo
+    type: timestamp
+    inPrimaryKey: false
+    maxLength: 25
+    maxScale: null
+    hasNullValues: true
+    hasScientificNotation: null
