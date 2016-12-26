@@ -102,14 +102,14 @@ function isVarchar(column, rows) {
     return evaluateColumn(column, rows, /.?/);
 }
 var types = [
-    {typeName:'boolean'  , adapt:adaptPlain, pad:padRight, validates:isBoolean    , parse:parseBoolean                               },
-    {typeName:'integer'  , adapt:adaptPlain, pad:padRight, validates:isInteger    , parse:parseNop                                   },
-    {typeName:'bigint'   , adapt:adaptPlain, pad:padRight, validates:isBigInteger , parse:parseNop                                   },
-    {typeName:'numeric'  , adapt:adaptPlain, pad:padRight, validates:isNumeric    , parse:parseNop, useLength:true                   },
-    {typeName:'double'   , adapt:adaptPlain, pad:padRight, validates:isDouble     , parse:parseNop                                   },
-    {typeName:'date'     , adapt:adaptText , pad:padRight, validates:isDate       , parse:parseNop                                   , isNotNumeric:true},
-    {typeName:'timestamp', adapt:adaptText , pad:padRight, validates:isTimestamp  , parse:parseNop                                   , isNotNumeric:true},
-    {typeName:'varchar'  , adapt:adaptText , pad:padLeft , validates:isVarchar    , parse:parseNop, useLength:true, isTextColumn:true, isNotNumeric:true},
+    {typeName:'boolean'  , adapt:adaptPlain, pad:padRight, validates:isBoolean    , parse:parseBoolean                                                        },
+    {typeName:'integer'  , adapt:adaptPlain, pad:padRight, validates:isInteger    , parse:parseNop                                                            },
+    {typeName:'bigint'   , adapt:adaptPlain, pad:padRight, validates:isBigInteger , parse:parseNop                                                            },
+    {typeName:'numeric'  , adapt:adaptPlain, pad:padRight, validates:isNumeric    , parse:parseNop      , useLength:true                                      },
+    {typeName:'double'   , adapt:adaptPlain, pad:padRight, validates:isDouble     , parse:parseNop                                                            },
+    {typeName:'date'     , adapt:adaptText , pad:padRight, validates:isDate       , parse:parseNop                                         , isNotNumeric:true},
+    {typeName:'timestamp', adapt:adaptText , pad:padRight, validates:isTimestamp  , parse:parseNop                                         , isNotNumeric:true},
+    {typeName:'varchar'  , adapt:adaptText , pad:padLeft , validates:isVarchar    , parse:parseNop      , useLength:true, isTextColumn:true, isNotNumeric:true},
 ];
 
 function quoteBackTick(objectName) { return '`'+objectName.replace(/`/g,'``')+'`'; }
@@ -223,7 +223,6 @@ function getFixedTypes(outputEngine) {
         var mapped=outputEngine.fixedTypes[type.typeName];
         return changing(type, mapped?{typeName:mapped.name||type.typeName, parse:mapped.parse||type.parse}:{});
     });
-    //console.log("ET", engineTypes)
     return engineTypes;
 }
 function verifyInputParams(info){
@@ -477,9 +476,8 @@ function transformNames(info) {
 function verifyColumnNames(info) {
     var errors=[];
     var namesHash = {};
-    var empty = "";
     info.columnsInfo.forEach(function(columnInfo, columnIndex){
-        if(columnInfo.name===empty) {
+        if(columnInfo.name==="") {
             errors.push(txtToSql.errString(info, 'errColMissing',[columnIndex+1]));
         } else {
             if(columnInfo.name in namesHash) {
@@ -493,30 +491,31 @@ function verifyColumnNames(info) {
     return info;
 }
 
-function determineColumnTypes(info){
-    if(! info.opts.columns || ! info.opts.columns[0].type) {
-        info.columnsInfo.forEach(function(columnInfo, columnIndex){
-            var maxTypeIndex=0;
-            var typeIndex=0;
-            while(! info.outputEngine.types[typeIndex].validates(columnIndex, info.rows)) {
-                typeIndex++;
-            }
-            if(typeIndex>maxTypeIndex){ maxTypeIndex=typeIndex; }
-            columnInfo.typeInfo = info.outputEngine.types[maxTypeIndex];
-        });        
-    } else {
-        info.columnsInfo.forEach(function(columnInfo, columnIndex){
-            var mapTypeIndex;
-            info.outputEngine.types.some(function(col, colIndex) {
-                if(col.typeName === info.opts.columns[columnIndex].type) {
-                    mapTypeIndex = colIndex;
-                    return true;
-                }
-                return false;
-            });
-            columnInfo.typeInfo = info.outputEngine.types[mapTypeIndex];
-        });
+function deduceType(engineTypes, columnIndex, info) {
+    var maxTypeIndex=0;
+    var typeIndex=0;
+    while(! engineTypes[typeIndex].validates(columnIndex, info.rows)) {
+        typeIndex++;
     }
+    if(typeIndex>maxTypeIndex){ maxTypeIndex=typeIndex; }
+    return maxTypeIndex;
+}
+function selectType(engineTypes, columnIndex, info) {
+    var mapTypeIndex;
+    engineTypes.some(function(col, colIndex) {
+        if(col.typeName === info.opts.columns[columnIndex].type) {
+            mapTypeIndex = colIndex;
+            return true;
+        }
+        return false;
+    });
+    return mapTypeIndex;
+}
+function determineColumnTypes(info){
+    var typeFunction = (! info.opts.columns || ! info.opts.columns[0].type) ? deduceType : selectType;
+    info.columnsInfo.forEach(function(columnInfo, columnIndex){
+        columnInfo.typeInfo = info.outputEngine.types[typeFunction(info.outputEngine.types, columnIndex, info)];
+    });        
     return info;
 }
 
