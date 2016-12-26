@@ -37,7 +37,7 @@ describe/*.skip*/("fast-fixtures", function(){
     [
         {name:'mssql-example-one'},
         {name:'oracle-example-one'},
-        {name:'mssql-comma-align'},
+        {name:'mssql-comma-align', noLowerThreshold:true},
         {name:'mssql-with-drop-table'},
         {name:'oracle-with-drop-table'},
         {name:'mssql-example-one', title:'mssql-coverage',
@@ -80,6 +80,7 @@ describe/*.skip*/("fast-fixtures", function(){
                     if(fixture.changeExpected) { fixture.changeExpected(expected); }
                 }).then(function() {
                     var threshold = param.rawTable.toString().split(/\r?\n/).length;
+                    if(! fixture.noLowerThreshold) { threshold -= 2; }
                     return txtToSqlFast.doFast(param, basePath, threshold, generated);
                 }).then(function(){
                     var gen = generated.lines.join('');

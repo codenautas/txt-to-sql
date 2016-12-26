@@ -928,7 +928,6 @@ function generateScripts(info){
     .catch(catchErrors.bind(null, info));
 }
 
-//txtToSql.getLengthInfo = getLengthInfo;
 txtToSql.prepare = prepare;
 txtToSql.generateScripts = generateScripts;
 txtToSql.engines = engines;
