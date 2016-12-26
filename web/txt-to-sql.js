@@ -127,8 +127,9 @@ function alterTableAddPK(quotedTableName, pkName, pkArray) {
 var engines = {
     'postgresql': {
         fixedTypes:{
-            'double':'double precision',
-            'varchar':'character varying'
+            'boolean':{parse:function(val) { return parseBoolean(val)===1?true:false; }},
+            'double':{name:'double precision'},
+            'varchar':{name:'character varying'}
         },
         quote:quoteDouble,
         dropTable:dropTableIfExists,
@@ -136,8 +137,8 @@ var engines = {
     },
     'mssql': {
         fixedTypes:{
-            'boolean':'bit',
-            'double':'real'
+            'boolean':{name:'bit'},
+            'double':{name:'real'}
         },
         quote:quoteBracket,
         noCompactInsert:true,
@@ -146,8 +147,8 @@ var engines = {
     },
     'mysql': {
         fixedTypes:{
-            'boolean':'tinyint',
-            'double':'double precision'
+            'boolean':{name:'tinyint'},
+            'double':{name:'double precision'}
         },
         quote:quoteBackTick,
         dropTable:dropTableIfExists,
@@ -155,11 +156,11 @@ var engines = {
     },
     'oracle': {
         fixedTypes:{
-            'boolean':'char',
-            'bigint':'long',
-            'numeric':'number',
-            'double':'binary_double',
-            'varchar':'varchar2'
+            'boolean':{name:'char'},
+            'bigint':{name:'long'},
+            'numeric':{name:'number'},
+            'double':{name:'binary_double'},
+            'varchar':{name:'varchar2'}
         },
         quote:quoteDouble,
         noCompactInsert:true,
@@ -168,9 +169,9 @@ var engines = {
     },
     'sqlite': {
         fixedTypes:{
-            'bigint':'integer',
-            'double':'real',
-            'varchar':'text'
+            'bigint':{name:'integer'},
+            'double':{name:'real'},
+            'varchar':{name:'text'}
         },
         quote:quoteDouble,
         dropTable:dropTableIfExists,
@@ -220,7 +221,7 @@ function checkEncodingParam(info, encoding, inOrOut, errors) {
 function getFixedTypes(outputEngine) {
     var engineTypes = types.map(function(type, index) {
         var mapped=outputEngine.fixedTypes[type.typeName];
-        return changing(type, {typeName:mapped?mapped:type.typeName});
+        return changing(type, mapped?{typeName:mapped.name||type.typeName, parse:mapped.parse||type.parse}:{});
     });
     //console.log("ET", engineTypes)
     return engineTypes;

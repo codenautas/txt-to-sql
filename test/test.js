@@ -71,7 +71,7 @@ describe("fixtures", function(){
         {name:'dates'},
         {name:'timestamps'},
         {name:'broken-lines'},
-        {skip:true, name:'booleans'},
+        {name:'booleans'},
         {name:'mysql-booleans'},
     ].forEach(function(fixture){
         if(fixture.skip) {
@@ -312,7 +312,7 @@ describe("datatype validation (default engine)", function(){
             expect(b(0, [['tito'],['loncho'],['pepe'],['tito']])).to.eql(false);
             expect(b(0, [['juan'],['pedro'],['pedro'],['juan']])).to.eql(false);
         });
-        it.skip("parse", function(){
+        it("parse", function(){
             var p = txtToSql.typeValidations['boolean'].parse;
             // true
             expect(p('1')).to.be(true);
