@@ -286,7 +286,7 @@ describe("stringizeStats", function(){
     addStringizeTests(fixtures_en, null);
 });
 
-describe("datatype validation", function(){
+describe("datatype validation (default engine)", function(){
     describe('boolean', function() {
         it("check", function(){
             var b1 = txtToSql.typeValidations['boolean'].checkOne;
@@ -313,35 +313,20 @@ describe("datatype validation", function(){
             expect(b(0, [['juan'],['pedro'],['pedro'],['juan']])).to.eql(false);
         });
         it.skip("parse", function(){
-            var rawTable=new Buffer(
-                "text-field;int-field;num-field;big;double\n"+
-                "hello;4;3.141592;1234567890;1.12e-101\r\n"+
-                "bye;5;3.141593;1234567890;1.12e-101\r\n"+
-                ";;;0;0.0", 'binary'
-            );
-            var param={tableName:'dummy', rawTable:rawTable};
-            txtToSql.prepare(param).then(function(res) {
-                //console.log("outputEngine", Object.keys(txtToSql).sort());
-                console.log("outputEngine", txtToSql.engines.postgresql);
-            }).catch(function(e) {
-                console.log("mal", e)
-            });
-            /*
-            var p = txtToSql.typeValidations['boolean'].parseOne;
+            var p = txtToSql.typeValidations['boolean'].parse;
             // true
-            expect(p('1')).to.eql(true);
-            expect(p('t')).to.eql(true);
-            expect(p('true')).to.eql(true);
+            expect(p('1')).to.be(true);
+            expect(p('t')).to.be(true);
+            expect(p('true')).to.be(true);
             // true porque se supone que el "check" está ok!!
-            expect(p('uno')).to.eql(true);
-            expect(p('anything')).to.eql(true);
+            expect(p('uno')).to.be(true);
+            expect(p('anything')).to.be(true);
             // false
-            expect(p('naranja')).to.eql(false);
-            expect(p('n')).to.eql(false);
-            expect(p('f')).to.eql(false);
-            expect(p('0')).to.eql(false);
-            expect(p('2')).to.eql(false);
-            */
+            expect(p('naranja')).to.be(false);
+            expect(p('n')).to.be(false);
+            expect(p('f')).to.be(false);
+            expect(p('0')).to.be(false);
+            expect(p('2')).to.be(false);
         });
     });
     it("integer", function(){
