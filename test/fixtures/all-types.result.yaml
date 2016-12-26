@@ -1,0 +1,43 @@
+columns:
+  - name: texto
+    type: character varying
+    inPrimaryKey: false
+    maxLength: 5
+    maxScale: null
+    hasNullValues: true
+    hasScientificNotation: null
+  - name: entero
+    type: integer
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: true
+    hasScientificNotation: null
+  - name: numero
+    type: numeric
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 6
+    hasNullValues: true
+    hasScientificNotation: null
+  - name: grande
+    type: bigint
+    inPrimaryKey: false
+    maxLength: 10
+    maxScale: 0
+    hasNullValues: false
+    hasScientificNotation: null
+  - name: doble
+    type: double precision
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 7
+    hasNullValues: false
+    hasScientificNotation: true
+  - name: boleano
+    type: boolean
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: true
+    hasScientificNotation: null

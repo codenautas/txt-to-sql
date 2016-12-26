@@ -127,7 +127,7 @@ function alterTableAddPK(quotedTableName, pkName, pkArray) {
 var engines = {
     'postgresql': {
         fixedTypes:{
-            'boolean':{parse:function(val) { return parseBoolean(val)===1?true:false; }},
+            'boolean':{parse:function(val) { return val==='null' ? val : parseBoolean(val)===1?true:false; }},
             'double':{name:'double precision'},
             'varchar':{name:'character varying'}
         },
