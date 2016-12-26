@@ -6,6 +6,6 @@ create table "booleans" (
 );
 
 insert into "booleans" ("b1", "b2", "b3") values
- (1, 1, 1),
- (1, 0, 0),
- (0, 0, 0);
+ (true, true, true),
+ (true, false, false),
+ (false, false, false);

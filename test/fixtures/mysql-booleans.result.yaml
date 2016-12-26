@@ -1,0 +1,25 @@
+columns:
+  - name: b1
+    type: tinyint
+    inPrimaryKey: true
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: b2
+    type: tinyint
+    inPrimaryKey: true
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+  - name: b3
+    type: tinyint
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: false
+    hasCientificNotation: null
+opts:
+  columnNamesFormat: lowercased_names
+  outputEngine: mysql

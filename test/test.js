@@ -71,7 +71,8 @@ describe("fixtures", function(){
         {name:'dates'},
         {name:'timestamps'},
         {name:'broken-lines'},
-        {name:'booleans'},
+        {skip:true, name:'booleans'},
+        {name:'mysql-booleans'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
