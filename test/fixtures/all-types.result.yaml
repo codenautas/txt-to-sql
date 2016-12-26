@@ -41,3 +41,10 @@ columns:
     maxScale: 0
     hasNullValues: true
     hasScientificNotation: null
+  - name: fecha
+    type: date
+    inPrimaryKey: false
+    maxLength: 9
+    maxScale: null
+    hasNullValues: true
+    hasScientificNotation: null
