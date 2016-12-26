@@ -55,3 +55,5 @@ columns:
     maxScale: null
     hasNullValues: true
     hasScientificNotation: null
+opts:
+    columnAlignedCommas: true

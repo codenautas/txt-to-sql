@@ -681,8 +681,10 @@ function createAdaptedRows(info, rows) {
     return rows.map(function(row, rowIndex) {
         return info.columnsInfo.map(function(column, columnIndex) {
             var adaptedValue = column.typeInfo.adapt(row[columnIndex]);
+            //var adaptedValue = column.typeInfo.parse(column.typeInfo.adapt(row[columnIndex]));
             if(info.opts.columnAlignedCommas) {
-                if(adaptedValue.length>column.columnLength) { 
+                //console.log(adaptedValue, adaptedValue.length, column.columnLength)
+                if(adaptedValue.length>column.columnLength) {
                     column.columnLength = adaptedValue.length; 
                 }
             }
