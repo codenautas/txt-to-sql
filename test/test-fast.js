@@ -43,6 +43,8 @@ describe/*.skip*/("fast-fixtures", function(){
         {name:'mssql-example-one', title:'mssql-coverage',
          changeParam:function(param) { param.opts.inputEncoding=null; param.opts.outputEncoding=null; }
         },
+        {name:'oracle-with-null-lines'},
+        
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
