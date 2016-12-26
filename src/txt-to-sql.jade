@@ -162,7 +162,7 @@ html(lang=lang)
             userOptions.separator = defSeparator.value;
         }
         while(steps.lastChild) {
-            console.log("removing", steps.lastChild.id)
+            //console.log("removing", steps.lastChild.id)
             steps.removeChild(steps.lastChild);
         }
         log.textContent="";
@@ -262,6 +262,7 @@ html(lang=lang)
             var colLen = getID('col_len_'+index);
             var colScale = getID('col_scale_'+index);
             var colCN = getID('col_cn_'+index);
+            //console.log("colType", index, colType.value)
             if(addColumns) {
                 userOptions.columns.push({
                     name:colName.value,
@@ -311,7 +312,7 @@ html(lang=lang)
         var files = getID('inputFile').files;
         resetPage();
         Array.prototype.forEach.call(files, function(file){
-            console.log('file: '+file.name)
+            //console.log('file: '+file.name)
             processFile(file, messages.loading).then(function(param) {
                 return prepare(param);
             }).then(function(prepared) {

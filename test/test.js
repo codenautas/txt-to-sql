@@ -312,6 +312,20 @@ describe("datatype validation", function(){
             expect(b(0, [['juan'],['pedro'],['pedro'],['juan']])).to.eql(false);
         });
         it.skip("parse", function(){
+            var rawTable=new Buffer(
+                "text-field;int-field;num-field;big;double\n"+
+                "hello;4;3.141592;1234567890;1.12e-101\r\n"+
+                "bye;5;3.141593;1234567890;1.12e-101\r\n"+
+                ";;;0;0.0", 'binary'
+            );
+            var param={tableName:'dummy', rawTable:rawTable};
+            txtToSql.prepare(param).then(function(res) {
+                //console.log("outputEngine", Object.keys(txtToSql).sort());
+                console.log("outputEngine", txtToSql.engines.postgresql);
+            }).catch(function(e) {
+                console.log("mal", e)
+            });
+            /*
             var p = txtToSql.typeValidations['boolean'].parseOne;
             // true
             expect(p('1')).to.eql(true);
@@ -326,6 +340,7 @@ describe("datatype validation", function(){
             expect(p('f')).to.eql(false);
             expect(p('0')).to.eql(false);
             expect(p('2')).to.eql(false);
+            */
         });
     });
     it("integer", function(){
