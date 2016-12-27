@@ -315,21 +315,21 @@ describe("datatype validation (default engine)", function(){
             expect(b(0, [['tito'],['loncho'],['pepe'],['tito']])).to.eql(false);
             expect(b(0, [['juan'],['pedro'],['pedro'],['juan']])).to.eql(false);
         });
-        it("parse", function(){
-            var p = txtToSql.typeValidations['boolean'].parse;
+        it("adapt", function(){
+            var adapt = txtToSql.typeValidations['boolean'].adapt;
             // true
-            expect(p('1')).to.be(true);
-            expect(p('t')).to.be(true);
-            expect(p('true')).to.be(true);
+            expect(adapt('1')).to.be(true);
+            expect(adapt('t')).to.be(true);
+            expect(adapt('true')).to.be(true);
             // true porque se supone que el "check" está ok!!
-            expect(p('uno')).to.be(true);
-            expect(p('anything')).to.be(true);
+            expect(adapt('uno')).to.be(true);
+            expect(adapt('anything')).to.be(true);
             // false
-            expect(p('naranja')).to.be(false);
-            expect(p('n')).to.be(false);
-            expect(p('f')).to.be(false);
-            expect(p('0')).to.be(false);
-            expect(p('2')).to.be(false);
+            expect(adapt('naranja')).to.be(false);
+            expect(adapt('n')).to.be(false);
+            expect(adapt('f')).to.be(false);
+            expect(adapt('0')).to.be(false);
+            expect(adapt('2')).to.be(false);
         });
     });
     it("integer", function(){
