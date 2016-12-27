@@ -75,7 +75,7 @@ describe("fixtures", function(){
         {name:'mysql-booleans'},
         {name:'oracle-booleans'},
         {name:'oracle-with-null-lines'},
-        {skip:true, name:'all-types'},
+        {/*skip:true,*/ name:'all-types'},
     ].forEach(function(fixture){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
@@ -318,18 +318,18 @@ describe("datatype validation (default engine)", function(){
         it("adapt", function(){
             var adapt = txtToSql.typeValidations['boolean'].adapt;
             // true
-            expect(adapt('1')).to.be(true);
-            expect(adapt('t')).to.be(true);
-            expect(adapt('true')).to.be(true);
+            expect(adapt('1')).to.be('true');
+            expect(adapt('t')).to.be('true');
+            expect(adapt('true')).to.be('true');
             // true porque se supone que el "check" está ok!!
-            expect(adapt('uno')).to.be(true);
-            expect(adapt('anything')).to.be(true);
+            expect(adapt('uno')).to.be('true');
+            expect(adapt('anything')).to.be('true');
             // false
-            expect(adapt('naranja')).to.be(false);
-            expect(adapt('n')).to.be(false);
-            expect(adapt('f')).to.be(false);
-            expect(adapt('0')).to.be(false);
-            expect(adapt('2')).to.be(false);
+            expect(adapt('naranja')).to.be('false');
+            expect(adapt('n')).to.be('false');
+            expect(adapt('f')).to.be('false');
+            expect(adapt('0')).to.be('false');
+            expect(adapt('2')).to.be('false');
         });
     });
     it("integer", function(){
