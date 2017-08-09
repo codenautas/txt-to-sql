@@ -1264,7 +1264,8 @@ jsToHtml.htmlAttributes={
         "tags": {
             "HTML elements": {"description": "Presentational and formatting instructions","value": "CSS declarations*"}
         },
-        "idl": "style"
+        "idl": "style",
+        "noProperty": true  // https://stackoverflow.com/questions/24906279/how-to-set-element-style-property-in-strict-mode,
     },
     "tabindex": {
         "tags": {

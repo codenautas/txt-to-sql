@@ -29,7 +29,8 @@ me.defaultExpectedResult;
 var testDefaultResult = {
     separator:';',
     inputEncoding: 'UTF8',
-    outputEncoding: 'UTF8'
+    outputEncoding: 'UTF8',
+    detectBooleans: true
 };
 
 me.loadDefaultExpectedResult = function loadDefaultExpectedResult() {
@@ -40,6 +41,15 @@ me.loadDefaultExpectedResult = function loadDefaultExpectedResult() {
 }
 
 me.logBuffersIfDifferent = function logBuffersIfDifferent(gen, exp) {
+    if(gen == null){
+        console.log("GEN IS NULL");
+    }
+    if(exp == null){
+        console.log("EXP IS NULL");
+    }
+    if(gen && exp == null){
+        return ;
+    }
     var comp = txtToSql.compareBuffers(gen, exp);
     if(comp !==-1) {
         console.log("GEN '"+gen+"'");

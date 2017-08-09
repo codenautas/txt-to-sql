@@ -17,3 +17,6 @@ input {
 input[type="file"] {
   width: 400px;
 }
+input[type="checkbox"] {
+  margin-left: 32px;
+}

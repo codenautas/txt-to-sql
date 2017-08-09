@@ -3,6 +3,7 @@
     labelChoose:'Paso 1: ',
     buttonChoose:'Elegir',
     labelSeparator:'Separador: ',
+    labelDetectBooleans:'Detectar campos lógicos (boolean)',
     separatorTitle:'Definir separador, si vacío, auto-detecta',
     separatorHint:'auto detectar',
     loading:'cargando',
@@ -45,6 +46,7 @@
   en:{
     labelChoose:'Step 1: ',
     labelSeparator:'Separator: ',
+    labelDetectBooleans:'Detect booleans',
     buttonChoose:'select file ',
     separatorTitle:'Define separator, if empty, auto-detects it',
     separatorHint:'auto detect',
@@ -87,7 +89,7 @@
   }
 };
 var currentLanguage='es';
-var messages=dictionary[currentLanguage];</script><a href="https://github.com/codenautas/txt-to-sql"><img style="position: absolute; top: 0; right: 0; border: 0" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a><div style="position: absolute; top: 40px; right: 140px; border: 0"><form><input type="radio" id="lang_es" name="lang" value="es" checked><label for="lang_es"><img src="lang-es.png"></label><br><input type="radio" id="lang_en" name="lang" value="en"><label for="lang_en"><img src="lang-en.png"></label></form><a href="https://github.com/codenautas/txt-to-sql/issues"><img id="issues" style="position: absolute; top: 80px; left: 20px; border: 0" src="new-issue-es.png" alt="New issue"></a></div><div style="float:left;height:180px;margin:0px 30px"><img src="txt-to-sql.png"></div><h1>txt-to-sql</h1><div><label id="labelInputFile"></label><input type="file" id="inputFile"><span>&nbsp;</span><label id="labelInputSeparator"></label><input type="text" id="inputSeparator" size="8"></div><div id="steps"></div><pre id="log"></pre><pre id="errMessage" style="color:red"></pre></body><script>/* space */
+var messages=dictionary[currentLanguage];</script><a href="https://github.com/codenautas/txt-to-sql"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a><div style="position: absolute; top: 40px; right: 140px; border: 0;"><form><input type="radio" id="lang_es" name="lang" value="es" checked><label for="lang_es"><img src="lang-es.png"></label><br><input type="radio" id="lang_en" name="lang" value="en"><label for="lang_en"><img src="lang-en.png"></label></form><a href="https://github.com/codenautas/txt-to-sql/issues"><img id="issues" style="position: absolute; top: 80px; left: 20px; border: 0;" src="new-issue-es.png" alt="New issue"></a></div><div style="float:left;height:180px;margin:0px 30px;"><img src="txt-to-sql.png"></div><h1>txt-to-sql</h1><div><label id="labelInputFile"></label><input type="file" id="inputFile"><span>&nbsp;</span><label id="labelInputSeparator" for="inputSeparator"></label><input type="text" id="inputSeparator" size="8"><input type="checkbox" id="inputDetectBooleans"><label id="labelDetectBooleans" for="inputDetectBooleans"></label></div><div id="steps"></div><pre id="log"></pre><pre id="errMessage" style="color:red;"></pre></body><script>/* space */
 var module = {};
 /* space */
 function getID(id) { return document.getElementById(id); }</script><script src="buffer.js"></script><script src="iconv-lite.js"></script><script>/* space */
@@ -109,6 +111,10 @@ function resetPage() {
     defSeparator = getID('inputSeparator');
     if(defSeparator && defSeparator.value !=='') {
         userOptions.separator = defSeparator.value;
+    }
+    defDetectBooleans = getID('inputDetectBooleans');
+    if(defDetectBooleans) {
+        userOptions.detectBooleans = defDetectBooleans.checked;
     }
     while(steps.lastChild) {
         //console.log("removing", steps.lastChild.id)
@@ -368,6 +374,7 @@ function changeLanguage(event){
     getID('labelInputFile').innerHTML=messages.labelChooselabel=messages.labelChoose;
     getID('inputFile').title=messages.buttonChoose;
     getID('labelInputSeparator').innerHTML=messages.labelSeparator;
+    getID('labelDetectBooleans').innerHTML=messages.labelDetectBooleans;
     var inputSeparator = getID('inputSeparator');
     inputSeparator.title=messages.separatorTitle;
     inputSeparator.placeholder=messages.separatorHint;
@@ -379,6 +386,7 @@ function changeLanguage(event){
 }
 getID('inputFile').addEventListener('change', handlePrepare, false);
 getID('inputSeparator').addEventListener('change', handlePrepare, false);
+getID('inputDetectBooleans').addEventListener('change', handlePrepare, false);
 getID('lang_es').addEventListener('change', changeLanguage, false);
 getID('lang_en').addEventListener('change', changeLanguage, false);
 window.onload=changeLanguage;

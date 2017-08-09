@@ -15,6 +15,7 @@ html(lang=lang)
           labelChoose:'Paso 1: ',
           buttonChoose:'Elegir',
           labelSeparator:'Separador: ',
+          labelDetectBooleans:'Detectar campos lógicos (boolean)',
           separatorTitle:'Definir separador, si vacío, auto-detecta',
           separatorHint:'auto detectar',
           loading:'cargando',
@@ -57,6 +58,7 @@ html(lang=lang)
         en:{
           labelChoose:'Step 1: ',
           labelSeparator:'Separator: ',
+          labelDetectBooleans:'Detect booleans',
           buttonChoose:'select file ',
           separatorTitle:'Define separator, if empty, auto-detects it',
           separatorHint:'auto detect',
@@ -120,8 +122,10 @@ html(lang=lang)
       label(id="labelInputFile")
       input(type='file', id='inputFile')
       span &nbsp;
-      label(id="labelInputSeparator")
+      label(id="labelInputSeparator", for='inputSeparator')
       input(type='text', id='inputSeparator' size=8)
+      input(type='checkbox', id='inputDetectBooleans')
+      label(id="labelDetectBooleans", for='inputDetectBooleans')
     div#steps
     pre#log
     pre#errMessage(style={color:'red'})
@@ -160,6 +164,10 @@ html(lang=lang)
         defSeparator = getID('inputSeparator');
         if(defSeparator && defSeparator.value !=='') {
             userOptions.separator = defSeparator.value;
+        }
+        defDetectBooleans = getID('inputDetectBooleans');
+        if(defDetectBooleans) {
+            userOptions.detectBooleans = defDetectBooleans.checked;
         }
         while(steps.lastChild) {
             //console.log("removing", steps.lastChild.id)
@@ -419,6 +427,7 @@ html(lang=lang)
         getID('labelInputFile').innerHTML=messages.labelChooselabel=messages.labelChoose;
         getID('inputFile').title=messages.buttonChoose;
         getID('labelInputSeparator').innerHTML=messages.labelSeparator;
+        getID('labelDetectBooleans').innerHTML=messages.labelDetectBooleans;
         var inputSeparator = getID('inputSeparator');
         inputSeparator.title=messages.separatorTitle;
         inputSeparator.placeholder=messages.separatorHint;
@@ -430,6 +439,7 @@ html(lang=lang)
     }
     getID('inputFile').addEventListener('change', handlePrepare, false);
     getID('inputSeparator').addEventListener('change', handlePrepare, false);
+    getID('inputDetectBooleans').addEventListener('change', handlePrepare, false);
     getID('lang_es').addEventListener('change', changeLanguage, false);
     getID('lang_en').addEventListener('change', changeLanguage, false);
     window.onload=changeLanguage;

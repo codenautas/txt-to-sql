@@ -72,6 +72,7 @@ describe("fixtures", function(){
         {name:'timestamps'},
         {name:'broken-lines'},
         {name:'booleans'},
+        {name:'booleans-text'},
         {name:'mysql-booleans'},
         {name:'oracle-booleans'},
         {name:'oracle-with-null-lines'},
@@ -81,7 +82,7 @@ describe("fixtures", function(){
             it.skip("fixture: "+fixture.name);
         } else {
             it("fixture: "+fixture.name, function(done){
-                var defaultOpts = {inputEncoding:'UTF8', outputEncoding:'UTF8'};
+                var defaultOpts = {inputEncoding:'UTF8', outputEncoding:'UTF8', detectBooleans:true};
                 var param={tableName:fixture.name};
                 var expected={};
                 var basePath='./test/fixtures/'+fixture.name;
@@ -121,8 +122,12 @@ describe("fixtures", function(){
                     // generated
                     expect(generated.errors).to.eql(expected.errors);
                     common.logBuffersIfDifferent(generated.rawSql,expected.rawSql);
+                    if(param.opts.outputEncoding=='UTF8'){
+                        discrepances.showAndThrow(generated.rawSql.toString(),expected.rawSql.toString());
+                    }
+                    discrepances.showAndThrow(generated.rawSql,expected.rawSql);
                     expect(generated.rawSql).to.eql(expected.rawSql);
-                    expect(discrepances(generated.rawSql,expected.rawSql)).to.eql(null);
+                    discrepances.showAndThrow(generated.rawSql,expected.rawSql);
                     // coherencia entre prepared y generated
                     expect(generated.errors).to.eql(prepared.errors);
                     if(expected.stats) {
@@ -152,9 +157,13 @@ describe("specials", function(){
             return txtToSql.generateScripts({tableName:'example-one', rawTable:rawTable});
         }).then(function(generated){
             return fs.readFile('./test/fixtures/example-one.sql').then(function(rawSql){
+                if(!generated.rawSql){
+                    console.log("non generated.rawSql")
+                    console.log(generated)
+                }
                 common.logBuffersIfDifferent(generated.rawSql,rawSql);
                 expect(generated.rawSql).to.eql(rawSql);
-                expect(discrepances(generated.rawSql,rawSql)).to.eql(null);
+                discrepances.showAndThrow(generated.rawSql,rawSql);
                 return;
             });
         }).then(done,done);
@@ -291,6 +300,9 @@ describe("stringizeStats", function(){
 
 describe("datatype validation (default engine)", function(){
     describe('boolean', function() {
+        before(function(){
+            txtToSql.detectBooleans=true;
+        });
         it("check", function(){
             var b1 = txtToSql.typeValidations['boolean'].checkOne;
             var b = txtToSql.typeValidations['boolean'].checkArray;
