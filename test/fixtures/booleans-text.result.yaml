@@ -1,0 +1,24 @@
+opts:
+  detectBooleans: false
+columns:
+  - name: b1
+    type: character varying
+    inPrimaryKey: true
+    maxLength: 1
+    maxScale: null
+    hasNullValues: false
+    hasScientificNotation: null
+  - name: b2
+    type: integer
+    inPrimaryKey: true
+    maxLength: 1
+    maxScale: 0
+    hasNullValues: false
+    hasScientificNotation: null
+  - name: b3
+    type: character varying
+    inPrimaryKey: false
+    maxLength: 1
+    maxScale: null
+    hasNullValues: false
+    hasScientificNotation: null
