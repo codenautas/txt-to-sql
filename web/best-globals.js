@@ -165,45 +165,47 @@ function npad(num, width) {
     return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
 }
 
-function addDateMethods(dt) {
-    dt.toYmd = function toYmd() {
+var dateMethods=[
+    {name: "toYmd", fun: function toYmd() {
         var r = [];
         r.push(this.getFullYear());
         r.push(npad(this.getMonth()+1,2));
         r.push(npad(this.getDate(),2));
         return r.join('-');        
-    };
-    dt.toHms = function toHms() {
+    }},
+    {name: "toHms", fun: function toHms() {
         var r = [];
         r.push(npad(this.getHours(),2));
         r.push(npad(this.getMinutes(),2));
         r.push(npad(this.getSeconds(),2));
         return r.join(':');
-    };
-    dt.toYmdHms = function toYmdHms() {
+    }},
+    {name: "toYmdHms", fun: function toYmdHms() {
         return this.toYmd()+' '+this.toHms();
-    };
-    dt.toYmdHmsM = function toYmdHmsM() {
+    }},
+    {name: "toYmdHmsM", fun: function toYmdHmsM() {
         return this.toYmdHms()+'.'+npad(this.getMilliseconds(),3);
-    };
-    dt.toYmdHmsMm = function toYmdHmsMm() {
+    }},
+    {name: "toYmdHmsMm", fun: function toYmdHmsMm() {
         return this.toYmdHms()+'.'+npad(this.getMilliseconds(),3)+npad(this.getMicroseconds(),3);
-    };
-    dt.setDateValue = function setDateValue(dateVal) {
-        if(! bestGlobals.date.isOK(dateVal)) { throw new Error('invalid date'); }
-        dt.setTime(dateVal.valueOf()); 
-    };
-    dt.add = function add(objectOrTimeInterval){
+    }},
+    {name: "add", fun: function add(objectOrTimeInterval){
         if(!objectOrTimeInterval.timeInterval){
             objectOrTimeInterval=bestGlobals.timeInterval(objectOrTimeInterval);
         }
-        return bestGlobals.date(new Date(dt.getTime()+objectOrTimeInterval.timeInterval.ms));
-    };
-    dt.sameValue = function sameValue(other){
+        return bestGlobals.date(new Date(this.getTime()+objectOrTimeInterval.timeInterval.ms));
+    }},
+    {name: "sameValue", fun: function sameValue(other){
         return other && 
             other instanceof other.constructor && 
             this.getTime() == other.getTime();
-    }
+    }}
+]
+
+function addDateMethods(dt) {
+    dateMethods.forEach(function(funDef){
+        dt[funDef.name] = funDef.fun;
+    });
     return dt;
 }
 
@@ -282,7 +284,7 @@ bestGlobals.Datetime=function Datetime(integerParts) {
 
 addDateMethods(bestGlobals.Datetime.prototype);
 
-bestGlobals.Datetime.reTz3 = ' ([0-9]{2}):([0-9]{2})(:([0-9]{2}))?(.([0-9]{3,6}))?';
+bestGlobals.Datetime.reTz3 = ' ([0-9]{2}):([0-9]{2})(:([0-9]{2}))?(.([0-9]{1,6}))?';
 bestGlobals.Datetime.re = new RegExp('^('+reDate+'('+bestGlobals.Datetime.reTz3+')?)$');
 
 bestGlobals.Datetime.prototype.getFullYear     = function getFullYear()     { return this.parts.year;     };
@@ -387,8 +389,8 @@ bestGlobals.datetime.iso = function iso(dateStr) {
         integerParts.hour    = parseInt(match[10]||0,10)
         integerParts.minutes = parseInt(match[11]||0,10)
         integerParts.seconds = parseInt(match[13]||0,10)
-        integerParts.ms      = parseInt((match[15]||'000').substr(0,3),10)
-        var microPartWithoutMilliSecs = (match[15]||'000').substr(3);
+        integerParts.ms      = parseInt(((match[15]||'0')+'000000').substr(0,3),10)
+        var microPartWithoutMilliSecs = ((match[15]||'0')+'000000').substr(3);
         microPartWithoutMilliSecs+='000';
         microPartWithoutMilliSecs = microPartWithoutMilliSecs.substr(0,3);
         integerParts.micros  = parseInt(microPartWithoutMilliSecs,10);
@@ -645,6 +647,14 @@ bestGlobals.registerJson4All = function registerJson4All(JSON4all){
             return bestGlobals.date.iso(value);
         },
     });
+    JSON4all.addType(bestGlobals.Datetime, {
+        construct: function construct(value){
+            return bestGlobals.datetime.iso(value);
+        },
+        deconstruct: function construct(datetime){
+            return datetime.toPlainString();
+        },
+    });
 };
 
 /* istanbul ignore next */
@@ -706,6 +716,15 @@ bestGlobals.serie = function serie(NorFirst, NifNoFirst){
     var first = NifNoFirst==null ? 0        : NorFirst  ;
     return Array.apply(null, Array(n)).map(function (_, i) {return i+first;});
 };
+
+var MAX_SAFE_INTEGER = bestGlobals.MAX_SAFE_INTEGER = 9007199254740991;
+
+bestGlobals.sameValue = function sameValue(a,b){
+    return a==b ||
+      a instanceof Date && b instanceof Date && a.getTime() == b.getTime() ||
+      typeof a === 'number' && (a>MAX_SAFE_INTEGER || a< -MAX_SAFE_INTEGER) && Math.abs(a/b)<1.00000000000001 && Math.abs(a/b)>0.99999999999999 ||
+      a && !!a.sameValue && a.sameValue(b);
+}
 
 return bestGlobals;
 
