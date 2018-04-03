@@ -11,13 +11,49 @@ var requireBro = {};
     if(window.require){
         throw new Error("require-bro is incompatible here. 'window.require' found");
     }
+    if(!window.define){
+        window.define = function define(){
+            var argPos=0;
+            var name;
+            var dependencies=['require'];
+            var factory;
+            if(argPos<arguments.length && typeof arguments[argPos] === "string"){
+                name=arguments[argPos];
+                argPos++;
+            }else{
+                name=window.globalModuleName || document.currentScript.src.replace(/.*\/([^/\.]*)(.js(\?[0-9a-zA-Z]+)?)?/,function(all,part){ return part; });
+            }
+            if(argPos<arguments.length && arguments[argPos] instanceof Array){
+                dependencies=arguments[argPos];
+                argPos++;
+            }
+            if(argPos<arguments.length && arguments[argPos] instanceof Function){
+                factory=arguments[argPos];
+                argPos++;
+            }else{
+                throw new Error("require-bro define miss factory Function");
+            }
+            var exports={};
+            var createdModule = factory.apply(window, dependencies.map(function(moduleName){ 
+                if(moduleName==='require'){
+                    return require;
+                }
+                if(moduleName==='exports'){
+                    return exports;
+                }
+                return require(moduleName) 
+            }));
+            window.require.definedModules[name] = window[name] = createdModule === undefined ? exports : createdModule;
+        }
+        window.define.amd='powered by require-bro';
+    }
     window.require = function requireBro(name){
         if(window.require.definedModules[name]){
             return window.require.definedModules[name];
         }else{
             var camelName=name.replace(/-([a-z])/g, function(match, letter){
                 return letter.toUpperCase();
-            }).replace(/^(.*\/)*([^./]+)(\.js)?$/, function(match, path, moduleName, extJs){
+            }).replace(/^(\.\/)?(.*\/)*([^./]+)(\.js)?$/, function(match, fromThisPath, path, moduleName, extJs){
                 return moduleName;
             });
             // console.log('requireBro', name, camelName, window.selfExplain);
