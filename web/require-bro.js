@@ -51,10 +51,11 @@ var requireBro = {};
         if(window.require.definedModules[name]){
             return window.require.definedModules[name];
         }else{
-            var camelName=name.replace(/-([a-z])/g, function(match, letter){
-                return letter.toUpperCase();
-            }).replace(/^(\.\/)?(.*\/)*([^./]+)(\.js)?$/, function(match, fromThisPath, path, moduleName, extJs){
+            var moduleName=name.replace(/^(\.\/)?(.*\/)*([^./]+)(\.js)?$/, function(match, fromThisPath, path, moduleName, extJs){
                 return moduleName;
+            });
+            var camelName=moduleName.replace(/-([a-z])/g, function(match, letter){
+                return letter.toUpperCase();
             });
             // console.log('requireBro', name, camelName, window.selfExplain);
             if(window[camelName]){
@@ -74,7 +75,14 @@ var requireBro = {};
                         return window.require.definedModules[name] = window[camelName];
                         /* jshint +W093 */ 
                     }else{
-                        throw new Error("require-bro: module "+JSON.stringify(name)+" not found. It must included manually");
+                        camelName=moduleName;
+                        if(window[camelName]){
+                            /* jshint -W093 */ 
+                            return window.require.definedModules[name] = window[camelName];
+                            /* jshint +W093 */ 
+                        }else{
+                            throw new Error("require-bro: module "+JSON.stringify(name)+" not found. It must included manually");
+                        }
                     }
                 }
             }
