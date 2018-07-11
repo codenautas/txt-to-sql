@@ -76,6 +76,7 @@ describe("fixtures", function(){
         {name:'mysql-booleans'},
         {name:'oracle-booleans'},
         {name:'oracle-with-null-lines'},
+        {skip:'#41', name:'numbers-spanish'},
         {/*skip:true,*/ name:'all-types'},
     ].forEach(function(fixture){
         if(fixture.skip) {
