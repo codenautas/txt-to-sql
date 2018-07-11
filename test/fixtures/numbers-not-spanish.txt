@@ -1,0 +1,4 @@
+provincia;sup_km2;habitantes_miles;densidad;idh;codigo_postal
+Álava;3037;321.932;107.53;0,99;01
+Albacete;14926;390.032;26.13;0,98;02
+Alicante;5816;1825;334.23;0,97;03
