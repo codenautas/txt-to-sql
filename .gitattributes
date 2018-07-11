@@ -1,2 +1,2 @@
 *.sql text eol=lf
-*.txt text eol=lf
+# *.txt text eol=lf
