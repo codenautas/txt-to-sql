@@ -82,7 +82,7 @@ describe("fixtures", function(){
         if(fixture.skip) {
             it.skip("fixture: "+fixture.name);
         } else {
-            it("fixture: "+fixture.name, function(done){
+           const fun = function(done){
                 var defaultOpts = {inputEncoding:'UTF8', outputEncoding:'UTF8', detectBooleans:true};
                 var param={tableName:fixture.name};
                 var expected={};
@@ -141,7 +141,12 @@ describe("fixtures", function(){
                         //expect(generated.stats.endTime).to.be.greaterThan(generated.stats.startTime);
                     }
                }).then(done,done);
-            });   
+            };
+            if(fixture.only) {
+               it.only("fixture: "+fixture.name, fun);
+            } else {
+               it("fixture: "+fixture.name, fun);
+            }
         }
     });
 });
